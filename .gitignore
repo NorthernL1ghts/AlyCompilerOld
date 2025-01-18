@@ -1,0 +1,81 @@
+# Ignore build directories
+build/
+x64/
+bin/
+bin-int/
+Debug/
+Release/
+DebugMon/
+*.obj
+*.o
+*.lo
+*.a
+*.so
+*.dll
+*.exe
+*.pdb
+*.idb
+*.lib
+*.suo
+*.sln.docstates
+
+# Ignore Visual Studio directories and files
+.vs/
+.vscode/
+.idea/
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.user
+*.suo
+*.userosscache
+
+# Ignore Mac OS system files
+.DS_Store
+
+# Ignore CMake build files and directories
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+Makefile.user
+
+# Ignore Eclipse project files
+.project
+.cproject
+.settings/
+
+# Ignore Code::Blocks files
+*.cbp
+*.layout
+
+# Ignore Ninja build files
+build.ninja
+
+# Ignore GDB debugging files
+*.gdb
+
+# Ignore Qt Creator files
+*.pro.user
+*.qmake.stash
+
+# Ignore Visual Studio Code settings for specific projects
+.vscode/*
+
+# Ignore global configuration files
+*.clangd
+*.dir-locals.el
+
+# Ignore test or coverage files
+*.gcda
+*.gcno
+*.gcov
+
+# Ignore generated files and folders for CI/CD
+*.log
+*.out
+*.dSYM/
+
+# Ignore temporary files
+*.swp
+*.swo
