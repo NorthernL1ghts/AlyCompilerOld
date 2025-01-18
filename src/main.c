@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 long file_size(FILE* file) {
 	if (!file) { return 0; }
@@ -100,11 +101,28 @@ void print_error(Error err) {
 	(n).type = (t);                  \
 	(n).msg = (message);
 
+const char* whitespace = " \r";
+const char* delimiters = " \r:\n"; // NOTE (NL) : Delimiters just end a token and begin a new one.
+
+/// Lex the next token from SOURCE, and point to it with BEG and END.
 Error lex(char* source, char** beg, char** end) {
 	Error err = ok;
-	if (!source) {
+	if (!source || !beg || !end) {
 		ERROR_PREP(err, ERROR_ARGUMENTS, "Can not lex empty source.");
+		return err;
 	};
+	*beg = source;
+	*beg += strspn(*beg, whitespace); // Skip the whitespace at the beginning.
+	*end = source;
+	*end += strcspn(*beg, whitespace); // Skip to whitespace and delimiters.
+	printf("lexed: %.*s", *end - *beg, *beg);
+	return err;
+}
+
+Error parse_expr(char* source) {
+	char* beg = source;
+	char* end = source;
+	Error err = lex(source, &beg, &end);
 	return err;
 }
 
@@ -118,11 +136,11 @@ int main(int argc, char** argv) {
 	char* contents = file_contents(path);
 	if (contents) {
 		printf("Contents of %s:\n---\n\"%s\"\n---\n", path, contents);
+
+		Error err = parse_expr(contents);
+		print_error(err);
 		free(contents);
 	}
-
-	Error err = lex(NULL, NULL, NULL);
-	print_error(err);
 
 	return 0;
 }
