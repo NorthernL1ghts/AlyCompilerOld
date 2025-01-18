@@ -2,6 +2,8 @@
 
 1. We need some list of identifiers that are known, ideally with type information as well as the literal value / memory address or something. These need to be scoped (i.e. nested) to allow for shadowing of global identifiers within functions for example. This may even allow use to implement `let` which would be cool.
 
+2. Maybe we make a Runtime evaluator as well as a compiler, not sure if we will be able to get this done.
+
 # Misc
 1. Statically typed
 2. Compiled

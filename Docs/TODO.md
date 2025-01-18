@@ -1,6 +1,6 @@
 # AlyCompiler's TODO:
 
-- [ ] Lex source into tokens or something
+- [x] Lex source into tokens or something
 
 - [ ] Parse tokens or something into AST -- Just a tree containing data about the program
 

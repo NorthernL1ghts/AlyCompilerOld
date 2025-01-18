@@ -140,6 +140,10 @@ typedef struct Node {
 
 } Node;
 
+// Predicates
+#define nonep(node) ((node).type == NODE_TYPE_NONE)
+#define integerp(node) ((node).type == NODE_TYPE_INTEGER)
+
 // TODO: 
 // |-- API to create new Binding.
 // `-- API to add Binding to environment.
@@ -159,7 +163,7 @@ void environment_set() {
 
 }
 
-Error parse_expr(char* source) {
+Error parse_expr(char* source, Node* result) {
 	char* beg = source;
 	char* end = source;
 	Error err = ok;
@@ -181,8 +185,10 @@ int main(int argc, char** argv) {
 	if (contents) {
 		// printf("Contents of %s:\n---\n\"%s\"\n---\n", path, contents);
 
-		Error err = parse_expr(contents);
+		Node expression;
+		Error err = parse_expr(contents, &expression);
 		print_error(err);
+
 		free(contents);
 	}
 
