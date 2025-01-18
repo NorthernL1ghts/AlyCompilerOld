@@ -102,7 +102,7 @@ void print_error(Error err) {
 	(n).msg = (message);
 
 const char* whitespace = " \r";
-const char* delimiters = " \r:\n"; // NOTE (NL) : Delimiters just end a token and begin a new one.
+const char* delimiters = " \r\n"; // NOTE (NL) : Delimiters just end a token and begin a new one.
 
 /// Lex the next token from SOURCE, and point to it with BEG and END.
 Error lex(char* source, char** beg, char** end) {
@@ -113,16 +113,19 @@ Error lex(char* source, char** beg, char** end) {
 	};
 	*beg = source;
 	*beg += strspn(*beg, whitespace); // Skip the whitespace at the beginning.
-	*end = source;
-	*end += strcspn(*beg, whitespace); // Skip to whitespace and delimiters.
-	printf("lexed: %.*s", *end - *beg, *beg);
+	*end = *beg;
+	*end += strcspn(*beg, delimiters); // Skip everything that is not in delimiters.
 	return err;
 }
 
 Error parse_expr(char* source) {
 	char* beg = source;
 	char* end = source;
-	Error err = lex(source, &beg, &end);
+	Error err = ok;
+	while ((err = lex(end, &beg, &end)).type == ERROR_NONE) {
+		if (end - beg == 0) { break; }
+		printf("lexed: %.*s\n", end - beg, beg);
+	}
 	return err;
 }
 
@@ -135,7 +138,7 @@ int main(int argc, char** argv) {
 	char* path = argv[1];
 	char* contents = file_contents(path);
 	if (contents) {
-		printf("Contents of %s:\n---\n\"%s\"\n---\n", path, contents);
+		// printf("Contents of %s:\n---\n\"%s\"\n---\n", path, contents);
 
 		Error err = parse_expr(contents);
 		print_error(err);
