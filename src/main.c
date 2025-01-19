@@ -124,23 +124,27 @@ Error lex(char* source, char** beg, char** end) {
 	return err;
 }
 
+// TODO:
+// |-- API to create new node.
+// `-- API to add node as child.
 typedef long long integer_t;
 typedef struct Node {
 	enum NodeType {
 		NODE_TYPE_NONE,
+		NODE_TYPE_MAX,
+		NODE_TYPE_PROGRAM,
 		NODE_TYPE_INTEGER,
-		NODE_TYPE_MAX
 	} type;
 
 	union NodeValue {
 		integer_t integer;
 	} value;
 
-	struct Node* children[3];
+	struct Node** children;
 
 } Node;
 
-// Predicates
+// Predicates (booleans)
 #define nonep(node) ((node).type == NODE_TYPE_NONE)
 #define integerp(node) ((node).type == NODE_TYPE_INTEGER)
 
