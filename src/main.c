@@ -106,20 +106,26 @@ void print_error(Error err) {
 const char* whitespace = " \r\n";
 const char* delimiters = " \r\n,():"; // NOTE (NL) : Delimiters just end a token and begin a new one.
 
+typedef struct Token {
+	char* beginning;
+	char* end;
+	struct Token* next; // Linked list.
+} Token;
+
 /// Lex the next token from SOURCE, and point to it with BEG and END.
-Error lex(char* source, char** beg, char** end) {
+Error lex(char* source, Token* token) {
 	Error err = ok;
-	if (!source || !beg || !end) {
+	if (!source || !token) {
 		ERROR_PREP(err, ERROR_ARGUMENTS, "Can not lex empty source.");
 		return err;
 	};
-	*beg = source;
-	*beg += strspn(*beg, whitespace); // Skip the whitespace at the beginning.
-	*end = *beg;
-	if (**end == '\0') { return err; }
-	*end += strcspn(*beg, delimiters); // Skip everything that is not in delimiters.
-	if (*end == *beg) {
-		*end += 1; // 1 byte.
+	token->beginning = source;
+	token->beginning += strspn(token->beginning, whitespace); // Skip the whitespace at the beginning.
+	token->end = token->beginning;
+	if (*(token->end) == '\0') { return err; }
+	token->end += strcspn(token->beginning, delimiters); // Skip everything that is not in delimiters.
+	if (token->end == token->beginning) {
+		token->end += 1; // Just 1 byte.
 	}
 	return err;
 }
@@ -139,9 +145,7 @@ typedef struct Node {
 	union NodeValue {
 		integer_t integer;
 	} value;
-
 	struct Node** children;
-
 } Node;
 
 // Predicates (booleans)
@@ -168,12 +172,14 @@ void environment_set() {
 }
 
 Error parse_expr(char* source, Node* result) {
-	char* beg = source;
-	char* end = source;
+	Token token;
+	token.next = NULL;
+	token.beginning = source;
+	token.end = source;
 	Error err = ok;
-	while ((err = lex(end, &beg, &end)).type == ERROR_NONE) {
-		if (end - beg == 0) { break; }
-		printf("lexed: %.*s\n", end - beg, beg);
+	while ((err = lex(token.end, &token)).type == ERROR_NONE) {
+		if (token.end - token.beginning == 0) { break; }
+		printf("lexed: %.*s\n", token.end - token.beginning, token.beginning);
 	}
 	return err;
 }
