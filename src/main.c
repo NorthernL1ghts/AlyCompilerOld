@@ -248,7 +248,11 @@ Error parse_expr(char* source, Node* result) {
 		if (token_string_equalp(":", token_it)) {
 			printf("Found `:` at token\n");
 			if (token_it->next && token_string_equalp("=", token_it->next)) {
-
+				printf("Found assignment\n");
+			}
+			else if (token_string_equalp("integer", token_it->next)) {
+				// TODO: Make helper to check if string is type name.
+				printf("Found (hopefully) a variable declaration");
 			}
 		}
 
