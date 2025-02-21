@@ -46,7 +46,7 @@ char* file_contents(char* path) {
 }
 
 void print_usage(char** argv) {
-	printf("USAGE: %s <path_to_file_to_compile>\n", argv[0]);
+	pprintf("USAGE: %s <path_to_file_to_compile>\n", argv[0]);
 }
 
 typedef struct Error {
@@ -140,7 +140,6 @@ void print_tokens(Token* root) {
 	}
 }
 
-
 /// Lex the next token from SOURCE, and point to it with BEG and END.
 Error lex(char* source, Token* token) {
 	Error err = ok;
@@ -159,6 +158,16 @@ Error lex(char* source, Token* token) {
 	return err;
 }
 
+//			 Node-
+//			/  |  \
+//		    0  1  2
+//		   / \
+//        3   4
+// 
+// Node
+// |-- 0  ->  1  ->  2
+//	   `-- 3  -> 4
+
 // TODO:
 // |-- API to create new node.
 // `-- API to add node as child.
@@ -170,16 +179,33 @@ typedef struct Node {
 		NODE_TYPE_PROGRAM,
 		NODE_TYPE_INTEGER,
 	} type;
-
 	union NodeValue {
 		integer_t integer;
 	} value;
-	struct Node** children;
+	// Possible TODO: Parent?
+	struct Node* children;
+	struct Node* next_child;
 } Node;
 
-// Predicates (booleans)
+// Predicates
 #define nonep(node) ((node).type == NODE_TYPE_NONE)
 #define integerp(node) ((node).type == NODE_TYPE_INTEGER)
+
+// TODO: Make more efficient! -- Maybe keep track of allocated ptr's
+// then free them all in one go?
+void node_free(Node* root) {
+	if (!root) { return; }
+	Node* child = root->children;
+	Node* next_child = NULL;
+	while (child) {
+		next_child = child;
+		node_free(child);
+		child = next_child;
+	}
+	free(root);
+}
+
+// 1:31:52 -- 3:00:37 p2
 
 // TODO: 
 // |-- API to create new Binding.
@@ -200,10 +226,12 @@ void environment_set() {}
 
 // @return Boolean-like value; 1 for success, 0 for failure.
 int token_string_equalp(char* string, Token* token) {
-	if (!string || token) { return 0; }
+	if (!string || !token) { return 0; }
 	char* beg = token->beginning;
 	while (*string && token->beginning < token->end) {
-		if (*string != *beg) { return 0; }
+		if (*string != *beg) {
+			return 0;
+		}
 		string++;
 		beg++;
 	}
@@ -246,13 +274,12 @@ Error parse_expr(char* source, Node* result) {
 		// TODO: Map constructs from the language and attempt to create nodes.
 
 		if (token_string_equalp(":", token_it)) {
-			printf("Found `:` at token\n");
 			if (token_it->next && token_string_equalp("=", token_it->next)) {
 				printf("Found assignment\n");
 			}
 			else if (token_string_equalp("integer", token_it->next)) {
 				// TODO: Make helper to check if string is type name.
-				printf("Found (hopefully) a variable declaration");
+				printf("Found (hopefully) a variable declaration\n");
 			}
 		}
 
