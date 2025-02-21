@@ -117,6 +117,14 @@ Token* token_create() {
 	return token;
 }
 
+void free_tokens(Token* root) {
+	while (root) {
+		Token* token_to_free = root;
+		root = root->next;
+		free(token_to_free);
+	}
+}
+
 void print_tokens(Token* root) {
 	// NOTE: Sequential to prevent stackoverflow issue
 	size_t count = 1;
@@ -131,6 +139,7 @@ void print_tokens(Token* root) {
 		count++;
 	}
 }
+
 
 /// Lex the next token from SOURCE, and point to it with BEG and END.
 Error lex(char* source, Token* token) {
@@ -189,6 +198,18 @@ typedef struct Environment {
 
 void environment_set() {}
 
+// @return Boolean-like value; 1 for success, 0 for failure.
+int token_string_equalp(char* string, Token* token) {
+	if (!string || token) { return 0; }
+	char* beg = token->beginning;
+	while (*string && token->beginning < token->end) {
+		if (*string != *beg) { return 0; }
+		string++;
+		beg++;
+	}
+	return 1;
+}
+
 Error parse_expr(char* source, Node* result) {
 	Token* tokens = NULL;
 	Token* token_it = tokens;
@@ -201,6 +222,7 @@ Error parse_expr(char* source, Node* result) {
 		if (current_token.end - current_token.beginning == 0) { break; }
 
 		// Before we lex, we need to create tokens!
+		// FIXME: This could conditional branch could be removed from the loop.
 		if (tokens) {
 			// Overwrite tokens->next
 			token_it->next = token_create();
@@ -213,11 +235,27 @@ Error parse_expr(char* source, Node* result) {
 			memcpy(tokens, &current_token, sizeof(Token));
 			token_it = tokens;
 		}
-
-		printf("lexed: %.*s\n", current_token.end - current_token.beginning, current_token.beginning);
 	}
 
 	print_tokens(tokens);
+
+	Node* root = calloc(1, sizeof(Node));
+	assert(root && "Could not allocate memory from AST Node");
+	token_it = tokens;
+	while (token_it) {
+		// TODO: Map constructs from the language and attempt to create nodes.
+
+		if (token_string_equalp(":", token_it)) {
+			printf("Found `:` at token\n");
+			if (token_it->next && token_string_equalp("=", token_it->next)) {
+
+			}
+		}
+
+		token_it = token_it->next;
+	}
+
+	free_tokens(tokens);
 
 	return err;
 }
