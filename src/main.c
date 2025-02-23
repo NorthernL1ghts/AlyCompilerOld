@@ -46,7 +46,7 @@ char* file_contents(char* path) {
 }
 
 void print_usage(char** argv) {
-	pprintf("USAGE: %s <path_to_file_to_compile>\n", argv[0]);
+	printf("USAGE: %s <path_to_file_to_compile>\n", argv[0]);
 }
 
 typedef struct Error {
