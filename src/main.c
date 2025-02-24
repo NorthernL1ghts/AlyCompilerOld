@@ -117,7 +117,7 @@ Token* token_create() {
 	return token;
 }
 
-void free_tokens(Token* root) {
+void token_free(Token* root) {
 	while (root) {
 		Token* token_to_free = root;
 		root = root->next;
@@ -198,16 +198,14 @@ void node_free(Node* root) {
 	Node* child = root->children;
 	Node* next_child = NULL;
 	while (child) {
-		next_child = child;
+		next_child = child->next_child;
 		node_free(child);
 		child = next_child;
 	}
 	free(root);
 }
 
-// 1:31:52 -- 3:00:37 p2
-
-// TODO: 
+// TODO:
 // |-- API to create new Binding.
 // `-- API to add Binding to environment.
 typedef struct Binding {
@@ -239,55 +237,39 @@ int token_string_equalp(char* string, Token* token) {
 }
 
 Error parse_expr(char* source, Node* result) {
-	Token* tokens = NULL;
-	Token* token_it = tokens;
+	size_t token_count = 0;
 	Token current_token;
 	current_token.next = NULL;
 	current_token.beginning = source;
 	current_token.end = source;
 	Error err = ok;
-	while ((err = lex(current_token.end, &current_token)).type == ERROR_NONE) {
-		if (current_token.end - current_token.beginning == 0) { break; }
-
-		// Before we lex, we need to create tokens!
-		// FIXME: This could conditional branch could be removed from the loop.
-		if (tokens) {
-			// Overwrite tokens->next
-			token_it->next = token_create();
-			memcpy(token_it->next, &current_token, sizeof(Token));
-			token_it = token_it->next;
-		}
-		else {
-			// Overwrite tokens
-			tokens = token_create();
-			memcpy(tokens, &current_token, sizeof(Token));
-			token_it = tokens;
-		}
-	}
-
-	print_tokens(tokens);
 
 	Node* root = calloc(1, sizeof(Node));
-	assert(root && "Could not allocate memory from AST Node");
-	token_it = tokens;
-	while (token_it) {
-		// TODO: Map constructs from the language and attempt to create nodes.
+	assert(root && "Could notg allocate memory for AST Root.");
+	root->type = NODE_TYPE_PROGRAM;
 
-		if (token_string_equalp(":", token_it)) {
-			if (token_it->next && token_string_equalp("=", token_it->next)) {
-				printf("Found assignment\n");
-			}
-			else if (token_string_equalp("integer", token_it->next)) {
-				// TODO: Make helper to check if string is type name.
-				printf("Found (hopefully) a variable declaration\n");
-			}
+	Node working_node;
+	working_node.children = NULL;
+	working_node.next_child = NULL;
+	working_node.type = NODE_TYPE_NONE;
+	working_node.value.integer = 0;
+	while ((err = lex(current_token.end, &current_token)).type == ERROR_NONE) {
+		size_t token_length = current_token.end - current_token.beginning;
+		if (token_length == 0) { break; }
+		if (token_length == 1 && *(current_token.beginning) == '0') {
+			working_node.type = NODE_TYPE_INTEGER;
+			working_node.value.integer = 0;
+			printf("Zero integer!\n");
 		}
-
-		token_it = token_it->next;
+		if ((working_node.value.integer = strtoll(current_token.beginning, NULL, 10)) != 0) {
+			working_node.type = NODE_TYPE_INTEGER;
+			printf("Found integer %lld!\n", working_node.value.integer);
+		}
+		if (token_string_equalp(":", &current_token)) {
+			// Have an assignment, so move forward.
+			Token equals;
+		}
 	}
-
-	free_tokens(tokens);
-
 	return err;
 }
 
