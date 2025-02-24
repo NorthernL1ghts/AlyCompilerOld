@@ -125,6 +125,10 @@ void token_free(Token* root) {
 	}
 }
 
+void print_token(Token t) {
+	printf("%.*s", t.end - t.beginning, t.beginning);
+}
+
 void print_tokens(Token* root) {
 	// NOTE: Sequential to prevent stackoverflow issue
 	size_t count = 1;
@@ -255,7 +259,9 @@ typedef struct Environment {
 	Binding* bind;
 } Environment;
 
-void environment_set() {}
+void environment_set() {
+
+}
 
 // @return Boolean-like value; 1 for success, 0 for failure.
 int token_string_equalp(char* string, Token* token) {
@@ -298,22 +304,35 @@ Error parse_expr(char* source, Node* result) {
 	root->type = NODE_TYPE_PROGRAM;
 
 	Node working_node;
-	working_node.children = NULL;
-	working_node.next_child = NULL;
-	working_node.type = NODE_TYPE_NONE;
-	working_node.value.integer = 0;
 	while ((err = lex(current_token.end, &current_token)).type == ERROR_NONE) {
+		working_node.children = NULL;
+		working_node.next_child = NULL;
+		working_node.type = NODE_TYPE_NONE;
+		working_node.value.integer = 0;
 		size_t token_length = current_token.end - current_token.beginning;
 		if (token_length == 0) { break; }
 		if (parse_integer(&current_token, &working_node)) {
-			printf("Found integer: ");
-			print_node(&working_node, 0);
+			// Look ahead for binary operators that include integers.
+			Token integer;
+			memcpy(&integer, &current_token, sizeof(Token));
+			err = lex(current_token.end, &current_token);
+			if (err.type != ERROR_NONE) {
+				return err;
+			}
+			// TODO: Check for valid integer operator.
+		}
+		else {
+			printf("Unrecognized token: ");
+			print_token(current_token);
 			putchar('\n');
+
+			// TODO: Check if valid symbol for environment, then attempt to 
+			// pattern match variable access, assignment, declaration, or
+			// declaration with initialization.
 		}
-		if (token_string_equalp(":", &current_token)) {
-			// Have an assignment, so move forward.
-			Token equals;
-		}
+		printf("Found node: ");
+		print_node(&working_node, 0);
+		putchar('\n');
 	}
 	return err;
 }
