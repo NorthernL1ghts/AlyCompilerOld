@@ -1,8 +1,12 @@
-#include <assert.h>
+﻿#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+/*
+ Gets the size of a file in bytes.
+ Returns the file size, or 0 if the file is invalid or an error occurs.
+*/
 long file_size(FILE* file) {
 	if (!file) { return 0; }
 	fpos_t original = 0;
@@ -17,7 +21,11 @@ long file_size(FILE* file) {
 	}
 	return out;
 }
-
+/*
+ Reads the entire contents of a file into a dynamically allocated string.
+ The caller is responsible for freeing the returned memory.
+ Returns a pointer to the file contents, or NULL on failure.
+*/
 char* file_contents(char* path) {
 	FILE* file = fopen(path, "r");
 	if (!file) {
@@ -45,10 +53,12 @@ char* file_contents(char* path) {
 	return contents;
 }
 
+// Prints program usage instructions.
 void print_usage(char** argv) {
 	printf("USAGE: %s <path_to_file_to_compile>\n", argv[0]);
 }
 
+// Represents an error type and associated message.
 typedef struct Error {
 	enum ErrorType {
 		ERROR_NONE = 0,
@@ -64,6 +74,7 @@ typedef struct Error {
 
 Error ok = { ERROR_NONE, NULL };
 
+// Prints an error message if an error exists.
 void print_error(Error err) {
 	if (err.type == ERROR_NONE) { return; }
 	printf("ERROR: ");
@@ -101,16 +112,18 @@ void print_error(Error err) {
 	(n).type = (t);                  \
 	(n).msg = (message);
 
-// NOTE: Delimiters just end a token and begin a new one.
+/* NOTE: Delimiters just end a token and begin a new one. */
 const char* whitespace = " \r\n";
 const char* delimiters = " \r\n,():";
 
+// Represents a token in the input.
 typedef struct Token {
 	char* beginning;
 	char* end;
 	struct Token* next;
 } Token;
 
+// Allocates and initializes a new token.
 Token* token_create() {
 	Token* token = malloc(sizeof(Token));
 	assert(token && "Could not allocate memory for token");
@@ -118,6 +131,7 @@ Token* token_create() {
 	return token;
 }
 
+// Frees all tokens in a linked list.
 void token_free(Token* root) {
 	while (root) {
 		Token* token_to_free = root;
@@ -130,8 +144,9 @@ void print_token(Token t) {
 	printf("%.*s", t.end - t.beginning, t.beginning);
 }
 
+// Prints all tokens in a linked list.
 void print_tokens(Token* root) {
-	// NOTE: Sequential to prevent stackoverflow issue
+	/* NOTE: Sequential to prevent stackoverflow issue */
 	size_t count = 1;
 	while (root) {
 		if (count > 10000) { break; } // FIXME: Remove this limit.
@@ -145,7 +160,8 @@ void print_tokens(Token* root) {
 	}
 }
 
-/// Lex the next token from SOURCE, and point to it with BEG and END.
+/// Lex the next token from SOURCE, and point to it with BEG and END. 
+// Returns an error if the source or token is NULL.
 Error lex(char* source, Token* token) {
 	Error err = ok;
 	if (!source || !token) {
@@ -163,20 +179,18 @@ Error lex(char* source, Token* token) {
 	return err;
 }
 
-//			 Node-
-//			/  |  \
-//		    0  1  2
-//		   / \
-//        3   4
-//
-// Node
-// |-- 0  ->  1  ->  2
-//	   `-- 3  -> 4
+/*
+	Node Structure:
+	Node
+	├── 0  ->  1  ->  2
+	│    └── 3  -> 4
+*/
 
 // TODO:
 // |-- API to create new node.
 // `-- API to add node as child.
 typedef long long integer_t;
+// Represents a node in the abstract syntax tree.
 typedef struct Node {
 	enum NodeType {
 		NODE_TYPE_NONE,
@@ -287,6 +301,7 @@ typedef struct Environment {
 	Binding* bind;
 } Environment;
 
+// Creates a new environment.
 Environment* environment_create(Environment* parent) {
 	Environment* env = malloc(sizeof(Environment));
 	assert(env && "Could not allocate memory to new environment");
