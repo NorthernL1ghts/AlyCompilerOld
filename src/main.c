@@ -32,7 +32,6 @@ char* file_contents(char* path) {
 		printf("Could not open file at %s\n", path);
 		return NULL;
 	}
-	// Otherwise, if you find file get the size.
 	fseek(file, 0, SEEK_SET);
 	long size = file_size(file);
 	char* contents = malloc(size + 1);
@@ -140,6 +139,7 @@ void token_free(Token* root) {
 	}
 }
 
+/* NOTE: This is the new token printing that is not reversed! */
 void print_token(Token t) {
 	printf("%.*s", t.end - t.beginning, t.beginning);
 }
@@ -174,7 +174,7 @@ Error lex(char* source, Token* token) {
 	if (*(token->end) == '\0') { return err; }
 	token->end += strcspn(token->beginning, delimiters); // Skip everything that is not in delimiters.
 	if (token->end == token->beginning) {
-		token->end += 1; // Just 1 byte.
+		token->end += 1;
 	}
 	return err;
 }
@@ -213,9 +213,7 @@ typedef struct Node {
 /// @return Boolean-like value; 1 for success, 0 for failure.
 int node_compare(Node* a, Node* b) {
 	if (!a || !b) {
-		if (!a && !b) {
-			return 1;
-		}
+		if (!a && !b) { return 1; }
 		return 0;
 	}
 	assert(NODE_TYPE_MAX == 3 && "node_compare() must handle all node types");
@@ -340,9 +338,7 @@ int token_string_equalp(char* string, Token* token) {
 	if (!string || !token) { return 0; }
 	char* beg = token->beginning;
 	while (*string && token->beginning < token->end) {
-		if (*string != *beg) {
-			return 0;
-		}
+		if (*string != *beg) { return 0; }
 		string++;
 		beg++;
 	}
