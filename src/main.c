@@ -140,7 +140,11 @@ void token_free(Token* root) {
 	}
 }
 
-/* NOTE: This is the new token printing that is not reversed! */
+/*
+	NOTE: This is the new method for printing the linked list, which avoids the issue of having
+	to reverse the list. The previous method printed the list in the wrong direction, but with
+	this approach, we can print it in the correct order without needing to reverse it.
+*/
 void print_token(Token t) {
 	printf("%.*s", t.end - t.beginning, t.beginning);
 }
@@ -164,7 +168,7 @@ void print_tokens(Token* root) {
 /*
 	Lex the next token from SOURCE, and point to it with BEG and END.
 	Returns an error if the source or token is NULL.
- */
+*/
 Error lex(char* source, Token* token) {
 	Error err = ok;
 	if (!source || !token) {
@@ -188,7 +192,6 @@ Error lex(char* source, Token* token) {
 	├── 0  ->  1  ->  2
 	│    └── 3  -> 4
 */
-
 // TODO:
 // |-- API to create new node.
 // `-- API to add node as child.
@@ -209,7 +212,7 @@ typedef struct Node {
 	struct Node* next_child;
 } Node;
 
-// Predicates
+// Predicates -- Just to shorten code
 #define nonep(node) ((node).type == NODE_TYPE_NONE)
 #define integerp(node) ((node).type == NODE_TYPE_INTEGER)
 
@@ -227,9 +230,7 @@ int node_compare(Node* a, Node* b) {
 		return 0;
 		break;
 	case NODE_TYPE_INTEGER:
-		if (a->value.integer == b->value.integer) {
-			return 1;
-		}
+		if (a->value.integer == b->value.integer) { return 1; }
 		return 0;
 		break;
 	case NODE_TYPE_PROGRAM:
