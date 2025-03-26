@@ -4,8 +4,8 @@
 #include <string.h>
 
 /*
- Gets the size of a file in bytes.
- Returns the file size, or 0 if the file is invalid or an error occurs.
+	Gets the size of a file in bytes.
+	Returns the file size, or 0 if the file is invalid or an error occurs.
 */
 long file_size(FILE* file) {
 	if (!file) { return 0; }
@@ -22,9 +22,9 @@ long file_size(FILE* file) {
 	return out;
 }
 /*
- Reads the entire contents of a file into a dynamically allocated string.
- The caller is responsible for freeing the returned memory.
- Returns a pointer to the file contents, or NULL on failure.
+	Reads the entire contents of a file into a dynamically allocated string.
+	The caller is responsible for freeing the returned memory.
+	Returns a pointer to the file contents, or NULL on failure.
 */
 char* file_contents(char* path) {
 	FILE* file = fopen(path, "r");
@@ -38,6 +38,7 @@ char* file_contents(char* path) {
 	char* write_it = contents;
 	size_t bytes_read = 0;
 	while (bytes_read < size) {
+		/* NOTE: `write_it` could be 0, therefore doesn't adhere to specification of `fread`. */
 		size_t bytes_read_this_iteration = fread(write_it, 1, size - bytes_read, file);
 		if (ferror(file)) {
 			printf("Error when reading: %i\n", errno);
@@ -160,8 +161,10 @@ void print_tokens(Token* root) {
 	}
 }
 
-/// Lex the next token from SOURCE, and point to it with BEG and END. 
-// Returns an error if the source or token is NULL.
+/*
+	Lex the next token from SOURCE, and point to it with BEG and END.
+	Returns an error if the source or token is NULL.
+ */
 Error lex(char* source, Token* token) {
 	Error err = ok;
 	if (!source || !token) {
@@ -220,9 +223,7 @@ int node_compare(Node* a, Node* b) {
 	if (a->type != b->type) { return 0; }
 	switch (a->type) {
 	case NODE_TYPE_NONE:
-		if (nonep(*b)) {
-			return 1;
-		}
+		if (nonep(*b)) { return 1; }
 		return 0;
 		break;
 	case NODE_TYPE_INTEGER:
@@ -368,7 +369,7 @@ Error parse_expr(char* source, Node* result) {
 	Error err = ok;
 
 	Node* root = calloc(1, sizeof(Node));
-	assert(root && "Could notg allocate memory for AST Root.");
+	assert(root && "Could not allocate memory for AST Root.");
 	root->type = NODE_TYPE_PROGRAM;
 
 	Node working_node;
@@ -384,9 +385,8 @@ Error parse_expr(char* source, Node* result) {
 			Token integer;
 			memcpy(&integer, &current_token, sizeof(Token));
 			err = lex(current_token.end, &current_token);
-			if (err.type != ERROR_NONE) {
-				return err;
-			}
+			if (err.type != ERROR_NONE) { return err; }
+
 			// TODO: Check for valid integer operator.
 		}
 		else {
