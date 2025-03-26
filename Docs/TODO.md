@@ -6,7 +6,7 @@
 
 - [ ] Compile AST into assembly, let's start with x86_64? We could also transpile into another language that then gets compiled, like C or something.
 
-# Dumb Ideas
+# Dumb ideas that we could implement
 
 # -- Miscellaneous
 

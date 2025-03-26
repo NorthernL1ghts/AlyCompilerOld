@@ -4,7 +4,8 @@
 
 2. Maybe we make a Runtime evaluator as well as a compiler, not sure if we will be able to get this done.
 
-# Misc
+# Miscellaneous
+
 1. Statically typed
 2. Compiled
 3. Whitespace agnostic
@@ -13,12 +14,11 @@
 6. Maybe we transpile to C or another language later?
 7. Top level declarations like foo() like Python does? Not sure I like that!
 
-I suppose this could be done as a very simple linked list
+I suppose this could be done as a very simple linked list!
 
 [  [  ID -> TYPE  ], [  "a" -> integer ]  ]
 
 ================================
-
         ROOT
          │
          ├── /
@@ -50,3 +50,4 @@ I suppose this could be done as a very simple linked list
          │    │
          │    └── integer
          │          └── 420
+================================
