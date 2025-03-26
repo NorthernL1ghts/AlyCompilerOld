@@ -4,7 +4,7 @@
 
 I don't really have a plan, I just want to make a compiler; it sounds fun. There is an example of some code that should be valid and able to be compile in [`example`](example) file.
 
-I have decided to call the Language Aly short for `Analytic Lexical Yield`, this is because I've decided to dedicate this language to my partner Alyssa.
+I have decided to call the Language `Aly` short for `Analytic Lexical Yield`, this is because I've decided to dedicate this language to my partner Alyssa.
 
 ## Usage
 
@@ -16,6 +16,7 @@ Run the executable from a shell with a path to some source code as the only argu
 
 - **[CMake](https://cmake.org/)** (Version 3.14 or later)
 - **[GCC](https://gcc.gnu.org/)** or any other C Compiler (e.g., Clang, MSVC)
+
 
 ### 1️⃣ Generate Build Tree
 
