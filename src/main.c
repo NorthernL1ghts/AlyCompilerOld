@@ -162,15 +162,17 @@ Error lex(char* source, Token* token) {
 	return err;
 }
 
-//			 Node-
-//			/  |  \
-//		    0  1  2
-//		   / \
-//        3   4
-// 
+// Tree Diagram:
+//         Node
+//        /  |  \
+//       0   1   2
+//      / \
+//     3   4
+
+// Node Relationships:
 // Node
-// |-- 0  ->  1  ->  2
-//	   `-- 3  -> 4
+// |-- 0 -> 1 -> 2
+//     `-- 3 -> 4
 
 // TODO:
 // |-- API to create new node.
