@@ -95,7 +95,7 @@ void print_error(Error err) {
 	}
 }
 #define ERROR_CREATE(n, t, msg)   \
-	Error (n) = { (t), (msg) } 
+	Error (n) = { (t), (msg) }
 
 #define ERROR_PREP(n, t, message)   \
 	(n).type = (t);                  \
@@ -162,6 +162,16 @@ Error lex(char* source, Token* token) {
 	}
 	return err;
 }
+
+//			 Node-
+//			/  |  \
+//		    0  1  2
+//		   / \
+//        3   4
+//
+// Node
+// |-- 0  ->  1  ->  2
+//	   `-- 3  -> 4
 
 // TODO:
 // |-- API to create new node.
@@ -373,7 +383,7 @@ Error parse_expr(char* source, Node* result) {
 			print_token(current_token);
 			putchar('\n');
 
-			// TODO: Check if valid symbol for environment, then attempt to 
+			// TODO: Check if valid symbol for environment, then attempt to
 			// pattern match variable access, assignment, declaration, or
 			// declaration with initialization.
 		}
