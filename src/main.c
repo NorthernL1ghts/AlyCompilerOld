@@ -101,8 +101,9 @@ void print_error(Error err) {
 	(n).type = (t);                  \
 	(n).msg = (message);
 
+// NOTE: Delimiters just end a token and begin a new one.
 const char* whitespace = " \r\n";
-const char* delimiters = " \r\n,():"; // Delimiters just end a token and begin a new one.
+const char* delimiters = " \r\n,():";
 
 typedef struct Token {
 	char* beginning;
@@ -161,16 +162,6 @@ Error lex(char* source, Token* token) {
 	}
 	return err;
 }
-
-//			 Node-
-//			/  |  \
-//		    0  1  2
-//		   / \
-//        3   4
-// 
-// Node
-// |-- 0  ->  1  ->  2
-//	   `-- 3  -> 4
 
 // TODO:
 // |-- API to create new node.
