@@ -16,8 +16,6 @@ Run the executable from a shell with a path to some source code as the only argu
 
 - **[CMake](https://cmake.org/)** (Version 3.14 or later)
 - **[GCC](https://gcc.gnu.org/)** or any other C Compiler (e.g., Clang, MSVC)
-- **CMake** (Version 3.14 or later)
-- **Any C Compiler** (e.g., GCC, Clang, MSVC)
 
 ### 1️⃣ Generate Build Tree
 
