@@ -21,6 +21,7 @@ long file_size(FILE* file) {
 	}
 	return out;
 }
+
 /*
 	Reads the entire contents of a file into a dynamically allocated string.
 	The caller is responsible for freeing the returned memory.
@@ -53,7 +54,6 @@ char* file_contents(char* path) {
 	return contents;
 }
 
-// Prints program usage instructions.
 void print_usage(char** argv) {
 	printf("USAGE: %s <path_to_file_to_compile>\n", argv[0]);
 }
@@ -74,7 +74,6 @@ typedef struct Error {
 
 Error ok = { ERROR_NONE, NULL };
 
-// Prints an error message if an error exists.
 void print_error(Error err) {
 	if (err.type == ERROR_NONE) { return; }
 	printf("ERROR: ");
@@ -301,7 +300,7 @@ typedef struct Environment {
 	Binding* bind;
 } Environment;
 
-// Creates a new environment.
+// Create a new environment.
 Environment* environment_create(Environment* parent) {
 	Environment* env = malloc(sizeof(Environment));
 	assert(env && "Could not allocate memory to new environment");
@@ -310,6 +309,7 @@ Environment* environment_create(Environment* parent) {
 	return env;
 }
 
+// Set a new environment.
 void environment_set(Environment env, Node id, Node value) {
 	Binding* binding = malloc(sizeof(Binding));
 	assert(binding && "Could not allocate new binding for environment");
@@ -319,6 +319,7 @@ void environment_set(Environment env, Node id, Node value) {
 	env.bind = binding;
 }
 
+// Get a new environment.
 Node environment_get(Environment env, Node id) {
 	Binding* binding_it = env.bind;
 	while (binding_it) {
