@@ -327,29 +327,19 @@ int parse_integer(Token* token, Node* node) {
 	return 1;
 }
 
-Error parse_expr(char* source, Node* result) {
+Error parse_expr(char* source, char** end, Node* result) {
 	size_t token_count = 0;
 	Token current_token;
 	current_token.beginning = source;
 	current_token.end = source;
 	Error err = ok;
 
-	Node* root = calloc(1, sizeof(Node));
-	assert(root && "Could not allocate memory for AST Root.");
-	root->type = NODE_TYPE_PROGRAM;
-
-	Node working_node;
 	while ((err = lex(current_token.end, &current_token)).type == ERROR_NONE) {
-		working_node.children = NULL;
-		working_node.next_child = NULL;
-		working_node.type = NODE_TYPE_NONE;
-		working_node.value.integer = 0;
 		size_t token_length = current_token.end - current_token.beginning;
 		if (token_length == 0) { break; }
-		if (parse_integer(&current_token, &working_node)) {
+		if (parse_integer(&current_token, result)) {
 			// Look ahead for binary operators that include integers.
-			Token integer;
-			memcpy(&integer, &current_token, sizeof(Token));
+			Node lhs_integer = *result;
 			err = lex(current_token.end, &current_token);
 			if (err.type != ERROR_NONE) {
 				return err;
@@ -369,10 +359,11 @@ Error parse_expr(char* source, Node* result) {
 			// pattern match variable access, assignment, declaration, or
 			// declaration with initialization.
 		}
-		printf("Found node: ");
-		print_node(&working_node, 0);
+		printf("Intermediate node: ");
+		print_node(result, 0);
 		putchar('\n');
 	}
+
 	return err;
 }
 
@@ -388,7 +379,13 @@ int main(int argc, char** argv) {
 		// printf("Contents of %s:\n---\n\"%s\"\n---\n", path, contents);
 
 		Node expression;
-		Error err = parse_expr(contents, &expression);
+		char* contents_it = contents;
+		char* last_contents_it = NULL;
+		Error err = ok;
+		while ((err = parse_expr(contents_it, &contents_it, &expression)).type == ERROR_NONE) {
+			if (contents_it == last_contents_it) { break; }
+			last_contents_it = contents;
+		}
 		print_error(err);
 
 		free(contents);
