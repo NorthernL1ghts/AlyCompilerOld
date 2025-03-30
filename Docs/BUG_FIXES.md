@@ -2,12 +2,12 @@
 
 ## Memory Management
 
-- [ ] **`file_contents()` does not check for `NULL` return value from `malloc()`.**
+- [x] **`file_contents()` does not check for `NULL` return value from `malloc()`.**
 
 ## Token Handling
 
-- [ ] **Tokens do not need to be linked lists** or have `create/free` functions.
-- [ ] **Remove `print_tokens()` while we are at it.**
+- [x] **Tokens do not need to be linked lists** or have `create/free` functions.
+- [x] **Remove `print_tokens()` while we are at it.**
 
 ## Lexing
 
