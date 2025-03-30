@@ -103,7 +103,7 @@ void print_error(Error err) {
 	(n).msg = (message);
 
 const char* whitespace = " \r\n";
-const char* delimiters = " \r\n,():"; // Delimiters just end a token and begin a new one.
+const char* delimiters = " \r\n,():"; // NOTE: Delimiters just end a token and begin a new one.
 
 typedef struct Token {
 	char* beginning;
@@ -265,6 +265,16 @@ Environment* environment_create(Environment* parent) {
 }
 
 void environment_set(Environment env, Node id, Node value) {
+	// Over-write existing value if ID is already bound in environment.
+	Binding* binding_it = env.bind;
+	while (binding_it) {
+		if (node_compare(&binding_it->id, &id)) {
+			binding_it->value;
+			return;
+		}
+		binding_it = binding_it->next;
+	}
+	// Create new binding.
 	Binding* binding = malloc(sizeof(Binding));
 	assert(binding && "Could not allocate new binding for environment");
 	binding->id = id;
@@ -345,8 +355,12 @@ Error parse_expr(char* source, Node* result) {
 				return err;
 			}
 			// TODO: Check for valid integer operator.
+			// It would be cool to use an operator environment to look up
+			// operators instead of hard-coding them. This would eventually
+			// allow for user-defined operators, or stuff like that!
 		}
 		else {
+			// TODO: Check for unary prefix operators.
 			printf("Unrecognized token: ");
 			print_token(current_token);
 			putchar('\n');
