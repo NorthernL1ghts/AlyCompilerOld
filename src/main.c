@@ -24,6 +24,7 @@ char* file_contents(char* path) {
 		printf("Could not open file at %s\n", path);
 		return NULL;
 	}
+	// Otherwise, if you find file get the size.
 	fseek(file, 0, SEEK_SET);
 	long size = file_size(file);
 	char* contents = malloc(size + 1);
@@ -95,26 +96,56 @@ void print_error(Error err) {
 	}
 }
 #define ERROR_CREATE(n, t, msg)   \
-	Error (n) = { (t), (msg) }
+	Error (n) = { (t), (msg) } 
 
 #define ERROR_PREP(n, t, message)   \
 	(n).type = (t);                  \
 	(n).msg = (message);
 
 const char* whitespace = " \r\n";
-const char* delimiters = " \r\n,():";
+const char* delimiters = " \r\n,():"; // Delimiters just end a token and begin a new one.
 
 typedef struct Token {
 	char* beginning;
 	char* end;
+	struct Token* next;
 } Token;
 
+Token* token_create() {
+	Token* token = malloc(sizeof(Token));
+	assert(token && "Could not allocate memory for token");
+	memset(token, 0, sizeof(Token));
+	return token;
+}
+
+void token_free(Token* root) {
+	while (root) {
+		Token* token_to_free = root;
+		root = root->next;
+		free(token_to_free);
+	}
+}
 
 void print_token(Token t) {
 	printf("%.*s", t.end - t.beginning, t.beginning);
 }
 
-// Lex the next token from SOURCE, and point to it with BEG and END.
+void print_tokens(Token* root) {
+	// NOTE: Sequential to prevent stackoverflow issue
+	size_t count = 1;
+	while (root) {
+		if (count > 10000) { break; } // FIXME: Remove this limit.
+		printf("Token %zu: ", count);
+		if (root->beginning && root->end) {
+			printf("%.*s", root->end - root->beginning, root->beginning);
+		}
+		putchar('\n');
+		root = root->next;
+		count++;
+	}
+}
+
+/// Lex the next token from SOURCE, and point to it with BEG and END.
 Error lex(char* source, Token* token) {
 	Error err = ok;
 	if (!source || !token) {
@@ -126,19 +157,26 @@ Error lex(char* source, Token* token) {
 	token->end = token->beginning;
 	if (*(token->end) == '\0') { return err; }
 	token->end += strcspn(token->beginning, delimiters); // Skip everything that is not in delimiters.
-	if (token->end == token->beginning) { token->end += 1; }
+	if (token->end == token->beginning) {
+		token->end += 1; // Just 1 byte.
+	}
 	return err;
 }
 
-//	Node Structure:
-//	Node-
-//	├── 0  ->  1  ->  2
-//	│   └── 3  -> 4
-//
+//			 Node-
+//			/  |  \
+//		    0  1  2
+//		   / \
+//        3   4
+// 
+// Node
+// |-- 0  ->  1  ->  2
+//	   `-- 3  -> 4
 
 // TODO:
 // |-- API to create new node.
 // `-- API to add node as child.
+typedef long long integer_t;
 typedef struct Node {
 	enum NodeType {
 		NODE_TYPE_NONE,
@@ -147,32 +185,38 @@ typedef struct Node {
 		NODE_TYPE_MAX,
 	} type;
 	union NodeValue {
-		long long integer;
+		integer_t integer;
 	} value;
 	// Possible TODO: Parent?
 	struct Node* children;
 	struct Node* next_child;
 } Node;
 
-// Predicates -- Just to shorten code
+// Predicates
 #define nonep(node) ((node).type == NODE_TYPE_NONE)
 #define integerp(node) ((node).type == NODE_TYPE_INTEGER)
 
 /// @return Boolean-like value; 1 for success, 0 for failure.
 int node_compare(Node* a, Node* b) {
 	if (!a || !b) {
-		if (!a && !b) { return 1; }
+		if (!a && !b) {
+			return 1;
+		}
 		return 0;
 	}
 	assert(NODE_TYPE_MAX == 3 && "node_compare() must handle all node types");
 	if (a->type != b->type) { return 0; }
 	switch (a->type) {
 	case NODE_TYPE_NONE:
-		if (nonep(*b)) { return 1; }
+		if (nonep(*b)) {
+			return 1;
+		}
 		return 0;
 		break;
 	case NODE_TYPE_INTEGER:
-		if (a->value.integer == b->value.integer) { return 1; }
+		if (a->value.integer == b->value.integer) {
+			return 1;
+		}
 		return 0;
 		break;
 	case NODE_TYPE_PROGRAM:
@@ -214,7 +258,7 @@ void print_node(Node* node, size_t indent_level) {
 	}
 }
 
-// TODO: Make more efficient! -- Maybe keep track of allocated pointers
+// TODO: Make more efficient! -- Maybe keep track of allocated ptr's
 // then free them all in one go?
 void node_free(Node* root) {
 	if (!root) { return; }
@@ -281,7 +325,9 @@ int token_string_equalp(char* string, Token* token) {
 	if (!string || !token) { return 0; }
 	char* beg = token->beginning;
 	while (*string && token->beginning < token->end) {
-		if (*string != *beg) { return 0; }
+		if (*string != *beg) {
+			return 0;
+		}
 		string++;
 		beg++;
 	}
@@ -291,56 +337,60 @@ int token_string_equalp(char* string, Token* token) {
 /// @return Boolean-like value; 1 upon success, 0 for failure.
 int parse_integer(Token* token, Node* node) {
 	if (!token || !node) { return 0; }
-	char* end = NULL;
 	if (token->end - token->beginning == 1 && *(token->beginning) == '0') {
 		node->type = NODE_TYPE_INTEGER;
 		node->value.integer = 0;
 	}
-	else if ((node->value.integer = strtoll(token->beginning, &end, 10)) != 0) {
-		if (end != token->end) { return 0; }
+	else if ((node->value.integer = strtoll(token->beginning, NULL, 10)) != 0) {
 		node->type = NODE_TYPE_INTEGER;
 	}
 	else { return 0; }
 	return 1;
 }
 
-Error parse_expr(char* source, char** end, Node* result) {
+Error parse_expr(char* source, Node* result) {
 	size_t token_count = 0;
 	Token current_token;
+	current_token.next = NULL;
 	current_token.beginning = source;
 	current_token.end = source;
 	Error err = ok;
 
+	Node* root = calloc(1, sizeof(Node));
+	assert(root && "Could not allocate memory for AST Root.");
+	root->type = NODE_TYPE_PROGRAM;
+
+	Node working_node;
 	while ((err = lex(current_token.end, &current_token)).type == ERROR_NONE) {
+		working_node.children = NULL;
+		working_node.next_child = NULL;
+		working_node.type = NODE_TYPE_NONE;
+		working_node.value.integer = 0;
 		size_t token_length = current_token.end - current_token.beginning;
 		if (token_length == 0) { break; }
-		if (parse_integer(&current_token, result)) {
+		if (parse_integer(&current_token, &working_node)) {
 			// Look ahead for binary operators that include integers.
-			Node lhs_integer = *result;
+			Token integer;
+			memcpy(&integer, &current_token, sizeof(Token));
 			err = lex(current_token.end, &current_token);
 			if (err.type != ERROR_NONE) {
 				return err;
 			}
 			// TODO: Check for valid integer operator.
-			// It would be cool to use an operator environment to look up
-			// operators instead of hard-coding them. This would eventually
-			// allow for user-defined operators, or stuff like that!
 		}
 		else {
-			// TODO: Check for unary prefix operators.
 			printf("Unrecognized token: ");
 			print_token(current_token);
 			putchar('\n');
 
-			// TODO: Check if valid symbol for environment, then attempt to
+			// TODO: Check if valid symbol for environment, then attempt to 
 			// pattern match variable access, assignment, declaration, or
 			// declaration with initialization.
 		}
-		printf("Intermediate node: ");
-		print_node(result, 0);
+		printf("Found node: ");
+		print_node(&working_node, 0);
 		putchar('\n');
 	}
-
 	return err;
 }
 
@@ -353,16 +403,10 @@ int main(int argc, char** argv) {
 	char* path = argv[1];
 	char* contents = file_contents(path);
 	if (contents) {
-		//printf("Contents of %s:\n---\n\"%s\"\n---\n", path, contents);
+		// printf("Contents of %s:\n---\n\"%s\"\n---\n", path, contents);
 
 		Node expression;
-		char* contents_it = contents;
-		char* last_contents_it = NULL;
-		Error err = ok;
-		while ((err = parse_expr(contents_it, &contents_it, &expression)).type == ERROR_NONE) {
-			if (contents_it == last_contents_it) { break; }
-			last_contents_it = contents;
-		}
+		Error err = parse_expr(contents, &expression);
 		print_error(err);
 
 		free(contents);
