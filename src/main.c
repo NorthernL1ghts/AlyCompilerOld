@@ -132,20 +132,20 @@ Error lex(char* source, Token* token) {
 	return err;
 }
 
-//			 Node-
-//			/  |  \
-//		    0  1  2
-//		   / \
-//        3   4
-// 
+//        Node
+//       /  |  \
+//      0   1   2
+//     / \
+//    3   4
+//
 // Node
-// |-- 0  ->  1  ->  2
-//	   `-- 3  -> 4
+// ├── 0 ──► 1 ──► 2
+// │  
+// └── 3 ──► 4
 
 // TODO:
 // |-- API to create new node.
 // `-- API to add node as child.
-typedef long long integer_t;
 typedef struct Node {
 	enum NodeType {
 		NODE_TYPE_NONE,
@@ -154,7 +154,7 @@ typedef struct Node {
 		NODE_TYPE_MAX,
 	} type;
 	union NodeValue {
-		integer_t integer;
+		long long integer;
 	} value;
 	// Possible TODO: Parent?
 	struct Node* children;
