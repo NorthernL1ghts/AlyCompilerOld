@@ -1,5 +1,12 @@
 # BUG FIXES
 
+- [ ] Look into why assert for `NODE_TYPE_MAX` is failing and overall not asserting the issues.
+      - In VS, it worked at runtime but resulted in an aborted message.
+      - In VSC, it doesn't throw any issue.
+      - Further code inspection or environment setup review is needed.
+      - Likely cause: `NODE_TYPE_MAX` was initially the third item in the `enum` but was moved to the seventh position.
+      - In C, `CASSERT` moves up rather than down, unlike in C++, which may be causing the issue.
+
 ## Memory Management
 
 - [x] **`file_contents()` does not check for `NULL` return value from `malloc()`.**
