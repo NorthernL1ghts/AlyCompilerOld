@@ -132,7 +132,7 @@ Error lex(char* source, Token* token) {
 	return err;
 }
 
-//        Node
+//        Node-
 //       /  |  \
 //      0   1   2
 //     / \
@@ -140,21 +140,38 @@ Error lex(char* source, Token* token) {
 //
 // Node
 // ├── 0 ──► 1 ──► 2
-// │  
-// └── 3 ──► 4
+//	   └── 3 ──► 4
+
+// A : integer = 420
+//
+// PROGRAM
+// `-- VARIABLE_DECLARATION_INITIALIZED
+//	   `-- VARIABLE_DECLARATION -> INTEGER (420)
+//		   `-- INTEGER -> SYMBOL (A)
 
 // TODO:
 // |-- API to create new node.
 // `-- API to add node as child.
 typedef struct Node {
+	// TODO: Think about how to document node types and how they fit in the AST.
 	enum NodeType {
 		NODE_TYPE_NONE,
+
+		/// Just an integer.
 		NODE_TYPE_INTEGER,
+
+		/// Anything that isn't another literal type becomes a symbol.
+		NODE_TYPE_SYMBOL,
+
+		NODE_TYPE_VARIABLE_DECLARATION,
+		NODE_TYPE_VARIABLE_DECLARATION_INITIALIZED,
+		NODE_TYPE_BINARY_OPERATOR,
 		NODE_TYPE_PROGRAM,
 		NODE_TYPE_MAX,
 	} type;
 	union NodeValue {
 		long long integer;
+		char* symbol;
 	} value;
 	// Possible TODO: Parent?
 	struct Node* children;
@@ -164,22 +181,19 @@ typedef struct Node {
 // Predicates
 #define nonep(node) ((node).type == NODE_TYPE_NONE)
 #define integerp(node) ((node).type == NODE_TYPE_INTEGER)
+#define symbolp(node) ((node).type == NODE_TYPE_SYMBOL)
 
 /// @return Boolean-like value; 1 for success, 0 for failure.
 int node_compare(Node* a, Node* b) {
 	if (!a || !b) {
-		if (!a && !b) {
-			return 1;
-		}
+		if (!a && !b) { return 1; }
 		return 0;
 	}
-	assert(NODE_TYPE_MAX == 3 && "node_compare() must handle all node types");
+	assert(NODE_TYPE_MAX == 7 && "node_compare() must handle all node types");
 	if (a->type != b->type) { return 0; }
 	switch (a->type) {
 	case NODE_TYPE_NONE:
-		if (nonep(*b)) {
-			return 1;
-		}
+		if (nonep(*b)) { return 1; }
 		return 0;
 		break;
 	case NODE_TYPE_INTEGER:
@@ -204,7 +218,7 @@ void print_node(Node* node, size_t indent_level) {
 		putchar(' ');
 	}
 	// Print type + value.
-	assert(NODE_TYPE_MAX == 3 && "print_node() must handle all node types");
+	assert(NODE_TYPE_MAX == 7 && "print_node() must handle all node types");
 	switch (node->type) {
 	default:
 		printf("UNKNOWN");
@@ -237,6 +251,9 @@ void node_free(Node* root) {
 		next_child = child->next_child;
 		node_free(child);
 		child = next_child;
+	}
+	if (symbolp(*root) && root->value.symbol) {
+		free(root->value.symbol);
 	}
 	free(root);
 }
@@ -322,9 +339,7 @@ int parse_integer(Token* token, Node* node) {
 		node->value.integer = 0;
 	}
 	else if ((node->value.integer = strtoll(token->beginning, &end, 10)) != 0) {
-		if (end != token->end) {
-			return 0;
-		}
+		if (end != token->end) { return 0; }
 		node->type = NODE_TYPE_INTEGER;
 	}
 	else { return 0; }
@@ -341,6 +356,7 @@ Error parse_expr(char* source, char** end, Node* result) {
 	while ((err = lex(current_token.end, &current_token)).type == ERROR_NONE) {
 		size_t token_length = current_token.end - current_token.beginning;
 		if (token_length == 0) { break; }
+		*end = current_token.end;
 		if (parse_integer(&current_token, result)) {
 			// Look ahead for binary operators that include integers.
 			Node lhs_integer = *result;
@@ -355,13 +371,30 @@ Error parse_expr(char* source, char** end, Node* result) {
 		}
 		else {
 			// TODO: Check for unary prefix operators.
-			printf("Unrecognized token: ");
-			print_token(current_token);
-			putchar('\n');
+
+			// TODO: Check that it isn't a binary operator (we should encounter left
+			// side first and peek forward, rather than encounter it at top level).
 
 			// TODO: Check if valid symbol for environment, then attempt to 
 			// pattern match variable access, assignment, declaration, or
 			// declaration with initialization.
+
+			Node symbol;
+			symbol.type = NODE_TYPE_SYMBOL;
+			symbol.children = NULL;
+			symbol.next_child = NULL;
+			symbol.value.symbol = NULL;
+
+			char* symbol_string = malloc(token_length + 1);
+			assert(symbol_string && "Could not allocate memory for symbol");
+			memcpy(symbol_string, current_token.beginning, token_length);
+			symbol_string[token_length] = '\0';
+			symbol.value.symbol = symbol_string;
+
+			printf("Unrecognized token: ");
+			print_token(current_token);
+			putchar('\n');
+			return err;
 		}
 		printf("Intermediate node: ");
 		print_node(result, 0);
@@ -386,10 +419,14 @@ int main(int argc, char** argv) {
 		char* contents_it = contents;
 		char* last_contents_it = NULL;
 		Error err = ok;
-		while ((err = parse_expr(contents_it, &contents_it, &expression)).type == ERROR_NONE) {
+		long max = 1;
+		while ((err = parse_expr(contents_it, &contents_it, &expression)).type == ERROR_NONE && max-- > 0) {
 			if (contents_it == last_contents_it) { break; }
-			last_contents_it = contents;
+			print_node(&expression, 0);
+			last_contents_it = contents_it;
 		}
+
+		printf("max: %ld\n", max);
 		print_error(err);
 
 		free(contents);

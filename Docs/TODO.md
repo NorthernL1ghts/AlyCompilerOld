@@ -8,7 +8,9 @@
 
 # Dumb ideas that we could implement
 
+- Compile to brain-fuck XD? - This is just a perfect idea. I am not know if it's possible.
+
 # -- Miscellaneous
 
-    - Unnamed variable declarations
-        - It would be cool if an assignment and/or variable declaration could have no identifier, and work on a singular unnamed variable in the environment.
+- Unnamed variable declarations
+  - It would be cool if an assignment and/or variable declaration could have no identifier, and work on a singular unnamed variable in the environment.
