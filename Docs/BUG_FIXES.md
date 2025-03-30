@@ -17,7 +17,7 @@
 
 ## Parsing
 
-- [ ] **Completely change `parse_expr()`:**
+- [x] **Completely change `parse_expr()`:**
   - Accept `char* source`, `char** end`, and `Node* result`.
   - Get rid of `working_node` completely—use `result` instead.
   - Remove root node allocation; it will be handled at a higher level. Just use `result`.
