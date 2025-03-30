@@ -316,11 +316,15 @@ int token_string_equalp(char* string, Token* token) {
 /// @return Boolean-like value; 1 upon success, 0 for failure.
 int parse_integer(Token* token, Node* node) {
 	if (!token || !node) { return 0; }
+	char* end = NULL;
 	if (token->end - token->beginning == 1 && *(token->beginning) == '0') {
 		node->type = NODE_TYPE_INTEGER;
 		node->value.integer = 0;
 	}
-	else if ((node->value.integer = strtoll(token->beginning, NULL, 10)) != 0) {
+	else if ((node->value.integer = strtoll(token->beginning, &end, 10)) != 0) {
+		if (end != token->end) {
+			return 0;
+		}
 		node->type = NODE_TYPE_INTEGER;
 	}
 	else { return 0; }
