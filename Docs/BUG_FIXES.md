@@ -11,11 +11,9 @@
 
 ## Lexing
 
-- [ ] **Zero out the given token pointer using `memset()` when lexing.**
-
 ## Data Types
 
-- [ ] **Get rid of `integer_t`.** Just use `long long` and get on with it.
+- [x] **Get rid of `integer_t`.** Just use `long long` and get on with it.
 
 ## Parsing
 
