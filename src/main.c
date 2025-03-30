@@ -127,7 +127,7 @@ Error lex(char* source, Token* token) {
 	if (*(token->end) == '\0') { return err; }
 	token->end += strcspn(token->beginning, delimiters); // Skip everything that is not in delimiters.
 	if (token->end == token->beginning) {
-		token->end += 1; // Just 1 byte.
+		token->end += 1;
 	}
 	return err;
 }
@@ -218,18 +218,34 @@ void print_node(Node* node, size_t indent_level) {
 		putchar(' ');
 	}
 	// Print type + value.
-	assert(NODE_TYPE_MAX == 7 && "print_node() must handle all node types");
+	assert(NODE_TYPE_MAX == 7 && "print_node() must handle all node types"); // FIXME: This should be 3 instead but assert fails.
 	switch (node->type) {
 	default:
 		printf("UNKNOWN");
+		break;
 	case NODE_TYPE_NONE:
 		printf("NONE");
 		break;
 	case NODE_TYPE_INTEGER:
 		printf("INT:%lld", node->value.integer);
 		break;
+	case NODE_TYPE_SYMBOL:
+		printf("SYM:");
+		if (node->value.symbol) {
+			printf("%s", node->value.symbol);
+		}
+		break;
+	case NODE_TYPE_BINARY_OPERATOR:
+		printf("TODO: print_node() BINARY_OPERATOR");
+		break;
+	case NODE_TYPE_VARIABLE_DECLARATION:
+		printf("TODO: print_node() VAR DECL");
+		break;
+	case NODE_TYPE_VARIABLE_DECLARATION_INITIALIZED:
+		printf("TODO: print_node() VAR DECL INIT");
+		break;
 	case NODE_TYPE_PROGRAM:
-		printf("PROGRAM");
+		printf("TODO: print_node() PROGRAM");
 		break;
 	}
 	putchar('\n');
@@ -321,9 +337,7 @@ int token_string_equalp(char* string, Token* token) {
 	if (!string || !token) { return 0; }
 	char* beg = token->beginning;
 	while (*string && token->beginning < token->end) {
-		if (*string != *beg) {
-			return 0;
-		}
+		if (*string != *beg) { return 0; }
 		string++;
 		beg++;
 	}
@@ -354,9 +368,9 @@ Error parse_expr(char* source, char** end, Node* result) {
 	Error err = ok;
 
 	while ((err = lex(current_token.end, &current_token)).type == ERROR_NONE) {
+		*end = current_token.end;
 		size_t token_length = current_token.end - current_token.beginning;
 		if (token_length == 0) { break; }
-		*end = current_token.end;
 		if (parse_integer(&current_token, result)) {
 			// Look ahead for binary operators that include integers.
 			Node lhs_integer = *result;
@@ -364,6 +378,8 @@ Error parse_expr(char* source, char** end, Node* result) {
 			if (err.type != ERROR_NONE) {
 				return err;
 			}
+			*end = current_token.end;
+
 			// TODO: Check for valid integer operator.
 			// It would be cool to use an operator environment to look up
 			// operators instead of hard-coding them. This would eventually
@@ -374,10 +390,6 @@ Error parse_expr(char* source, char** end, Node* result) {
 
 			// TODO: Check that it isn't a binary operator (we should encounter left
 			// side first and peek forward, rather than encounter it at top level).
-
-			// TODO: Check if valid symbol for environment, then attempt to 
-			// pattern match variable access, assignment, declaration, or
-			// declaration with initialization.
 
 			Node symbol;
 			symbol.type = NODE_TYPE_SYMBOL;
@@ -390,6 +402,12 @@ Error parse_expr(char* source, char** end, Node* result) {
 			memcpy(symbol_string, current_token.beginning, token_length);
 			symbol_string[token_length] = '\0';
 			symbol.value.symbol = symbol_string;
+
+			*result = symbol;
+
+			// TODO: Check if valid symbol for environment, then attempt to 
+			// pattern match variable access, assignment, declaration, or
+			// declaration with initialization.
 
 			printf("Unrecognized token: ");
 			print_token(current_token);
@@ -412,21 +430,19 @@ int main(int argc, char** argv) {
 
 	char* path = argv[1];
 	char* contents = file_contents(path);
+
 	if (contents) {
 		// printf("Contents of %s:\n---\n\"%s\"\n---\n", path, contents);
 
+		// TODO: Create API to heap allocate a program node, as well as add 
+		// expression as children.
 		Node expression;
+		memset(&expression, 0, sizeof(Node));
 		char* contents_it = contents;
-		char* last_contents_it = NULL;
-		Error err = ok;
-		long max = 1;
-		while ((err = parse_expr(contents_it, &contents_it, &expression)).type == ERROR_NONE && max-- > 0) {
-			if (contents_it == last_contents_it) { break; }
-			print_node(&expression, 0);
-			last_contents_it = contents_it;
-		}
+		Error err = parse_expr(contents_it, &contents_it, &expression);
+		print_node(&expression, 0);
+		putchar('\n');
 
-		printf("max: %ld\n", max);
 		print_error(err);
 
 		free(contents);
