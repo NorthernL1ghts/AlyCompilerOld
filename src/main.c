@@ -3,10 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-/*
-	Gets the size of a file in bytes.
-	Returns the file size, or 0 if the file is invalid or an error occurs.
-*/
 long file_size(FILE* file) {
 	if (!file) { return 0; }
 	fpos_t original = 0;
@@ -22,11 +18,6 @@ long file_size(FILE* file) {
 	return out;
 }
 
-/*
-	Reads the entire contents of a file into a dynamically allocated string.
-	The caller is responsible for freeing the returned memory.
-	Returns a pointer to the file contents, or NULL on failure.
-*/
 char* file_contents(char* path) {
 	FILE* file = fopen(path, "r");
 	if (!file) {
@@ -36,10 +27,10 @@ char* file_contents(char* path) {
 	fseek(file, 0, SEEK_SET);
 	long size = file_size(file);
 	char* contents = malloc(size + 1);
+	assert(contents && "Could not allocate buffer for file contents");
 	char* write_it = contents;
 	size_t bytes_read = 0;
 	while (bytes_read < size) {
-		/* NOTE: `write_it` could be 0, therefore doesn't adhere to specification of `fread`. */
 		size_t bytes_read_this_iteration = fread(write_it, 1, size - bytes_read, file);
 		if (ferror(file)) {
 			printf("Error when reading: %i\n", errno);
@@ -58,7 +49,6 @@ void print_usage(char** argv) {
 	printf("USAGE: %s <path_to_file_to_compile>\n", argv[0]);
 }
 
-// Represents an error type and associated message.
 typedef struct Error {
 	enum ErrorType {
 		ERROR_NONE = 0,
@@ -111,18 +101,15 @@ void print_error(Error err) {
 	(n).type = (t);                  \
 	(n).msg = (message);
 
-/* NOTE: Delimiters just end a token and begin a new one. */
 const char* whitespace = " \r\n";
 const char* delimiters = " \r\n,():";
 
-// Represents a token in the input.
 typedef struct Token {
 	char* beginning;
 	char* end;
 	struct Token* next;
 } Token;
 
-// Allocates and initializes a new token.
 Token* token_create() {
 	Token* token = malloc(sizeof(Token));
 	assert(token && "Could not allocate memory for token");
@@ -130,7 +117,6 @@ Token* token_create() {
 	return token;
 }
 
-// Frees all tokens in a linked list.
 void token_free(Token* root) {
 	while (root) {
 		Token* token_to_free = root;
@@ -139,18 +125,12 @@ void token_free(Token* root) {
 	}
 }
 
-/*
-	NOTE: This is the new method for printing the linked list, which avoids the issue of having
-	to reverse the list. The previous method printed the list in the wrong direction, but with
-	this approach, we can print it in the correct order without needing to reverse it.
-*/
 void print_token(Token t) {
 	printf("%.*s", t.end - t.beginning, t.beginning);
 }
 
-// Prints all tokens in a linked list.
 void print_tokens(Token* root) {
-	/* NOTE: Sequential to prevent stackoverflow issue */
+	// NOTE: Sequential to prevent stackoverflow!
 	size_t count = 1;
 	while (root) {
 		if (count > 10000) { break; } // FIXME: Remove this limit.
@@ -164,10 +144,7 @@ void print_tokens(Token* root) {
 	}
 }
 
-/*
-	Lex the next token from SOURCE, and point to it with BEG and END.
-	Returns an error if the source or token is NULL.
-*/
+// Lex the next token from SOURCE, and point to it with BEG and END.
 Error lex(char* source, Token* token) {
 	Error err = ok;
 	if (!source || !token) {
@@ -179,18 +156,15 @@ Error lex(char* source, Token* token) {
 	token->end = token->beginning;
 	if (*(token->end) == '\0') { return err; }
 	token->end += strcspn(token->beginning, delimiters); // Skip everything that is not in delimiters.
-	if (token->end == token->beginning) {
-		token->end += 1;
-	}
+	if (token->end == token->beginning) { token->end += 1; }
 	return err;
 }
 
-/*
-	Node Structure:
-	Node
-	├── 0  ->  1  ->  2
-	│    └── 3  -> 4
-*/
+//	Node Structure:
+//	Node
+//	├── 0  ->  1  ->  2
+//	│    └── 3  -> 4
+//
 // TODO:
 // |-- API to create new node.
 // `-- API to add node as child.
@@ -271,7 +245,7 @@ void print_node(Node* node, size_t indent_level) {
 	}
 }
 
-// TODO: Make more efficient! -- Maybe keep track of allocated ptr's
+// TODO: Make more efficient! -- Maybe keep track of allocated pointers
 // then free them all in one go?
 void node_free(Node* root) {
 	if (!root) { return; }
@@ -300,7 +274,6 @@ typedef struct Environment {
 	Binding* bind;
 } Environment;
 
-// Create a new environment.
 Environment* environment_create(Environment* parent) {
 	Environment* env = malloc(sizeof(Environment));
 	assert(env && "Could not allocate memory to new environment");
@@ -309,7 +282,6 @@ Environment* environment_create(Environment* parent) {
 	return env;
 }
 
-// Set a new environment.
 void environment_set(Environment env, Node id, Node value) {
 	Binding* binding = malloc(sizeof(Binding));
 	assert(binding && "Could not allocate new binding for environment");
@@ -319,7 +291,6 @@ void environment_set(Environment env, Node id, Node value) {
 	env.bind = binding;
 }
 
-// Get a new environment.
 Node environment_get(Environment env, Node id) {
 	Binding* binding_it = env.bind;
 	while (binding_it) {
