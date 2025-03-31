@@ -154,19 +154,31 @@ Error lex(char* source, Token* token) {
 typedef struct Node {
 	// TODO: Think about how to document node types and how they fit in the AST.
 	enum NodeType {
+		// BEGIN LITERALS
+
+		/// The definition of nothing; false, etc.
 		NODE_TYPE_NONE,
 
 		/// Just an integer.
 		NODE_TYPE_INTEGER,
 
-		/// Anything that isn't another literal type becomes a symbol.
+		/// When a literal is expected but no other literal is valid,
+		/// it becomes a symbol.
 		NODE_TYPE_SYMBOL,
 
+		// END LITERALS
+
+		/// Contains two children. The first determines type (and value),
+		/// while the second contains the symbolic name of the variable.
 		NODE_TYPE_VARIABLE_DECLARATION,
 		NODE_TYPE_VARIABLE_DECLARATION_INITIALIZED,
 
+		/// Contains two children that determine left and right acceptable
+		/// types.
 		NODE_TYPE_BINARY_OPERATOR,
 		NODE_TYPE_PROGRAM,
+
+		/// Contains a list of expressions to execute in sequence.
 		NODE_TYPE_MAX,
 	} type;
 	union NodeValue {
@@ -178,15 +190,20 @@ typedef struct Node {
 	struct Node* next_child;
 } Node;
 
-// Predicates
+Node* node_allocate() {
+	Node* node = calloc(1, sizeof(Node));
+	assert(node && "Could not allocate memory for AST node");
+	return node;
+}
+
 #define nonep(node) ((node).type == NODE_TYPE_NONE)
 #define integerp(node) ((node).type == NODE_TYPE_INTEGER)
 #define symbolp(node) ((node).type == NODE_TYPE_SYMBOL)
 
+/// PARENT is modified, NEW_CHILD is shallow copied.
 void node_add_child(Node* parent, Node* new_child) {
 	if (!parent || !new_child) { return; }
-	Node* allocated_child = malloc(sizeof(Node));
-	assert(allocated_child && "Could not allocate new child Node for AST");
+	Node* allocated_child = node_allocate();
 	*allocated_child = *new_child;
 	if (parent->children) {
 		Node* child = parent->children;
@@ -225,6 +242,14 @@ int node_compare(Node* a, Node* b) {
 		break;
 	}
 	return 0;
+}
+
+Node* node_symbol(char* symbol_string) {
+	// NOTE: 'strdup' is deprecated on Window's MSVC for safety, in Clang still exists.
+	Node* symbol = node_allocate();
+	symbol->type = NODE_TYPE_SYMBOL;
+	symbol->value.symbol = strdup(symbol_string);
+	sy
 }
 
 void print_node(Node* node, size_t indent_level) {
@@ -379,7 +404,21 @@ int parse_integer(Token* token, Node* node) {
 	return 1;
 }
 
-Error parse_expr(char* source, char** end, Node* result) {
+typedef struct ParsingContext {
+	// FIXME: "struct ParsingContext* parent;" ???
+	Environment* types;
+	Environment* variables;
+} ParsingContext;
+
+ParsingContext* parse_context_create() {
+	ParsingContext* ctx = calloc(1, sizeof(ParsingContext));
+	assert(ctx && "Could not allocate memory for parsing context.");
+	ctx->types = environment_create(NULL);
+	ctx->variables = environment_create(NULL);
+	return ctx;
+}
+
+Error parse_expr(ParsingContext* context, char* source, char** end, Node* result) {
 	size_t token_count = 0;
 	Token current_token;
 	current_token.beginning = source;
@@ -424,6 +463,7 @@ Error parse_expr(char* source, char** end, Node* result) {
 
 			*result = symbol;
 
+
 			// TODO: Check if valid symbol for environment, then attempt to 
 			// pattern match variable access, assignment, declaration, or
 			// declaration with initialization.
@@ -432,7 +472,6 @@ Error parse_expr(char* source, char** end, Node* result) {
 			if (err.type != ERROR_NONE) {
 				return err;
 			}
-			// We now have the current token!
 			*end = current_token.end;
 			size_t token_length = current_token.end - current_token.beginning;
 			if (token_length == 0) { break; }
@@ -442,12 +481,10 @@ Error parse_expr(char* source, char** end, Node* result) {
 				if (err.type != ERROR_NONE) {
 					return err;
 				}
-				// We now have the current token!
 				*end = current_token.end;
 				size_t token_length = current_token.end - current_token.beginning;
 				if (token_length == 0) { break; }
 
-				// We have now parsed past symbol and looking for type.
 				// TODO: Look up type in types environment from parsing context.
 				if (token_string_equalp("integer", &current_token)) {
 					Node var_decl;
@@ -496,10 +533,12 @@ int main(int argc, char** argv) {
 
 		// TODO: Create API to heap allocate a program node, as well as add 
 		// expression as children.
+		ParsingContext* context = parse_context_create();
+		Environment* environment = environment_create(NULL);
 		Node expression;
 		memset(&expression, 0, sizeof(Node));
 		char* contents_it = contents;
-		Error err = parse_expr(contents_it, &contents_it, &expression);
+		Error err = parse_expr(context, contents_it, &contents_it, &expression);
 		print_node(&expression, 0);
 		putchar('\n');
 

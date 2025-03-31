@@ -17,3 +17,6 @@
 
 - State Machine Parser:
   - Just a thought but when we lex right now we need to go deeper and as the compiler and parser get more advanced maybe we could use a state machine or something to handle the special cases rather than how we are currently doing it. Right now, I think we'll handle all the special cases in the same way we are because it's going to become so much more complicated and that will waste time.
+
+- Have a type that represents all the other types:
+  - This would allow variables to be defined with a type of another type.
