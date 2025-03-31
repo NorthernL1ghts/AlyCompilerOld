@@ -200,20 +200,18 @@ Node* node_allocate() {
 #define integerp(node) ((node).type == NODE_TYPE_INTEGER)
 #define symbolp(node) ((node).type == NODE_TYPE_SYMBOL)
 
-/// PARENT is modified, NEW_CHILD is shallow copied.
+/// PARENT is modified, NEW_CHILD pointer is verbatim.
 void node_add_child(Node* parent, Node* new_child) {
 	if (!parent || !new_child) { return; }
-	Node* allocated_child = node_allocate();
-	*allocated_child = *new_child;
 	if (parent->children) {
 		Node* child = parent->children;
 		while (child->next_child) {
 			child = child->next_child;
 		}
-		child->next_child = allocated_child;
+		child->next_child = new_child;
 	}
 	else {
-		parent->children = allocated_child;
+		parent->children = new_child;
 	}
 }
 
@@ -223,7 +221,7 @@ int node_compare(Node* a, Node* b) {
 		if (!a && !b) { return 1; }
 		return 0;
 	}
-	// TODO : This assert doesn't work, I don't know why :^(.
+	// TODO: This assert doesn't work, I don't know why :^(.
 	assert(NODE_TYPE_MAX == 7 && "node_compare() must handle all node types");
 	if (a->type != b->type) { return 0; }
 	switch (a->type) {
@@ -281,8 +279,18 @@ Node* node_symbol(char* symbol_string) {
 	Node* symbol = node_allocate();
 	symbol->type = NODE_TYPE_SYMBOL;
 	symbol->value.symbol = strdup(symbol_string);
-	symbol->children = NULL;
-	symbol->next_child = NULL;
+	return symbol;
+}
+
+Node* node_symbol_from_buffer(char* buffer, size_t length) {
+	assert(buffer && "Could not create AST symbol node from NULL buffer");
+	char* symbol_string = malloc(length + 1);
+	assert(symbol_string && "Could not allocate memory for symbol string");
+	memcpy(symbol_string, buffer, length);
+	symbol_string[length] = '\0';
+	Node* symbol = node_allocate();
+	symbol->type = NODE_TYPE_SYMBOL;
+	symbol->value.symbol = symbol_string;
 	return symbol;
 }
 
@@ -500,29 +508,16 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 			// TODO: Check that it isn't a binary operator (we should encounter left
 			// side first and peek forward, rather than encounter it at top level).
 
-			Node symbol;
-			symbol.type = NODE_TYPE_SYMBOL;
-			symbol.children = NULL;
-			symbol.next_child = NULL;
-			symbol.value.symbol = NULL;
+			Node* symbol = node_symbol_from_buffer(current_token.beginning, token_length);
 
-			char* symbol_string = malloc(token_length + 1);
-			assert(symbol_string && "Could not allocate memory for symbol");
-			memcpy(symbol_string, current_token.beginning, token_length);
-			symbol_string[token_length] = '\0';
-			symbol.value.symbol = symbol_string;
-
-			*result = symbol;
-
+			// *result = *symbol;
 
 			// TODO: Check if valid symbol for environment, then attempt to 
 			// pattern match variable access, assignment, declaration, or
 			// declaration with initialization.
 
 			err = lex(current_token.end, &current_token);
-			if (err.type != ERROR_NONE) {
-				return err;
-			}
+			if (err.type != ERROR_NONE) { return err; }
 			*end = current_token.end;
 			size_t token_length = current_token.end - current_token.beginning;
 			if (token_length == 0) { break; }
@@ -538,19 +533,16 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 
 				// TODO: Look up type in types environment from parsing context.
 				if (token_string_equalp("integer", &current_token)) {
-					Node var_decl;
-					var_decl.children = NULL;
-					var_decl.next_child = NULL;
-					var_decl.type = NODE_TYPE_VARIABLE_DECLARATION;
+					Node* var_decl = node_allocate();
+					var_decl->type = NODE_TYPE_VARIABLE_DECLARATION;
 
-					Node type_node;
-					memset(&type_node, 0, sizeof(Node));
-					type_node.type = NODE_TYPE_INTEGER;
+					Node* type_node = node_allocate();
+					type_node->type = NODE_TYPE_INTEGER;
 
-					node_add_child(&var_decl, &type_node);
-					node_add_child(&var_decl, &symbol);
+					node_add_child(var_decl, type_node);
+					node_add_child(var_decl, symbol);
 
-					*result = var_decl;
+					*result = *var_decl;
 
 					// TODO: Look ahead for "=" assignment operator.
 					return ok;
