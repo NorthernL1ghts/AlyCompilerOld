@@ -531,11 +531,11 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 				size_t token_length = current_token.end - current_token.beginning;
 				if (token_length == 0) { break; }
 
-				// TODO: Look up type in types environment from parsing context.
 				Node* expected_type_symbol = node_symbol_from_buffer(current_token.beginning, token_length);
 				int status = environment_get(*context->types, expected_type_symbol, result);
 				if (status == 0) {
 					ERROR_PREP(err, ERROR_TYPE, "Invalid type within variable declaration");
+					printf("\nINVALID TYPE: \"%s\"\n", expected_type_symbol->value.symbol);
 					return err;
 				}
 				else {
@@ -557,8 +557,6 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 					free(var_decl);
 					return ok;
 				}
-
-
 			}
 
 			printf("Unrecognized token: ");
