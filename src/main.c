@@ -223,6 +223,7 @@ int node_compare(Node* a, Node* b) {
 		if (!a && !b) { return 1; }
 		return 0;
 	}
+	// TODO : This assert doesn't work, I don't know why :^(.
 	assert(NODE_TYPE_MAX == 7 && "node_compare() must handle all node types");
 	if (a->type != b->type) { return 0; }
 	switch (a->type) {
@@ -236,6 +237,27 @@ int node_compare(Node* a, Node* b) {
 		}
 		return 0;
 		break;
+	case NODE_TYPE_SYMBOL:
+		if (a->value.symbol && b->value.symbol) {
+			if (strcmp(a->value.symbol, b->value.symbol) == 0) {
+				return 1;
+			}
+			return 0;
+		}
+		else if (!a->value.symbol && !b->value.symbol) {
+			return 1;
+		}
+		return 0;
+		break;
+	case NODE_TYPE_BINARY_OPERATOR:
+		printf("TODO: node_compare() BINARY OPERATOR\n");
+		break;
+	case NODE_TYPE_VARIABLE_DECLARATION:
+		printf("TODO: node_compare() VARIABLE DECLARATION\n");
+		break;
+	case NODE_TYPE_VARIABLE_DECLARATION_INITIALIZED:
+		printf("TODO: node_compare() VARIABLE DECLARATION INITALIZED\n");
+		break;
 	case NODE_TYPE_PROGRAM:
 		// TODO: Compare two programs.
 		printf("TODO: Compare two programs.\n");
@@ -244,12 +266,24 @@ int node_compare(Node* a, Node* b) {
 	return 0;
 }
 
+Node* node_integer(long long value) {
+	Node* integer = node_allocate();
+	integer->type = NODE_TYPE_INTEGER;
+	integer->value.integer = value;
+	integer->children = NULL;
+	integer->next_child = NULL;
+	return integer;
+}
+
+// TODO: Think about caching used symbols and not creating duplicates!
 Node* node_symbol(char* symbol_string) {
 	// NOTE: 'strdup' is deprecated on Window's MSVC for safety, in Clang still exists.
 	Node* symbol = node_allocate();
 	symbol->type = NODE_TYPE_SYMBOL;
 	symbol->value.symbol = strdup(symbol_string);
-	sy
+	symbol->children = NULL;
+	symbol->next_child = NULL;
+	return symbol;
 }
 
 void print_node(Node* node, size_t indent_level) {
@@ -260,7 +294,8 @@ void print_node(Node* node, size_t indent_level) {
 		putchar(' ');
 	}
 	// Print type + value.
-	assert(NODE_TYPE_MAX == 7 && "print_node() must handle all node types"); // FIXME: This should be 3 instead but assert fails.
+	// TODO : This assert doesn't work, I don't know why :^(.
+	assert(NODE_TYPE_MAX == 7 && "print_node() must handle all node types");
 	switch (node->type) {
 	default:
 		printf("UNKNOWN");
@@ -289,7 +324,7 @@ void print_node(Node* node, size_t indent_level) {
 		printf("TODO: print_node() VAR DECL INIT");
 		break;
 	case NODE_TYPE_PROGRAM:
-		printf("TODO: print_node() PROGRAM");
+		printf("PROGRAM");
 		break;
 	}
 	putchar('\n');
@@ -320,10 +355,11 @@ void node_free(Node* root) {
 
 // TODO:
 // |-- API to create new Binding.
+// |-- API to create new Binding.
 // `-- API to add Binding to environment.
 typedef struct Binding {
-	Node id;
-	Node value;
+	Node* id;
+	Node* value;
 	struct Binding* next;
 } Binding;
 
@@ -341,13 +377,20 @@ Environment* environment_create(Environment* parent) {
 	return env;
 }
 
-void environment_set(Environment env, Node id, Node value) {
+/**
+* @retval 0 Failure.
+* @retval 1 Creation of new binding.
+* @retval 2 Existing binding value overwrite (ID unused).
+*/
+int environment_set(Environment* env, Node* id, Node* value) {
 	// Over-write existing value if ID is already bound in environment.
-	Binding* binding_it = env.bind;
+	if (!env || !id || !value) { return 0; }
+
+	Binding* binding_it = env->bind;
 	while (binding_it) {
-		if (node_compare(&binding_it->id, &id)) {
-			binding_it->value;
-			return;
+		if (node_compare(binding_it->id, id)) {
+			binding_it->value = value;
+			return 2;
 		}
 		binding_it = binding_it->next;
 	}
@@ -356,24 +399,22 @@ void environment_set(Environment env, Node id, Node value) {
 	assert(binding && "Could not allocate new binding for environment");
 	binding->id = id;
 	binding->value = value;
-	binding->next = env.bind;
-	env.bind = binding;
+	binding->next = env->bind;
+	env->bind = binding;
+	return 1;
 }
 
-Node environment_get(Environment env, Node id) {
+/// @return Boolean-like value; 1 for success, 0 for failure.
+int environment_get(Environment env, Node* id, Node* result) {
 	Binding* binding_it = env.bind;
 	while (binding_it) {
-		if (node_compare(&binding_it->id, &id)) {
-			return binding_it->value;
+		if (node_compare(binding_it->id, id)) {
+			*result = *binding_it->value;
+			return 1;
 		}
 		binding_it = binding_it->next;
 	}
-	Node value;
-	value.type = NODE_TYPE_NONE;
-	value.children = NULL;
-	value.next_child = NULL;
-	value.value.integer = 0;
-	return value;
+	return 0;
 }
 
 /// @return Boolean-like value; 1 for success, 0 for failure.
@@ -414,6 +455,9 @@ ParsingContext* parse_context_create() {
 	ParsingContext* ctx = calloc(1, sizeof(ParsingContext));
 	assert(ctx && "Could not allocate memory for parsing context.");
 	ctx->types = environment_create(NULL);
+	if (environment_set(ctx->types, node_symbol("integer"), node_integer(0)) == 0) {
+		printf("ERROR: Failed to set builtin type in types environment.\n");
+	}
 	ctx->variables = environment_create(NULL);
 	return ctx;
 }
@@ -534,16 +578,34 @@ int main(int argc, char** argv) {
 		// TODO: Create API to heap allocate a program node, as well as add 
 		// expression as children.
 		ParsingContext* context = parse_context_create();
-		Environment* environment = environment_create(NULL);
-		Node expression;
-		memset(&expression, 0, sizeof(Node));
+		Node* lookup_symbol = node_symbol("integer");
+		Node* integer_type_hopefully = node_allocate();
+		int status = environment_get(*context->types, lookup_symbol, integer_type_hopefully);
+		if (status == 0) {
+			printf("Failed to find node within environment\n");
+		}
+		else {
+			print_node(integer_type_hopefully, 0);
+			putchar('\n');
+		}
+
+		node_free(lookup_symbol);
+		node_free(integer_type_hopefully);
+
+		Node* program = node_allocate();
+		program->type = NODE_TYPE_PROGRAM;
+		Node* expression = node_allocate();
+		memset(expression, 0, sizeof(Node));
 		char* contents_it = contents;
-		Error err = parse_expr(context, contents_it, &contents_it, &expression);
-		print_node(&expression, 0);
-		putchar('\n');
+		Error err = parse_expr(context, contents_it, &contents_it, expression);
+		node_add_child(program, expression);
 
 		print_error(err);
 
+		print_node(program, 0);
+		putchar('\n');
+
+		node_free(program);
 		free(contents);
 	}
 
