@@ -50,6 +50,7 @@ void print_usage(char** argv) {
 	printf("USAGE: %s <path_to_file_to_compile>\n", argv[0]);
 }
 
+// TODO: Add file path, byte offset, etc.
 typedef struct Error {
 	enum ErrorType {
 		ERROR_NONE = 0,
@@ -302,7 +303,6 @@ void print_node(Node* node, size_t indent_level) {
 		putchar(' ');
 	}
 	// Print type + value.
-	// TODO : This assert doesn't work, I don't know why :^(.
 	assert(NODE_TYPE_MAX == 7 && "print_node() must handle all node types");
 	switch (node->type) {
 	default:
@@ -532,21 +532,33 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 				if (token_length == 0) { break; }
 
 				// TODO: Look up type in types environment from parsing context.
-				if (token_string_equalp("integer", &current_token)) {
+				Node* expected_type_symbol = node_symbol_from_buffer(current_token.beginning, token_length);
+				int status = environment_get(*context->types, expected_type_symbol, result);
+				if (status == 0) {
+					ERROR_PREP(err, ERROR_TYPE, "Invalid type within variable declaration");
+					return err;
+				}
+				else {
+					// printf("Found valid type: ");
+					// print_node(expected_type_symbol, 0);
+					// putchar('\n');
+
 					Node* var_decl = node_allocate();
 					var_decl->type = NODE_TYPE_VARIABLE_DECLARATION;
 
 					Node* type_node = node_allocate();
-					type_node->type = NODE_TYPE_INTEGER;
+					type_node->type = result->type;
 
 					node_add_child(var_decl, type_node);
 					node_add_child(var_decl, symbol);
 
 					*result = *var_decl;
-
-					// TODO: Look ahead for "=" assignment operator.
+					// Node contents transfer ownership, var_decl is now hollow shell.
+					free(var_decl);
 					return ok;
 				}
+
+
 			}
 
 			printf("Unrecognized token: ");
@@ -577,7 +589,6 @@ int main(int argc, char** argv) {
 		// TODO: Create API to heap allocate a program node, as well as add 
 		// expression as children.
 		ParsingContext* context = parse_context_create();
-
 		Node* program = node_allocate();
 		program->type = NODE_TYPE_PROGRAM;
 		Node* expression = node_allocate();
