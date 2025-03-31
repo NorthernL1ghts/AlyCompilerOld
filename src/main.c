@@ -577,17 +577,6 @@ int main(int argc, char** argv) {
 		// TODO: Create API to heap allocate a program node, as well as add 
 		// expression as children.
 		ParsingContext* context = parse_context_create();
-		Node* integer_type_hopefully = node_allocate();
-		int status = enviornment_get_by_symbol(*context->types, "integer", integer_type_hopefully);
-		if (status == 0) {
-			printf("Failed to find node within environment\n");
-		}
-		else {
-			print_node(integer_type_hopefully, 0);
-			putchar('\n');
-		}
-
-		node_free(integer_type_hopefully);
 
 		Node* program = node_allocate();
 		program->type = NODE_TYPE_PROGRAM;
