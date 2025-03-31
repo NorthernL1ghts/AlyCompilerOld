@@ -1,10 +1,16 @@
 # AlyCompiler's TODO
 
+# Top Level
+
 - [x] Lex source into tokens or something
 
 - [ ] Parse tokens or something into AST -- Just a tree containing data about the program
 
 - [ ] Compile AST into assembly, let's start with x86_64? We could also transpile into another language that then gets compiled, like C or something.
+
+# Kind of Urgent
+
+- [ ] Lex past comments or something.
 
 # Dumb ideas that we could implement
 
@@ -20,3 +26,6 @@
 
 - Have a type that represents all the other types:
   - This would allow variables to be defined with a type of another type.
+
+- Write end-to-end tests in Algol
+  - First I guess I have to learn Algol XD.
