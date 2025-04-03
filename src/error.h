@@ -21,8 +21,8 @@ extern Error ok;
 
 #define ERROR_CREATE(n, t, msg) Error(n) = {(t), (msg)}
 
-#define ERROR_PREP(n, t, message)                                              \
-  (n).type = (t);                                                              \
+#define ERROR_PREP(n, t, message) \
+  (n).type = (t);                  \
   (n).msg = (message);
 
 #endif /* COMPILER_ERROR_H */
