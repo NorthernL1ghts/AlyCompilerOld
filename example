@@ -4,6 +4,9 @@ a := 420
 b : integer
 b := 42
 
+
+b : integer
+
 defun foo (a:integer, b:integer):integer {
 
 }

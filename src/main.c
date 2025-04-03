@@ -4,8 +4,8 @@
 #include <string.h>
 
 #include <environment.h>
-#include <error.h>
 #include <file_io.h>
+#include <error.h>
 #include <parser.h>
 
 void print_usage(char** argv) {
@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
 	char* contents = file_contents(path);
 
 	if (contents) {
-		// printf("Contents of %s:\n---\n\"%s\"\n---\n", path, contents);
+		//printf("Contents of %s:\n---\n\"%s\"\n---\n", path, contents);
 
 		// TODO: Create API to heap allocate a program node, as well as add
 		// expression as children.
@@ -32,10 +32,20 @@ int main(int argc, char** argv) {
 		Node* expression = node_allocate();
 		memset(expression, 0, sizeof(Node));
 		char* contents_it = contents;
-		Error err = parse_expr(context, contents_it, &contents_it, expression);
-		node_add_child(program, expression);
+		for (;;) {
 
-		print_error(err);
+			Error err = parse_expr(context, contents_it, &contents_it, expression);
+			printf("contents_it: \"%s\"\n", contents_it);
+
+			if (!(*contents_it)) {
+				break;
+			}
+			if (err.type != ERROR_NONE) {
+				print_error(err);
+				break;
+			}
+			node_add_child(program, expression);
+		}
 
 		print_node(program, 0);
 		putchar('\n');

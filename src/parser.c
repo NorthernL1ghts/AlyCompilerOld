@@ -1,12 +1,11 @@
 #include <parser.h>
+#include <environment.h>
+#include <error.h>
 
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include <environment.h>
-#include <error.h>
 
 // ============================================================ BEG lexer
 const char* whitespace = " \r\n";
@@ -29,7 +28,7 @@ Error lex(char* source, Token* token) {
 	if (*(token->end) == '\0') { return err; }
 	token->end += strcspn(token->beginning, delimiters); // Skip everything that is not in delimiters.
 	if (token->end == token->beginning) {
-		token->end += 1;
+		token->end += 1; // This is the current protection if we don't lex anything.
 	}
 	return err;
 }
@@ -54,7 +53,6 @@ Node* node_allocate() {
 
 void node_add_child(Node* parent, Node* new_child) {
 	if (!parent || !new_child) { return; }
-
 	if (parent->children) {
 		Node* child = parent->children;
 		while (child->next_child) {
@@ -216,8 +214,7 @@ ParsingContext* parse_context_create() {
 	ParsingContext* ctx = calloc(1, sizeof(ParsingContext));
 	assert(ctx && "Could not allocate memory for parsing context.");
 	ctx->types = environment_create(NULL);
-	if (environment_set(ctx->types, node_symbol("integer"), node_integer(0)) ==
-		0) {
+	if (environment_set(ctx->types, node_symbol("integer"), node_integer(0)) == 0) {
 		printf("ERROR: Failed to set builtin type in types environment.\n");
 	}
 	ctx->variables = environment_create(NULL);
@@ -242,8 +239,7 @@ int parse_integer(Token* token, Node* node) {
 	return 1;
 }
 
-Error parse_expr(ParsingContext* context, char* source, char** end,
-	Node* result) {
+Error parse_expr(ParsingContext* context, char* source, char** end, Node* result) {
 	size_t token_count = 0;
 	Token current_token;
 	current_token.beginning = source;
@@ -254,11 +250,11 @@ Error parse_expr(ParsingContext* context, char* source, char** end,
 		*end = current_token.end;
 		size_t token_length = current_token.end - current_token.beginning;
 		if (token_length == 0) { break; }
-
 		if (parse_integer(&current_token, result)) {
 			// Look ahead for binary operators that include integers.
 			Node lhs_integer = *result;
 			err = lex(current_token.end, &current_token);
+			*end = current_token.end;
 			if (err.type != ERROR_NONE) {
 				return err;
 			}
@@ -284,6 +280,8 @@ Error parse_expr(ParsingContext* context, char* source, char** end,
 			// declaration with initialization.
 
 			err = lex(current_token.end, &current_token);
+			*end = current_token.end;
+
 			if (err.type != ERROR_NONE) {
 				return err;
 			}
@@ -292,13 +290,53 @@ Error parse_expr(ParsingContext* context, char* source, char** end,
 			if (token_length == 0) { break; }
 
 			if (token_string_equalp(":", &current_token)) {
+
 				err = lex(current_token.end, &current_token);
-				if (err.type != ERROR_NONE) {
-					return err;
-				}
 				*end = current_token.end;
+				if (err.type != ERROR_NONE) { return err; }
 				size_t token_length = current_token.end - current_token.beginning;
 				if (token_length == 0) { break; }
+
+				// TODO: Check for variable re-assignment...
+
+				// FIXME: Actually set variable declarations within environment so that
+				// reassigments and redefinitions can be properly parsed and handled.
+				Node* variable_binding = node_allocate();
+				if (environment_get(*context->variables, symbol, variable_binding)) {
+					// Either re-assignment of existing variable (look for =)
+
+					if (token_string_equalp("=", &current_token)) {
+						err = lex(current_token.end, &current_token);
+						*end = current_token.end;
+						if (err.type != ERROR_NONE) { return err; }
+						size_t token_length = current_token.end - current_token.beginning;
+						if (token_length == 0) { break; }
+
+						// TODO: Stack based continuation to parse assignment expression.
+
+						// FIXME: This recursive call is kind of the worse :^)
+						Node* assigned_expr = node_allocate();
+						err = parse_expr(context, current_token.end, &current_token.end, assigned_expr);
+						if (err.type != ERROR_NONE) { return err; }
+
+						// TODO: FIXME: Proper type-checking (this only accepts literals)
+						// We will have to figure out the return value of the expression.
+						if (assigned_expr->type != variable_binding->children->type) {
+							ERROR_PREP(err, ERROR_TYPE, "Variable assignment expression has mismatched type.");
+							return err;
+						}
+
+						variable_binding->children->value = assigned_expr->value;
+
+						// Node contents transfer ownership, assigned_expr is now hollow shell.
+						free(assigned_expr);
+						return ok;
+					}
+					// TODO: Create new error type.
+					printf("ID of redefined variable: \"%s\"\n", symbol->value.symbol);
+					ERROR_PREP(err, ERROR_GENERIC, "Redefinition of variable!");
+					return err;
+				}
 
 				Node* expected_type_symbol = node_symbol_from_buffer(current_token.beginning, token_length);
 				if (environment_get(*context->types, expected_type_symbol, result) == 0) {
@@ -307,6 +345,8 @@ Error parse_expr(ParsingContext* context, char* source, char** end,
 					return err;
 				}
 				else {
+					// TODO: Check for variable re-definition...
+
 					// printf("Found valid type: ");
 					// print_node(expected_type_symbol, 0);
 					// putchar('\n');
@@ -317,12 +357,53 @@ Error parse_expr(ParsingContext* context, char* source, char** end,
 					Node* type_node = node_allocate();
 					type_node->type = result->type;
 
+					// NOTE: Because `var_decl` is used in verbatim that means 
+					// that we can access the memory of the child. 
 					node_add_child(var_decl, type_node);
 					node_add_child(var_decl, symbol);
 
+					// TODO: Check for "=" initialization operator after var decl.
+					err = lex(current_token.end, &current_token);
+					*end = current_token.end;
+					if (err.type != ERROR_NONE) { return err; }
+					size_t token_length = current_token.end - current_token.beginning;
+					if (token_length == 0) { break; }
+
+					if (token_string_equalp("=", &current_token)) {
+						err = lex(current_token.end, &current_token);
+						*end = current_token.end;
+						if (err.type != ERROR_NONE) { return err; }
+						size_t token_length = current_token.end - current_token.beginning;
+						if (token_length == 0) { break; }
+
+						// TODO: Stack based continuation to parse assignment expression.
+
+						// FIXME: This recursive call is kind of the worse :^)
+						Node* assigned_expr = node_allocate();
+						err = parse_expr(context, current_token.end, &current_token.end, assigned_expr);
+						if (err.type != ERROR_NONE) { return err; }
+
+						// TODO: FIXME: Proper type-checking (this only accepts literals)
+						// We will have to figure out the return value of the expression.
+						if (assigned_expr->type != type_node->type) {
+							ERROR_PREP(err, ERROR_TYPE, "Variable assignment expression has mismatched type.");
+							return err;
+						}
+
+						type_node->value = assigned_expr->value;
+
+						// Node contents transfer ownership, assigned_expr is now hollow shell.
+						free(assigned_expr);
+					}
+
 					*result = *var_decl;
+					// TODO: Write node_copy() and node_deep_copy(), then deep copy
+					// var_decl, into environment. Possibly copy symnbol as well?
+					// int status = environment_set(context->variables, symbol, result);
+
 					// Node contents transfer ownership, var_decl is now hollow shell.
 					free(var_decl);
+
 					return ok;
 				}
 			}
@@ -330,7 +411,10 @@ Error parse_expr(ParsingContext* context, char* source, char** end,
 			printf("Unrecognized token: ");
 			print_token(current_token);
 			putchar('\n');
+
+			ERROR_PREP(err, ERROR_SYNTAX, "Unrecognized token reached during parsing");
 			return err;
+
 		}
 		printf("Intermediate node: ");
 		print_node(result, 0);

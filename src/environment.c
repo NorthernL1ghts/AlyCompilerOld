@@ -1,6 +1,7 @@
 #include <environment.h>
-#include <assert.h>
 #include <parser.h>
+
+#include <assert.h>
 #include <stddef.h>
 #include <stdlib.h>
 
