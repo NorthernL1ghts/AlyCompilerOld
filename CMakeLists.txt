@@ -13,5 +13,14 @@ project(AlyCompiler C)
 
 add_executable(
     alyc
+    src/file_io.c
+    src/error.c
     src/main.c
+    src/parser.c
+    src/environment.c
+)
+
+target_include_directories(
+    alyc
+    PUBLIC src/
 )
