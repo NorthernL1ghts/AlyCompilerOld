@@ -14,7 +14,7 @@
 
 ## Dumb ideas that we could implement
 
-- **Compile to brain-fuck XD?** — This is just a perfect idea. I am not know if it's possible.
+- **Compile to brain-fuck XD?** — This is just a perfect idea. I am not sure or even know if it's possible. It randomly came to me as I was doing research on how Compiler's work on deeper levels.
 
 ## Miscellaneous
 
