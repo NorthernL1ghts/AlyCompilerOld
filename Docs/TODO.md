@@ -20,6 +20,20 @@
 
 ## Miscellaneous
 
+### Decide what the syntax is for uninitialized variables
+
+- Maybe we do something like: ` a : integer ! `
+
+- We could also have a specific value the parser recognizes as uninitialized, like ` a : integer = None ` or something.
+
+### = Any = type that can accept any type
+
+- This would be cool to be able to accept any type as a parameter. We may need a way to query what type something is, byt that is also totally doable. This may be way too complicated, but it would be cool.
+
+### Assertions not working???
+
+- It seems like the `NODE_TYPE_MAX` assertions are not working. Maybe I have to case the enum value to an integer or something. I don't know.
+
 ### Unnamed variable declarations
 
 - It would be cool if an assignment and/or variable declaration could have no identifier, and work on a singular unnamed variable in the environment.
