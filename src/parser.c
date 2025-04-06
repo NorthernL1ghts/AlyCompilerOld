@@ -39,6 +39,7 @@ Error lex(char* source, Token* token) {
 	// Check if current line is a comment, and skip past it.
 	while (comment_at_beginning(*token)) {
 		// Skip to after next newline.
+		printf("Skipping past comment line\n");
 		token->beginning = strpbrk(token->beginning, "\n");
 		if (!token->beginning) {
 			// If last line of file is comment, we're done lexing.
