@@ -1,4 +1,5 @@
 ; This is a comment. It will end at the newline.
+# This is also a comment.
 
 ; This is a variable declaration with initialization.
 a : integer = 69
@@ -22,3 +23,4 @@ defun foo (a:integer, b:integer):integer {
 
 ; This is a function call.
 foo(20, 34)
+
