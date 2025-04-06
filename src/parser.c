@@ -8,27 +8,51 @@
 #include <string.h>
 
 // ============================================================ BEG lexer
+const char* comment_delimiters = ";#";
 const char* whitespace = " \r\n";
 const char* delimiters = " \r\n,():";
 
-void print_token(Token t) {
-	printf("%.*s", t.end - t.beginning, t.beginning);
+/// @return Boolean-like value: 1 for success, 0 for failure.
+int comment_at_beginning(Token token) {
+	const char* comment_it = comment_delimiters;
+	while (*comment_it) {
+		if (*(token.beginning) == *comment_it) {
+			return 1;
+		}
+		comment_it++;
+	}
+	return 0;
 }
 
 /// Lex the next token from SOURCE, and point to it with BEG and END.
+/// If BEG and END of token are equal, there is nothing more to lex.
 Error lex(char* source, Token* token) {
 	Error err = ok;
 	if (!source || !token) {
 		ERROR_PREP(err, ERROR_ARGUMENTS, "Can not lex empty source.");
 		return err;
-	};
+	}
 	token->beginning = source;
 	token->beginning += strspn(token->beginning, whitespace); // Skip the whitespace at the beginning.
 	token->end = token->beginning;
 	if (*(token->end) == '\0') { return err; }
-	token->end += strcspn(token->beginning, delimiters); // Skip everything that is not in delimiters.
+	// Check if current line is a comment, and skip past it.
+	if (comment_at_beginning(*token)) {
+		// Skip to after next newline.
+		token->beginning = strpbrk(token->beginning, "\n");
+		if (!token->beginning) {
+			// If last line of file is comment, we're done lexing.
+			token->end = token->beginning;
+			return err;
+		}
+		// Skip to beginning of next token after comment.
+		token->beginning += strspn(token->beginning, whitespace);
+		token->end = token->beginning;
+	}
+	if (*(token->end) == '\0') { return err; }
+	token->end += strcspn(token->beginning, delimiters); // Skip everything not in delimiters.
 	if (token->end == token->beginning) {
-		token->end += 1; // This is the current protection if we don't lex anything.
+		token->end += 1;
 	}
 	return err;
 }
@@ -42,6 +66,11 @@ int token_string_equalp(char* string, Token* token) {
 		beg++;
 	}
 	return 1;
+}
+
+
+void print_token(Token t) {
+	printf("%.*s", t.end - t.beginning, t.beginning);
 }
 // ============================================================ END lexer
 
