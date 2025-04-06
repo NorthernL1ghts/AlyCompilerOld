@@ -1,4 +1,7 @@
 ; This is a comment. It will end at the first newline.
+; This is too.
+; And this.
+; a : integer
 a : integer = 69
 a := 420
 

@@ -37,7 +37,7 @@ Error lex(char* source, Token* token) {
 	token->end = token->beginning;
 	if (*(token->end) == '\0') { return err; }
 	// Check if current line is a comment, and skip past it.
-	if (comment_at_beginning(*token)) {
+	while (comment_at_beginning(*token)) {
 		// Skip to after next newline.
 		token->beginning = strpbrk(token->beginning, "\n");
 		if (!token->beginning) {
