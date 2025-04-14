@@ -199,10 +199,11 @@ void print_node(Node* node, size_t indent_level) {
 	case NODE_TYPE_BINARY_OPERATOR:
 		printf("TODO: print_node() BINARY_OPERATOR");
 		break;
+	case NODE_TYPE_VARIABLE_REASSIGNMENT:
+		printf("VARIABLE REASSIGNMENT");
+		break;
 	case NODE_TYPE_VARIABLE_DECLARATION:
 		printf("VARIABLE DECLARATION");
-		// printf("VAR_DECL:");
-		// TODO: Print first child (ID symbol), then type of second child.
 		break;
 	case NODE_TYPE_VARIABLE_DECLARATION_INITIALIZED:
 		printf("TODO: print_node() VAR DECL INIT");
