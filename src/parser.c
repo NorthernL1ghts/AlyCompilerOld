@@ -284,6 +284,19 @@ ParsingContext* parse_context_create() {
 	return ctx;
 }
 
+/// Update token, token length, and end of current token pointer.
+Error lex_advance(Token* token, size_t* token_length, char** end) {
+	if (!token || !token_length || !token->end) {
+		ERROR_CREATE(err, ERROR_ARGUMENTS, "lex_advance(): pointer arguments must not be NULL!");
+		return err;
+	}
+	Error err = lex(token->end, token);
+	*end = token->end;
+	if (err.type != ERROR_NONE) { return err; }
+	*token_length = token->end - token->beginning;
+	return ok;
+}
+
 int parse_integer(Token* token, Node* node) {
 	if (!token || !node) { return 0; }
 	char* end = NULL;
@@ -309,11 +322,10 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 	current_token.end = source;
 	Error err = ok;
 
-	while ((err = lex(current_token.end, &current_token)).type == ERROR_NONE) {
-		*end = current_token.end;
-		token_length = current_token.end - current_token.beginning;
+	while ((err = lex_advance(&current_token, &token_length, end)).type == ERROR_NONE) {
 		if (token_length == 0) { break; }
 		if (parse_integer(&current_token, result)) {
+
 			// TODO: Look ahead for binary operators that include integers.
 			// It would be cool to use an operator environment to look up
 			// operators instead of hard-coding them. This would eventually
@@ -331,32 +343,33 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 
 		Node* symbol = node_symbol_from_buffer(current_token.beginning, token_length);
 
-		//*result = *symbol;
-
 		// TODO: Check if valid symbol for variable environment, 
 		// then attempt to pattern match variable access, assignment, 
 		// declaration, or declaration with initialization.
 
-		err = lex(current_token.end, &current_token);
-		*end = current_token.end;
+		err = lex_advance(&current_token, &token_length, end);
 		if (err.type != ERROR_NONE) { return err; }
-		token_length = current_token.end - current_token.beginning;
 		if (token_length == 0) { break; }
+		//err = lex(current_token.end, &current_token);
+		//*end = current_token.end;
+		//if (err.type != ERROR_NONE) { return err; }
+		//token_length = current_token.end - current_token.beginning;
+		// if (token_length == 0) { break; }
 
 		if (token_string_equalp(":", &current_token)) {
 
-			err = lex(current_token.end, &current_token);
-			*end = current_token.end;
+			err = lex_advance(&current_token, &token_length, end);
 			if (err.type != ERROR_NONE) { return err; }
-			token_length = current_token.end - current_token.beginning;
 			if (token_length == 0) { break; }
 
 			// FIXME: Actually set variable declarations within environment so that
 			// reassigments and redefinitions can be properly parsed and handled.
 			Node* variable_binding = node_allocate();
-			printf("Looking for \"%s\" in variables environment\n", symbol->value.symbol);
+
 			if (environment_get(*context->variables, symbol, variable_binding)) {
+
 				printf("Found existing symbol in environment %s\n", symbol->value.symbol);
+
 				// Re-assignment of existing variable (look for =)
 				if (token_string_equalp("=", &current_token)) {
 					// TODO: Stack based continuation to parse assignment expression.
@@ -400,8 +413,6 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 				return err;
 			}
 
-			printf("Valid type symbol: \"%s\"\n", expected_type_symbol->value.symbol);
-
 			Node* var_decl = node_allocate();
 			var_decl->type = NODE_TYPE_VARIABLE_DECLARATION;
 
@@ -411,10 +422,8 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 			// `symbol` is now owned by var_decl.
 			node_add_child(var_decl, symbol);
 
-			err = lex(current_token.end, &current_token);
-			*end = current_token.end;
+			err = lex_advance(&current_token, &token_length, end);
 			if (err.type != ERROR_NONE) { return err; }
-			token_length = current_token.end - current_token.beginning;
 			if (token_length == 0) { break; }
 
 			if (token_string_equalp("=", &current_token)) {
@@ -470,6 +479,29 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 			 * wherever we decide to stick them. Then we can just do a
 			 * environment lookup in the codegen context to update the
 			 * proper value.
+			 *
+			 * A codegen context must contain, for example in x86_64 ASM,
+			 * stack offsets of local variable declarations. Otherwise,
+			 * how would we ever access them after creation, right?
+			 *
+			 * PROGRAM -> "a : integer  a := 420"
+			 *	 VARIABLE DECLARATION
+			 *	 `-- SYMBOL ("a")
+			 *	 VARIABLE REASSIGNMENT
+			 *	 `-- INTEGER (420) -> SYMBOL ("a")
+			 *
+			 * Codegen for each top-level VAR DECL (inherited from parsing context variables environment):
+			 *   Look up symbol in variable environment <- should never fail
+			 *	 Get size of type in bytes	               if parsing works.
+			 *   Generate variable space in .space or something.
+			 *   Re-define binding in globals environment to store new symbol.
+			 *
+			 * ASM:
+			 * .data
+			 *	 ga: .space <SIZEOF INTEGER>, 0
+			 * .code
+			 *   movq ga, %rax
+			 *   movq %rbx, (%rax)
 			*/
 
 			// AST gains variable declaration node.
@@ -482,6 +514,10 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 			Node* symbol_for_env = node_allocate();
 			node_copy(symbol, symbol_for_env);
 			int status = environment_set(context->variables, symbol_for_env, type_node);
+			if (status != 1) {
+				ERROR_PREP(err, ERROR_GENERIC, "Failed to define variable!");
+				return err;
+			}
 
 			return ok;
 		}
