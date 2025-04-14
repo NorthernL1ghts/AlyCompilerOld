@@ -1,0 +1,7 @@
+a : integer
+a := 420
+;       ^
+
+b : integer
+;          ^
+b := 69

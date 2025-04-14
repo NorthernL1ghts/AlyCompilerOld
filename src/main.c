@@ -25,8 +25,7 @@ int main(int argc, char** argv) {
 		program->type = NODE_TYPE_PROGRAM;
 		Node* expression = node_allocate();
 		char* contents_it = contents;
-		long max = 2;
-		while (max--) {
+		for (;;) {
 			Error err = parse_expr(context, contents_it, &contents_it, expression);
 
 			if (!(*contents_it)) { break; }
@@ -35,9 +34,9 @@ int main(int argc, char** argv) {
 				break;
 			}
 
-			printf("Parsed expression:\n");
-			print_node(expression, 0);
-			putchar('\n');
+			//printf("Parsed expression:\n");
+			//print_node(expression, 0);
+			//putchar('\n');
 
 			Node* child = node_allocate();
 			node_copy(expression, child);

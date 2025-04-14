@@ -281,6 +281,14 @@ ParsingContext* parse_context_create() {
 	return ctx;
 }
 
+/**   PROGRAM
+*     [0 -> PROG_MAX]
+*      VARIABLE DECLARATION
+*      [0 -> 17]
+*      `-- SYMBOL ("a") ->
+*         [0 -> 1]
+*/
+
 /// Update token, token length, and end of current token pointer.
 Error lex_advance(Token* token, size_t* token_length, char** end) {
 	if (!token || !token_length || !token->end) {
@@ -321,6 +329,7 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 		printf("lexed: ");
 		print_token(current_token);
 		putchar('\n');
+
 		if (token_length == 0) { return ok; }
 
 		if (parse_integer(&current_token, result)) {
@@ -346,24 +355,18 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 		// then attempt to pattern match variable access, assignment, 
 		// declaration, or declaration with initialization.
 
+		// TODO: Compact the next four lines into `expect()` helper.
 		err = lex_advance(&current_token, &token_length, end);
 		if (err.type != ERROR_NONE) { return err; }
 		if (token_length == 0) { return ok; }
-
 		if (token_string_equalp(":", &current_token)) {
 
 			err = lex_advance(&current_token, &token_length, end);
 			if (err.type != ERROR_NONE) { return err; }
 			if (token_length == 0) { break; }
 
-			// FIXME: Actually set variable declarations within environment so that
-			// reassigments and redefinitions can be properly parsed and handled.
 			Node* variable_binding = node_allocate();
 			if (environment_get(*context->variables, symbol, variable_binding)) {
-
-				printf("Found existing symbol in environment %s\n", symbol->value.symbol);
-				print_node(variable_binding, 2);
-				putchar('\n');
 
 				// Re-assignment of existing variable (look for =)
 				if (token_string_equalp("=", &current_token)) {
@@ -376,12 +379,6 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 						free(variable_binding);
 						return err;
 					}
-
-					printf("Reassigned expr: ");
-					print_node(reassign_expr, 0);
-					putchar('\n');
-
-					// exit(0);
 
 					// TODO: FIXME: Proper type-checking (this only accepts literals)
 					// We will have to figure out the return value of the expression.
@@ -427,24 +424,18 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 			// `symbol` is now owned by var_decl.
 			node_add_child(var_decl, symbol);
 
+			// FIXME: Use `expect()` helper once it exists.
+			char* old_end = *end;
 			err = lex_advance(&current_token, &token_length, end);
 			if (err.type != ERROR_NONE) { return err; }
 			if (token_length == 0) { break; }
-
 			if (token_string_equalp("=", &current_token)) {
 				// TODO: Stack based continuation to parse assignment expression.
 
 				// FIXME: This recursive call is kind of the worse :^)
 				Node* assigned_expr = node_allocate();
-				// CURRENT TOKEN -> "="
-				// LOOK AFTER CURRENT TOKEN FOR NEXT TOKEN!
-				// CURRENT TOKEN -> "= 69"
 				err = parse_expr(context, current_token.end, end, assigned_expr);
 				if (err.type != ERROR_NONE) { return err; }
-
-				printf("Assigned expr: ");
-				print_node(assigned_expr, 0);
-				putchar('\n');
 
 				// TODO: FIXME: Proper type-checking (this only accepts literals)
 				// We will have to figure out the return value of the expression.
@@ -455,9 +446,11 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 				}
 
 				type_node->value = assigned_expr->value;
-
 				// Node contents transfer ownership, assigned_expr is now hollow shell.
 				free(assigned_expr);
+			}
+			else {
+				*end = old_end;
 			}
 
 			/* VARIABLE DECLARATION

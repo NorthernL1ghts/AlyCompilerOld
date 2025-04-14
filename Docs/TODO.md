@@ -10,9 +10,21 @@
 
 ## Kind of Urgent
 
-- [ ] Lex past comments or something.
+- [x] Lex past comments or something.
 
 - [ ] Write LISP runtime in the compiled language.
+
+### Add token member to AST node structure
+
+- This would allow for much better error message that point to the source code that the error originates from.
+
+- We should also think about line count or something like that; maybe node ast holds custom structure containing token span, as well as file path (if applicable), line number, column number, etc.
+
+### Compile to chip-8 ASM?
+
+- It occurred to me whilst I was doing some compiler research, that someone has previously tried to make a CHIP-8 virtual machine, assembler, disassembler, etc. in PHP, and it would be really cool if we could collaborate or something.
+
+- There is no reason why this compiler can't also target chip 8 :)
 
 ## Dumb ideas that we could implement
 
