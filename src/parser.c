@@ -100,9 +100,7 @@ void node_add_child(Node* parent, Node* new_child) {
 
 int node_compare(Node* a, Node* b) {
 	if (!a || !b) {
-		if (!a && !b) {
-			return 1;
-		}
+		if (!a && !b) { return 1; }
 		return 0;
 	}
 	// TODO: This assert doesn't work, I don't know why :^(.
