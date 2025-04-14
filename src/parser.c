@@ -326,10 +326,7 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 	Error err = ok;
 
 	while ((err = lex_advance(&current_token, &token_length, end)).type == ERROR_NONE) {
-		printf("lexed: ");
-		print_token(current_token);
-		putchar('\n');
-
+		//printf("lexed: "); print_token(current_token); putchar('\n');
 		if (token_length == 0) { return ok; }
 
 		if (parse_integer(&current_token, result)) {
@@ -342,7 +339,7 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 			return ok;
 		}
 
-		// TODO: Parse strings nad other literal types.
+		// TODO: Parse strings and other literal types.
 
 		// TODO: Check for unary prefix operators.
 
