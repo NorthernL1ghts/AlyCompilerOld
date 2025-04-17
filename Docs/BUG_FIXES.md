@@ -2,33 +2,34 @@
 
 ## Assertions & Debugging
 
-- [x] Investigated and resolved assertion failure for `NODE_TYPE_MAX`.
-  - Issue was due to `NODE_TYPE_MAX` being moved in the `enum`, causing unexpected behavior in `CASSERT`.
-  - Differences between C and C++ assertion behavior were identified and accounted for.
+- **[x] Investigated and resolved assertion failure for `NODE_TYPE_MAX`:**
+  - The issue stemmed from `NODE_TYPE_MAX` being moved within the `enum`, causing unexpected behavior in `CASSERT`.
+  - Identified and accounted for the differences between C and C++ assertion behavior.
 
 ## Memory Management
 
-- [x] **Fixed `file_contents()` to check for `NULL` return value from `malloc()`.**
+- **[x] Fixed `file_contents()` to check for `NULL` return value from `malloc()`.**
 
 ## Token Handling
 
-- [x] **Refactored tokens to remove unnecessary linked lists and `create/free` functions.**
-- [x] **Removed `print_tokens()` as it was no longer needed.**
+- **[x] Refactored token handling:**
+  - Removed unnecessary linked lists and `create/free` functions.
+  - Removed `print_tokens()` as it was no longer needed.
 
 ## Lexing
 
-_TODO: Add lexing-specific bug fixes here._
+- **_TODO:_** Add lexing-specific bug fixes here.
 
 ## Data Types
 
-- [x] **Removed `integer_t` in favor of `long long`.**
+- **[x] Removed `integer_t` in favor of `long long`.**
 
 ## Parsing
 
-- [x] **Refactored `parse_expr()` to:**
+- **[x] Refactored `parse_expr()` to:**
   - Accept `char* source`, `char** end`, and `Node* result`.
   - Eliminate `working_node` and use `result` directly.
-  - Remove root node allocation—handled at a higher level.
+  - Remove root node allocation (handled at a higher level).
   - **Implemented parsing using a `while` loop** instead of handling a single expression.
 
 ---
@@ -37,8 +38,8 @@ _TODO: Add lexing-specific bug fixes here._
 
 ## Parsing Context
 
-- Explored how the parser could parse **within and into a given parsing context.**
-- Implemented a **parsing context** managing multiple environments:
+- Explored how the parser could parse **within and into a given parsing context**.
+- Implemented a **parsing context** to manage multiple environments:
   - **Type & Variable Definitions** → Ensures symbols are properly defined and typed.
   - **Operator Environment** → Maps operators to their respective functions.
 
