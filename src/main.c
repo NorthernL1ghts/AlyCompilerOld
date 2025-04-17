@@ -26,14 +26,13 @@ int main(int argc, char** argv) {
 		Node* expression = node_allocate();
 		char* contents_it = contents;
 		for (;;) {
-
 			Error err = parse_expr(context, contents_it, &contents_it, expression);
+
+			if (!(*contents_it)) { break; }
 			if (err.type != ERROR_NONE) {
 				print_error(err);
 				break;
 			}
-			// Check for end-of-parsing case (source and end are the same).
-			if (!(*contents_it)) { break; }
 
 			//printf("Parsed expression:\n");
 			//print_node(expression, 0);
