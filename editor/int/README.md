@@ -6,13 +6,13 @@ Once installed, restart VIM and, upon loading a file with `.int` extension, synt
 
 ## 1. Manual External Install (preferred)
 
-Let's say this directory is located at `/path/to/Aly/editor/int`.
+Let's say this directory is located at `/path/to/Aly/Editor/int`.
 
 Add the following to your vimrc (see `:help vimrc-intro` if confused).
 
 ```vim
 filetype off
-set rtp+=/path/to/Aly/editor/int
+set rtp+=/path/to/Aly/Editor/int
 filetype plugin indent on
 syntax on
 ```
