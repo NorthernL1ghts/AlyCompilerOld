@@ -1,0 +1,59 @@
+/// Top-level rule.
+<file> ::= <preamble> { <expression> | ";" }
+
+<preamble> ::= [ <module-declaration> ] { <import-declaration> | ";" }
+
+<module-declaration> ::= MODULE IDENTIFIER
+<import-declaration> ::= IMPORT IDENTIFIER
+
+/// Expression.
+<expression>     ::= <expr-decl>
+                   | <expr-if>
+                   | <expr-for>
+                   | <expr-while>
+                   | <expr-block>
+                   | <expr-lambda>
+                   | <expr-call>
+                   | <expr-cast>
+                   | <expr-subs>
+                   | <expr-paren>
+                   | <expr-prefix>
+                   | <expr-binary>
+                   | <expr-primary>
+
+/// Declarations.
+<expr-decl>      ::= <decl-start> <decl-rest>
+<decl-start>     ::= [ EXPORT ] IDENTIFIER ":"
+<decl-rest>      ::= <type-function> <function-body>
+                   | <type> [ "=" <expression> ]
+                   | EXT <type-function>
+
+/// Other expressions.
+<expr-if>        ::= IF <expression> <expression> [ ELSE <expression> ]
+<expr-while>     ::= WHILE <expression> <expression>
+<expr-for>       ::= FOR <expression> [ "," ] <expression> [ "," ] <expression> <expression>
+<expr-block>     ::= "{" { <expression> } "}"
+<expr-lambda>    ::= <type-function> <function-body>
+<expr-call>      ::= <expression> "(" { <expression> [ "," ] } ")"
+<expr-cast>      ::= <expression> AS <type>
+<expr-subs>      ::= <expression> "[" <expression> "]"
+<expr-paren>     ::= "(" <expression> ")"
+<expr-prefix>    ::= <prefix> <expression>
+<expr-binary>    ::= <expression> <binary> <expression>
+<expr-primary>   ::= NUMBER | IDENTIFIER
+
+/// Types.
+<type>           ::= <type-base> | <type-pointer> | <type-derived> | <type-struct>
+<type-pointer>   ::= "@" { "@" } ( IDENTIFIER | "(" <type> ")" )
+<type-base>      ::= IDENTIFIER | INTEGER | BYTE | VOID | ARBITRARY_INT
+<type-struct>    ::= TYPE <struct-body>
+<type-derived>   ::= <type-array> | <type-function>
+<type-array>     ::= <type> "[" <expression> "]"
+<type-function>  ::= <type> "(" { <param-decl> [ "," ]  } ")"
+<param-decl>     ::= <decl-start> <type>
+<struct-body>    ::= "{" { <param-decl> } "}"
+
+/// Miscellaneous.
+<function-body>  ::= [ "=" ] <expression>
+<binary>         ::= /// All binary operators
+<prefix>         ::= /// All unary prefix operators
