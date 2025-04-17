@@ -1,4 +1,6 @@
-# Ignore build directories
+# ─────────────────────────────
+# Build Artifacts & Binaries
+# ─────────────────────────────
 build/
 bld/
 x64/
@@ -14,69 +16,82 @@ DebugMon/
 *.so
 *.dll
 *.exe
+*.lib
 *.pdb
 *.idb
-*.lib
-*.suo
-*.sln.docstates
+*.out
+*.log
+*.dSYM/
 
-# Ignore Visual Studio directories and files
-.vs/
-.vscode/
-.idea/
-*.vcxproj
-*.vcxproj.filters
-*.vcxproj.user
-*.user
-*.suo
-*.userosscache
-
-# Ignore Mac OS system files
-.DS_Store
-
-# Ignore CMake build files and directories
+# ─────────────────────────────
+# CMake
+# ─────────────────────────────
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
 Makefile
 Makefile.user
 
-# Ignore Eclipse project files
+# ─────────────────────────────
+# Ninja
+# ─────────────────────────────
+build.ninja
+
+# ─────────────────────────────
+# Microsoft Visual Studio
+# ─────────────────────────────
+.vs/
+*.sln
+*.suo
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.user
+*.sln.docstates
+*.userosscache
+
+# ─────────────────────────────
+# Visual Studio Code & JetBrains
+# ─────────────────────────────
+.vscode/
+.idea/
+
+# ─────────────────────────────
+# Eclipse
+# ─────────────────────────────
 .project
 .cproject
 .settings/
 
-# Ignore Code::Blocks files
+# ─────────────────────────────
+# Code::Blocks
+# ─────────────────────────────
 *.cbp
 *.layout
 
-# Ignore Ninja build files
-build.ninja
-
-# Ignore GDB debugging files
-*.gdb
-
-# Ignore Qt Creator files
+# ─────────────────────────────
+# Qt Creator
+# ─────────────────────────────
 *.pro.user
 *.qmake.stash
 
-# Ignore Visual Studio Code settings for specific projects
-.vscode/*
+# ─────────────────────────────
+# System Files
+# ─────────────────────────────
+.DS_Store
 
-# Ignore global configuration files
-*.clangd
-*.dir-locals.el
-
-# Ignore test or coverage files
+# ─────────────────────────────
+# Compiler/Analysis Tools
+# ─────────────────────────────
 *.gcda
 *.gcno
 *.gcov
+*.gdb
+*.clangd
 
-# Ignore generated files and folders for CI/CD
-*.log
-*.out
-*.dSYM/
-
-# Ignore temporary files
+# ─────────────────────────────
+# Editor & Temporary Files
+# ─────────────────────────────
 *.swp
 *.swo
+*.dir-locals.el
