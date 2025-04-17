@@ -72,8 +72,7 @@ int token_string_equalp(char* string, Token* token) {
 void print_token(Token t) {
 	if (t.end - t.beginning < 1) {
 		printf("INVALID TOKEN POINTERS\n");
-	}
-	else {
+	} else {
 		printf("%.*s", t.end - t.beginning, t.beginning);
 	}
 }
@@ -93,8 +92,7 @@ void node_add_child(Node* parent, Node* new_child) {
 			child = child->next_child;
 		}
 		child->next_child = new_child;
-	}
-	else {
+	} else {
 		parent->children = new_child;
 	}
 }
@@ -121,8 +119,7 @@ int node_compare(Node* a, Node* b) {
 				return 1;
 			}
 			break;
-		}
-		else if (!a->value.symbol && !b->value.symbol) {
+		} else if (!a->value.symbol && !b->value.symbol) {
 			return 1;
 		}
 		break;
@@ -259,8 +256,7 @@ void node_copy(Node* a, Node* b) {
 		if (child_it) {
 			child_it->next_child = new_child;
 			child_it = child_it->next_child;
-		}
-		else {
+		} else {
 			b->children = new_child;
 			child_it = new_child;
 		}
@@ -295,22 +291,64 @@ Error lex_advance(Token* token, size_t* token_length, char** end) {
 	return ok;
 }
 
+typedef struct ExpectReturnValue {
+	Error err;
+	char found;
+	char done;
+} ExpectReturnValue;
+
+ExpectReturnValue lex_expect(char* expected, Token* current, size_t* current_length, char** end) {
+	ExpectReturnValue out;
+	out.done = 0;
+	out.found = 0;
+	out.err = ok;
+	Error err = ok;
+	if (!expected || !current || !current_length || !end) {
+		ERROR_PREP(err, ERROR_ARGUMENTS, "lex_expect() must not be passed NULL pointers!");
+		return out;
+	}
+	Token current_copy = *current;
+	size_t current_length_copy = *current_length;
+	char* end_value = *end;
+
+	out.err = lex_advance(&current_copy, &current_length_copy, &end_value);
+	if (out.err.type != ERROR_NONE) { return out; }
+	if (current_length_copy == 0) {
+		out.done = 1;
+		return out;
+	}
+
+	if (token_string_equalp(expected, &current_copy)) {
+		out.found = 1;
+		*end = end_value;
+		*current = current_copy;
+		*current_length = current_length_copy;
+		return out;
+	}
+
+	return out;
+}
+
+#define EXPECT(expected, expected_string, current_token, current_length, end)             \
+	expected = lex_expect(expected_string, &current_token, &current_length, end);          \
+	if (expected.err.type) { return expected.err; }                                         \
+	if (expected.done) { return ok; }
+
 int parse_integer(Token* token, Node* node) {
 	if (!token || !node) { return 0; }
 	char* end = NULL;
 	if (token->end - token->beginning == 1 && *(token->beginning) == '0') {
 		node->type = NODE_TYPE_INTEGER;
 		node->value.integer = 0;
-	}
-	else if ((node->value.integer = strtoll(token->beginning, &end, 10)) != 0) {
+	} else if ((node->value.integer = strtoll(token->beginning, &end, 10)) != 0) {
 		if (end != token->end) { return 0; }
 		node->type = NODE_TYPE_INTEGER;
-	}
-	else { return 0; }
+	} else { return 0; }
 	return 1;
 }
 
 Error parse_expr(ParsingContext* context, char* source, char** end, Node* result) {
+	ExpectReturnValue expected;
 	size_t token_count = 0;
 	size_t token_length = 0;
 	Token current_token;
@@ -345,11 +383,17 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 		// then attempt to pattern match variable access, assignment, 
 		// declaration, or declaration with initialization.
 
-		// TODO: Compact the next four lines into `expect()` helper.
-		err = lex_advance(&current_token, &token_length, end);
-		if (err.type != ERROR_NONE) { return err; }
-		if (token_length == 0) { return ok; }
-		if (token_string_equalp(":", &current_token)) {
+		EXPECT(expected, ":", current_token, token_length, end);
+		//expected = lex_expect(":", &current_token, &token_length, end);
+		//if (expected.err.type) { return expected.err; }
+		//if (expected.done) { return ok; }
+
+		if (expected.found) {
+			// TODO: Compact the next four lines into `expect()` helper.
+			//err = lex_advance(&current_token, &token_length, end);
+			//if (err.type != ERROR_NONE) { return err; }
+			//if (token_length == 0) { return ok; }
+			//if (token_string_equalp(":", &current_token)) {
 
 			err = lex_advance(&current_token, &token_length, end);
 			if (err.type != ERROR_NONE) { return err; }
@@ -438,8 +482,7 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 				type_node->value = assigned_expr->value;
 				// Node contents transfer ownership, assigned_expr is now hollow shell.
 				free(assigned_expr);
-			}
-			else {
+			} else {
 				*end = old_end;
 			}
 
