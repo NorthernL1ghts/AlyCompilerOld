@@ -1,5 +1,6 @@
 # Ignore build directories
 build/
+bld/
 x64/
 bin/
 bin-int/
