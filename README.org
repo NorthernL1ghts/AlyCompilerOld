@@ -1,0 +1,52 @@
+#+TITLE: AlyCompiler
+#+DESCRIPTION: Compiler project for the Aly programming language
+#+AUTHOR: Your Name
+#+OPTIONS: toc:nil
+
+[[file:Resources/AlyCompilerLogo.png]]
+
+* AlyCompiler
+
+I don't really have a plan — I just want to make a compiler; it sounds fun.
+There's an example of some code that should be valid and compilable in the [[file:example][example]] file.
+
+* About Aly
+
+Aly is a programming language designed with precision and efficiency in mind.
+The name *Aly* stands for *Analytic Lexical Yield*, reflecting its focus on analytical processes and lexical clarity.
+
+But beyond its technical roots, Aly is also a personal tribute — named after my partner, *Alyssa*, whose support and inspiration have shaped the journey of this project.
+
+The *AlyCompiler* is the compiler that powers the language, translating Aly code into executable instructions with optimal performance.
+
+Whether you're exploring new programming paradigms or just curious about the design, Aly offers a fresh take on the world of programming languages.
+
+* Usage
+
+Run the executable from a shell, passing a path to some source code as the only argument.
+
+Currently, the compiler prints out how far it gets through the compilation process.
+Eventually, it will emit compiled code.
+
+* Building Instructions
+
+** Dependencies
+- [[https://cmake.org/][CMake]] (Version 3.14 or later)
+- [[https://gcc.gnu.org/][GCC]] or any C compiler (Clang, MSVC, etc.)
+
+** 1. Generate the Build Tree
+
+#+begin_src sh
+cmake -G "Unix Makefiles" -B bld
+#+end_src
+
+** 2. Build the Executable
+
+#+begin_src sh
+cmake --build bld
+#+end_src
+
+Alternatively, you can use the platform-specific scripts:
+
+- Windows: ~Scripts/Win-GenerateProject.bat~
+- Linux/macOS: ~Scripts/GenerateProject.sh~
