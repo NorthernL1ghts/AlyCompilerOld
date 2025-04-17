@@ -12,7 +12,7 @@ const char* comment_delimiters = ";#";
 const char* whitespace = " \r\n";
 const char* delimiters = " \r\n,():";
 
-/// @return Boolean-like value: 1 for success, 0 for failure.
+/// @return Boolean-like value; 1 for success, 0 for failure.
 int comment_at_beginning(Token token) {
 	const char* comment_it = comment_delimiters;
 	while (*comment_it) {
@@ -277,14 +277,6 @@ ParsingContext* parse_context_create() {
 	return ctx;
 }
 
-/**   PROGRAM
-*     [0 -> PROG_MAX]
-*      VARIABLE DECLARATION
-*      [0 -> 17]
-*      `-- SYMBOL ("a") ->
-*         [0 -> 1]
-*/
-
 /// Update token, token length, and end of current token pointer.
 Error lex_advance(Token* token, size_t* token_length, char** end) {
 	if (!token || !token_length || !token->end) {
@@ -342,8 +334,8 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 
 		Node* symbol = node_symbol_from_buffer(current_token.beginning, token_length);
 
-		// TODO: Check if valid symbol for variable environment, 
-		// then attempt to pattern match variable access, assignment, 
+		// TODO: Check if valid symbol for variable environment,
+		// then attempt to pattern match variable access, assignment,
 		// declaration, or declaration with initialization.
 
 		// TODO: Compact the next four lines into `expect()` helper.
