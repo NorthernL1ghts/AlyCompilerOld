@@ -1,71 +1,75 @@
-# AlyCompiler's TODO
+# AlyCompiler TODO
 
-## Top Level
+## Top-Level Tasks
 
-- [x] Lex source into tokens or something
+- [x] **Lexing**
+  Convert source code into tokens.
 
-- [ ] Parse tokens or something into AST — Just a tree containing data about the program
+- [ ] **Parsing**
+  Transform tokens into an AST (Abstract Syntax Tree) — a structure representing the program.
 
-- [ ] Compile AST into assembly, let's start with x86_64? We could also transpile into another language that then gets compiled, like C or something.
+- [ ] **Compilation**
+  Compile the AST into x86_64 assembly.
+  Alternatively, consider trans-piling into a language like C and compiling from there.
 
-## Kind of Urgent
+## Urgent
 
-- [x] Lex past comments or something.
+- [x] **Comment Handling in Lexer**
+  Skip over comments during lexing.
 
-- [ ] Write LISP runtime in the compiled language.
+- [ ] **LISP Runtime**
+  Implement the LISP runtime in the compiled language.
 
-### Add token member to AST node structure
+## AST and Token Enhancements
 
-- This would allow for much better error message that point to the source code that the error originates from.
+- [ ] **Attach Token Metadata to AST Nodes**
+  - Enables detailed error messages that point to specific source locations.
+  - Consider a structure that includes token span, file path, line number, column number, etc.
 
-- We should also think about line count or something like that; maybe node ast holds custom structure containing token span, as well as file path (if applicable), line number, column number, etc.
+## Alternative Compilation Targets
 
-### Compile to chip-8 ASM?
+- [ ] **CHIP-8 ASM Backend**
+  - Inspired by a CHIP-8 toolset in PHP.
+  - Would be interesting to target CHIP-8 as an additional backend.
 
-- It occurred to me whilst I was doing some compiler research, that someone has previously tried to make a CHIP-8 virtual machine, assembler, disassembler, etc. in PHP, and it would be really cool if we could collaborate or something.
+- [ ] **Brainfuck Compilation**
+  - A random but intriguing idea. Not sure it’s even viable, but could be fun to explore.
 
-- There is no reason why this compiler can't also target chip 8 :)
+## Language Features and Ideas
 
-## Dumb ideas that we could implement
+### Type System
 
-- **Compile to brain-fuck XD?** — This is just a perfect idea. I am not sure or even know if it's possible. It randomly came to me as I was doing research on how Compiler's work on deeper levels.
+- [ ] **Automatic Type Deduction**
+  - If we can already infer expression return types, consider supporting type-less variable declarations.
+    Example syntax: `a :| = 69`
 
-## Miscellaneous
+- [ ] **Uninitialized Variables**
+  - Possible syntax: `a : integer !`
+  - Alternative: `a : integer = None` with parser support for recognizing this as "uninitialized".
 
-### Allow automatic type deduction
+- [ ] **Any Type**
+  - A universal type that accepts any other type.
+  - Would likely require a way to inspect types at runtime or during compilation.
 
-- As we already have the ability (or should have the ability) to deduce return type of an expression, why require type annotation explicitly in simple variable declarations? Maybe have custom `deduce` type or something.
+- [ ] **Meta-Types**
+  - A type that can represent other types — for meta-programming or reflection-style behavior.
 
-Could look something like this -> `a :| = 69`
+### Syntax & Declarations
 
+- [ ] **Unnamed Variable Declarations**
+  - Support for assigning to or declaring a variable without naming it, affecting a single unnamed environment variable.
 
-### Decide what the syntax is for uninitialized variables
+- [ ] **Assertions Not Working**
+  - The `NODE_TYPE_MAX` assertions may not be firing. Might need to cast enum values to integers.
 
-- Maybe we do something like: ` a : integer ! `
+## Parsing & Lexing Architecture
 
-- We could also have a specific value the parser recognizes as uninitialized, like ` a : integer = None ` or something.
+- [ ] **State Machine Parser**
+  - As complexity grows, consider using a state machine to handle edge cases and special parsing logic.
+  - For now, current approach may be simpler and faster to implement.
 
-### = Any = type that can accept any type
+## Testing and Tooling
 
-- This would be cool to be able to accept any type as a parameter. We may need a way to query what type something is, byt that is also totally doable. This may be way too complicated, but it would be cool.
-
-### Assertions not working???
-
-- It seems like the `NODE_TYPE_MAX` assertions are not working. Maybe I have to case the enum value to an integer or something. I don't know.
-
-### Unnamed variable declarations
-
-- It would be cool if an assignment and/or variable declaration could have no identifier, and work on a singular unnamed variable in the environment.
-
-### State Machine Parser
-
-- Just a thought, but when we lex right now, we need to go deeper. As the compiler and parser get more advanced, maybe we could use a state machine or something to handle the special cases rather than how we are currently doing it.
-- Right now, I think we'll handle all the special cases in the same way we are because it's going to become so much more complicated, and that will waste time.
-
-### Have a type that represents all the other types
-
-- This would allow variables to be defined with a type of another type.
-
-### Write end-to-end tests in Algol
-
-- First, I guess I have to learn Algol XD.
+- [ ] **Write End-to-End Tests in Algol**
+  - Step 1: Learn Algol.
+  - Step 2: Write tests in it.
