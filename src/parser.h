@@ -40,13 +40,14 @@ typedef struct Node {
 		NODE_TYPE_SYMBOL,
 
 		// END LITERALS
+		NODE_TYPE_TYPE,
 
 		/// Contains two children. The first determines type (and value),
 		/// while the second contains the symbolic name of the variable.
 		NODE_TYPE_VARIABLE_DECLARATION,
 		NODE_TYPE_VARIABLE_DECLARATION_INITIALIZED,
 
-		/// Contains two children. The first is the new expression to 
+		/// Contains two children. The first is the new expression to
 		/// execute that returns proper type, and second is ID symbol.
 		NODE_TYPE_VARIABLE_REASSIGNMENT,
 
@@ -61,6 +62,7 @@ typedef struct Node {
 	union NodeValue {
 		long long integer;
 		char* symbol;
+		enum NodeType type;
 	} value;
 	// Possible TODO: Parent?
 	struct Node* children;
@@ -103,7 +105,11 @@ int token_string_equalp(char* string, Token* token);
 int parse_integer(Token* token, Node* node);
 
 typedef struct ParsingContext {
-	// FIXME: "struct ParsingContext* parent;" ???
+  // FIXME: "struct ParsingContext* parent;" ???
+  /// TYPE
+  /// `-- SYMBOL (IDENTIFIER) -> TYPE (NODE_TYPE)
+  /// 	                         `-- BYTE_SIZE (N) -> LIST (members) -> LIST (functions)
+  ///                                                 `-- members...    `-- member functions...
 	Environment* types;
 	Environment* variables;
 } ParsingContext;
