@@ -8,6 +8,7 @@
 #include <string.h>
 
 // ============================================================ BEG lexer
+// TODO: Allow multy-byte comment delimiters.
 const char* comment_delimiters = ";#";
 const char* whitespace = " \r\n";
 const char* delimiters = " \r\n,():";

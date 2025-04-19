@@ -35,7 +35,6 @@ int main(int argc, char** argv) {
 			// Check for end-of-parsing case (source and end are the same).
 			if (!(*contents_it)) { break; }
 
-
 			//printf("Parsed expression:\n");
 			//print_node(expression, 0);
 			//putchar('\n');
