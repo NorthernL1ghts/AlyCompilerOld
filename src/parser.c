@@ -291,6 +291,47 @@ Error lex_advance(Token* token, size_t* token_length, char** end) {
 	return ok;
 }
 
+typedef struct ExpectReturnValue {
+	Error err;
+	char found;
+	char done; // NOTE: This could be a BIT-MASK?
+} ExpectReturnValue;
+
+/// @return Boolean-like value; iff given token is found next.
+///			Otherwise, do not change parsing state. This could be boolean 
+///			but then it wouldn't be equal, but we could have it take err 
+///			as param???
+ExpectReturnValue lex_expect(char* expected, Token* current, size_t* current_length, char** end) {
+	ExpectReturnValue out;
+	out.done = 0;
+	out.found = 0;
+	out.err = ok;
+	if (!expected || !current || !current_length || !end) {
+		ERROR_PREP(out.err, ERROR_ARGUMENTS, "lex_expect() must not be passed NULL pointers!");
+		return out;
+	}
+	Token current_copy = *current;
+	size_t current_length_copy = *current_length;
+	char* end_value = *end;
+
+	out.err = lex_advance(&current_copy, &current_length_copy, &end_value);
+	if (out.err.type != ERROR_NONE) { return out; }
+	if (current_length_copy == 0) {
+		out.done = 1;
+		return out;
+	}
+
+	if (token_string_equalp(expected, &current_copy)) {
+		out.found = 1;
+		*end = end_value;
+		*current = current_copy;
+		*current_length = current_length_copy;
+		return out;
+	}
+
+	return out;
+}
+
 int parse_integer(Token* token, Node* node) {
 	if (!token || !node) { return 0; }
 	char* end = NULL;
@@ -305,6 +346,7 @@ int parse_integer(Token* token, Node* node) {
 }
 
 Error parse_expr(ParsingContext* context, char* source, char** end, Node* result) {
+	ExpectReturnValue expected;
 	size_t token_count = 0;
 	size_t token_length = 0;
 	Token current_token;
@@ -340,10 +382,14 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 		// declaration, or declaration with initialization.
 
 		// TODO: Compact the next four lines into `expect()` helper.
-		err = lex_advance(&current_token, &token_length, end);
-		if (err.type != ERROR_NONE) { return err; }
-		if (token_length == 0) { return ok; }
-		if (token_string_equalp(":", &current_token)) {
+		expected = lex_expect(":", &current_token, &token_length, end);
+		if (expected.err.type) { return expected.err; }
+		if (expected.done) { return ok; }
+		if (expected.found) {
+			//err = lex_advance(&current_token, &token_length, end);
+			//if (err.type != ERROR_NONE) { return err; }
+			//if (token_length == 0) { return ok; }
+			//if (token_string_equalp(":", &current_token)) {
 
 			err = lex_advance(&current_token, &token_length, end);
 			if (err.type != ERROR_NONE) { return err; }
