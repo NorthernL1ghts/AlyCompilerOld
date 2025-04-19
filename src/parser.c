@@ -332,6 +332,11 @@ ExpectReturnValue lex_expect(char* expected, Token* current, size_t* current_len
 	return out;
 }
 
+#define EXPECT(expected, expected_string, current_token, current_length, end)              \
+	expected = lex_expect(expected_string, &current_token, &current_length, end);           \
+	if (expected.err.type) { return expected.err; }                                          \
+	if (expected.done) { return ok; }
+
 int parse_integer(Token* token, Node* node) {
 	if (!token || !node) { return 0; }
 	char* end = NULL;
