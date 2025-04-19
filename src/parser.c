@@ -386,15 +386,9 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 		// then attempt to pattern match variable access, assignment,
 		// declaration, or declaration with initialization.
 
-		// TODO: Compact the next four lines into `expect()` helper.
-		expected = lex_expect(":", &current_token, &token_length, end);
-		if (expected.err.type) { return expected.err; }
-		if (expected.done) { return ok; }
+		EXPECT(expected, ":", current_token, token_length, end);
+
 		if (expected.found) {
-			//err = lex_advance(&current_token, &token_length, end);
-			//if (err.type != ERROR_NONE) { return err; }
-			//if (token_length == 0) { return ok; }
-			//if (token_string_equalp(":", &current_token)) {
 
 			err = lex_advance(&current_token, &token_length, end);
 			if (err.type != ERROR_NONE) { return err; }
@@ -459,12 +453,9 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 			// `symbol` is now owned by var_decl.
 			node_add_child(var_decl, symbol);
 
-			// FIXME: Use `expect()` helper once it exists.
-			char* old_end = *end;
-			err = lex_advance(&current_token, &token_length, end);
-			if (err.type != ERROR_NONE) { return err; }
-			if (token_length == 0) { break; }
-			if (token_string_equalp("=", &current_token)) {
+			EXPECT(expected, "=", current_token, token_length, end);
+			if (expected.found) {
+
 				// TODO: Stack based continuation to parse assignment expression.
 
 				// FIXME: This recursive call is kind of the worse :^)
@@ -483,8 +474,6 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 				type_node->value = assigned_expr->value;
 				// Node contents transfer ownership, assigned_expr is now hollow shell.
 				free(assigned_expr);
-			} else {
-				*end = old_end;
 			}
 
 			// AST gains variable declaration node.
