@@ -21,6 +21,7 @@ int main(int argc, char** argv) {
 
 	char* contents = file_contents(argv[1]);
 	if (contents) {
+		Error err = ok;
 		ParsingContext* context = parse_context_create();
 		Node* program = node_allocate();
 		program->type = NODE_TYPE_PROGRAM;
@@ -30,7 +31,7 @@ int main(int argc, char** argv) {
 
           	Node* expression = node_allocate();
 			node_add_child(program, expression);
-			Error err = parse_expr(context, contents_it, &contents_it, expression);
+			err = parse_expr(context, contents_it, &contents_it, expression);
 			if (err.type != ERROR_NONE) {
 				print_error(err);
 				break;
@@ -41,16 +42,16 @@ int main(int argc, char** argv) {
 			//printf("Parsed expression:\n");
 			//print_node(expression, 0);
 			//putchar('\n');
-		}
+        }
 
 		print_node(program, 0);
 		putchar('\n');
 
-		printf("Generating code...\n");
-
-		codegen_program(OUTPUT_FMT_DEFAULT, context, program);
-
-		printf("Code generated.\n");
+        if (err.type == ERROR_NONE) {
+			printf("Generating code...\n");
+			codegen_program(OUTPUT_FMT_DEFAULT, context, program);
+			printf("Code generated.\n");
+        }
 
 		node_free(program);
 		free(contents);
