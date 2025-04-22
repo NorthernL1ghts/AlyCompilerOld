@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
 		putchar('\n');
 
         if (err.type == ERROR_NONE) {
-			printf("Generating code...\n");
+			printf("Generating code!\n");
 			codegen_program(OUTPUT_FMT_DEFAULT, context, program);
 			printf("Code generated.\n");
         }

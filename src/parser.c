@@ -102,7 +102,7 @@ int node_compare(Node* a, Node* b) {
 		if (!a && !b) { return 1; }
 		return 0;
 	}
-	assert(NODE_TYPE_MAX == 8&& "node_compare() must handle all node types");
+	assert(NODE_TYPE_MAX == 8 && "node_compare() must handle all node types");
 	if (a->type != b->type) { return 0; }
 	switch (a->type) {
 	case NODE_TYPE_NONE:
@@ -133,7 +133,7 @@ int node_compare(Node* a, Node* b) {
 		break;
 	case NODE_TYPE_PROGRAM:
 		printf("TODO: Compare two programs.\n");
-            break;
+		break;
 	}
 	return 0;
 }
@@ -172,23 +172,23 @@ Node* node_symbol_from_buffer(char* buffer, size_t length) {
 
 // Take ownership of type_symbol.
 Error node_add_type(Environment* types, int type, Node* type_symbol, long long byte_size) {
-  assert(types && "Could not add type to NULL environment");
-  assert(type_symbol && "Could not add NULL type symbol to types environment");
-  assert(byte_size >= 0 && "Can not define new type with zero or negative byte size");
+	assert(types && "Could not add type to NULL environment");
+	assert(type_symbol && "Could not add NULL type symbol to types environment");
+	assert(byte_size >= 0 && "Can not define new type with zero or negative byte size");
 
-  Node* size_node = node_allocate();
-  size_node->type = type;
-  size_node->value.integer = byte_size;
+	Node* size_node = node_allocate();
+	size_node->type = type;
+	size_node->value.integer = byte_size;
 
-  Node* type_node = node_allocate();
-  type_node->type = type;
-  type_node->children = size_node;
+	Node* type_node = node_allocate();
+	type_node->type = type;
+	type_node->children = size_node;
 
-  if (environment_set(types, type_symbol, type_node) == 1) { return ok; }
-    // TYPE REDEFINITION ERROR
-    printf("Type that was redefined: \"%s\"\n", type_symbol->value.symbol);
-    ERROR_CREATE(err, ERROR_TYPE, "Redefinition of type!");
-    return err;
+	if (environment_set(types, type_symbol, type_node) == 1) { return ok; }
+	// TYPE REDEFINITION ERROR
+	printf("Type that was redefined: \"%s\"\n", type_symbol->value.symbol);
+	ERROR_CREATE(err, ERROR_TYPE, "Redefinition of type!");
+	return err;
 }
 
 void print_node(Node* node, size_t indent_level) {
@@ -199,7 +199,7 @@ void print_node(Node* node, size_t indent_level) {
 		putchar(' ');
 	}
 	// Print type + value.
-	assert(NODE_TYPE_MAX == 8&& "print_node() must handle all node types");
+	assert(NODE_TYPE_MAX == 8 && "print_node() must handle all node types");
 	switch (node->type) {
 	default:
 		printf("UNKNOWN");
@@ -229,8 +229,8 @@ void print_node(Node* node, size_t indent_level) {
 		printf("TODO: print_node() VAR DECL INIT");
 		break;
 	case NODE_TYPE_PROGRAM:
-      printf("PROGRAM");
-      break;
+		printf("PROGRAM");
+		break;
 	}
 	putchar('\n');
 	// Print children.
@@ -376,15 +376,15 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 	Token current_token;
 	current_token.beginning = source;
 	current_token.end = source;
-    Error err = ok;
+	Error err = ok;
 
-    Node* working_result = result;
+	Node* working_result = result;
 
 	while ((err = lex_advance(&current_token, &token_length, end)).type == ERROR_NONE) {
 		//printf("lexed: "); print_token(current_token); putchar('\n');
 		if (token_length == 0) { return ok; }
 
-        if (parse_integer(&current_token, working_result)) {
+		if (parse_integer(&current_token, working_result)) {
 
 			// TODO: Look ahead for binary operators that include integers.
 			// It would be cool to use an operator environment to look up
@@ -414,8 +414,12 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 			EXPECT(expected, "=", current_token, token_length, end);
 			if (expected.found) {
 
-                Node *variable_binding = node_allocate();
-				if (!environment_get(*context->variables, symbol, variable_binding)) { // FIXME: This code only works with GCC, not clang / MSVC.
+				Node* variable_binding = node_allocate();
+				// NOTE: The `environment_get` line was causing severe heap corruption in MSVC, 
+				// likely due to quirks in Windows' memory handling.
+				// Interestingly, it worked fine in GCC. After adjusting the control flow of the recursion, 
+				// the issue was resolved, and the function now operates continuously without failure.
+				if (!environment_get(*context->variables, symbol, variable_binding)) {
 					// TODO: Add source location or something to the error.
 					// TODO: Create new error type.
 					printf("ID of undeclared variable: \"%s\"\n", symbol->value.symbol);
@@ -424,7 +428,7 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 				}
 				free(variable_binding);
 
-                // At this point, we have a guaranteed valid variable reassignment expression, unless
+				// At this point, we have a guaranteed valid variable reassignment expression, unless
 				// errors occur when parsing the actual value expression.
 				working_result->type = NODE_TYPE_VARIABLE_REASSIGNMENT;
 				node_add_child(working_result, symbol);
@@ -432,7 +436,7 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 				node_add_child(working_result, reassign_expr);
 
 				working_result = reassign_expr;
-                continue;
+				continue;
 			}
 
 			err = lex_advance(&current_token, &token_length, end);
@@ -460,7 +464,7 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 
 			working_result->type = NODE_TYPE_VARIABLE_DECLARATION;
 
-            Node* value_expression = node_none();
+			Node* value_expression = node_none();
 
 			// `symbol` is now owned by working_result, a variable declaration.
 			node_add_child(working_result, symbol);
@@ -473,7 +477,7 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 			if (status != 1) {
 				ERROR_PREP(err, ERROR_GENERIC, "Failed to define variable!");
 				return err;
-            }
+			}
 
 			EXPECT(expected, "=", current_token, token_length, end);
 			if (expected.found) {
