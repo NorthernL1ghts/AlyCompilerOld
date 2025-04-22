@@ -422,20 +422,14 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 					ERROR_PREP(err, ERROR_GENERIC, "Reassignment of a variable that has not been declared!");
 					return err;
 				}
+				free(variable_binding);
 
                 // At this point, we have a guaranteed valid variable reassignment expression, unless
 				// errors occur when parsing the actual value expression.
-
-				Node* var_reassign = node_allocate();
-				var_reassign->type = NODE_TYPE_VARIABLE_REASSIGNMENT;
-
+				working_result->type = NODE_TYPE_VARIABLE_REASSIGNMENT;
+				node_add_child(working_result, symbol);
 				Node* reassign_expr = node_allocate();
-
-				node_add_child(var_reassign, symbol);
-				node_add_child(var_reassign, reassign_expr);
-
-				*working_result = *var_reassign;
-				free(var_reassign);
+				node_add_child(working_result, reassign_expr);
 
 				working_result = reassign_expr;
                 continue;
@@ -446,11 +440,13 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 			if (token_length == 0) { break; }
 
 			Node* type_symbol = node_symbol_from_buffer(current_token.beginning, token_length);
-			if (environment_get(*context->types, type_symbol, working_result) == 0) {
+			Node* type_value = node_allocate();
+			if (environment_get(*context->types, type_symbol, type_value) == 0) {
 				ERROR_PREP(err, ERROR_TYPE, "Invalid type within variable declaration");
 				printf("\nINVALID TYPE: \"%s\"\n", type_symbol->value.symbol);
 				return err;
 			}
+			free(type_value);
 
 			Node* variable_binding = node_allocate();
 			if (environment_get(*context->variables, symbol, variable_binding)) {
