@@ -138,6 +138,12 @@ int node_compare(Node* a, Node* b) {
 	return 0;
 }
 
+Node* node_none() {
+	Node* none = node_allocate();
+	none->type = NODE_TYPE_NONE;
+	return none;
+}
+
 Node* node_integer(long long value) {
 	Node* integer = node_allocate();
 	integer->type = NODE_TYPE_INTEGER;
@@ -314,10 +320,6 @@ typedef struct ExpectReturnValue {
 	char done; // NOTE: This could be a BIT-MASK.
 } ExpectReturnValue;
 
-/// @return Boolean-like value; iff given token is found next.
-///			Otherwise, do not change parsing state. This could be boolean
-///			but then it wouldn't be equal, but we could have it take err
-///			as param???
 ExpectReturnValue lex_expect(char* expected, Token* current, size_t* current_length, char** end) {
 	ExpectReturnValue out;
 	out.done = 0;
@@ -350,8 +352,8 @@ ExpectReturnValue lex_expect(char* expected, Token* current, size_t* current_len
 }
 
 #define EXPECT(expected, expected_string, current_token, current_length, end)             \
-	expected = lex_expect(expected_string, &current_token, &current_length, end);            \
-	if (expected.err.type) { return expected.err; }                                           \
+	expected = lex_expect(expected_string, &current_token, &current_length, end);          \
+	if (expected.err.type) { return expected.err; }                                         \
 	if (expected.done) { return ok; }
 
 int parse_integer(Token* token, Node* node) {
@@ -380,7 +382,7 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 		//printf("lexed: "); print_token(current_token); putchar('\n');
 		if (token_length == 0) { return ok; }
 
-		if (parse_integer(&current_token, result)) {
+        if (parse_integer(&current_token, result)) {
 
 			// TODO: Look ahead for binary operators that include integers.
 			// TODO: It would be cool to use an operator environment to look up
@@ -411,7 +413,7 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 			if (expected.found) {
 
                 Node *variable_binding = node_allocate();
-				if (!environment_get(*context->variables, symbol, variable_binding)) { // MSVC doesn't like this, GCC does.
+				if (!environment_get(*context->variables, symbol, variable_binding)) { // NOTE: This code only works with GCC, not clang / MSVC.
 					// TODO: Add source location or something to the error.
 					// TODO: Create new error type.
 					printf("ID of undeclared variable: \"%s\"\n", symbol->value.symbol);
@@ -421,25 +423,16 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 
 				// TODO: Stack based continuation to parse assignment expression.
 
-				// FIXME: This recursive call is kind of the worse :^)
+				// FIXME: This recursive call is the worse :^)
 				Node* reassign_expr = node_allocate();
 				err = parse_expr(context, current_token.end, end, reassign_expr);
 				if (err.type != ERROR_NONE) { return err; }
 
-				// TODO: FIXME: Proper type-checking (this only accepts literals)
-				// TODO: We will have to figure out the return value of the expression.
-				if (reassign_expr->type != variable_binding->type) {
-					free(variable_binding);
-					ERROR_PREP(err, ERROR_TYPE, "Variable assignment expression has mismatched type.");
-					return err;
-				}
-				free(variable_binding);
-
 				Node* var_reassign = node_allocate();
 				var_reassign->type = NODE_TYPE_VARIABLE_REASSIGNMENT;
 
-				node_add_child(var_reassign, reassign_expr);
 				node_add_child(var_reassign, symbol);
+				node_add_child(var_reassign, reassign_expr);
 
 				*result = *var_reassign;
 				free(var_reassign);
@@ -470,8 +463,11 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 			Node* var_decl = node_allocate();
 			var_decl->type = NODE_TYPE_VARIABLE_DECLARATION;
 
+            Node* value_expression = node_none();
+
 			// `symbol` is now owned by var_decl.
 			node_add_child(var_decl, symbol);
+			node_add_child(var_decl, value_expression);
 
 			// AST gains variable declaration node.
 			*result = *var_decl;
@@ -492,10 +488,14 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 
 				// TODO: Stack based continuation to parse assignment expression.
 
-				// FIXME: This recursive call is kind of the worse :^)
+				// FIXME: This recursive call is the worse :^)
 				Node* assigned_expr = node_allocate();
 				err = parse_expr(context, current_token.end, end, assigned_expr);
 				if (err.type != ERROR_NONE) { return err; }
+
+                *value_expression = *assigned_expr;
+				// Node contents transfer ownership, assigned_expr is now hollow shell.
+				free(assigned_expr);
 
 				// TODO: FIXME: Proper type-checking (this only accepts literals)
 				// We will have to figure out the return value of the expression.
@@ -506,9 +506,8 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 				// }
 				// FIXME: This is also awful. We need to store value expression separate from type.
 				// type_node->value = assigned_expr->value;
-
 				// Node contents transfer ownership, assigned_expr is now hollow shell.
-				free(assigned_expr);
+				//free(assigned_expr);
 			}
 
 			return ok;

@@ -31,6 +31,7 @@ Error codegen_program_x86_64_att_asm(ParsingContext* context, Node* program) {
     case NODE_TYPE_VARIABLE_DECLARATION:
         // TODO: Get size of type, generate `<identifier>: .space <size>`. Keep track of identifier somehow.
         environment_get(*context->variables, expression->children, tmpnode1);
+        environment_get(*context->types, tmpnode1, tmpnode1);
         print_node(tmpnode1, 0);
         // TODO: Handle nested scopes (stack-based variables)
         break;
