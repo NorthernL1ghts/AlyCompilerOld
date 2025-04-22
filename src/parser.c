@@ -385,9 +385,9 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
         if (parse_integer(&current_token, result)) {
 
 			// TODO: Look ahead for binary operators that include integers.
-			// TODO: It would be cool to use an operator environment to look up
-			// TODO: operators instead of hard-coding them. This would eventually
-			// TODO: allow for user-defined operators, or stuff like that!
+			// It would be cool to use an operator environment to look up
+			// operators instead of hard-coding them. This would eventually
+			// allow for user-defined operators, or stuff like that!
 
 			return ok;
 		}
@@ -397,13 +397,13 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 		// TODO: Check for unary prefix operators.
 
 		// TODO: Check that it isn't a binary operator (we should encounter left
-		// TODO: side first and peek forward, rather than encounter it at top level).
+		// side first and peek forward, rather than encounter it at top level).
 
 		Node* symbol = node_symbol_from_buffer(current_token.beginning, token_length);
 
 		// TODO: Check if valid symbol for variable environment,
-		// TODO: then attempt to pattern match variable access, assignment,
-		// TODO: declaration, or declaration with initialization.
+		// then attempt to pattern match variable access, assignment,
+		// declaration, or declaration with initialization.
 
 		EXPECT(expected, ":", current_token, token_length, end);
 		if (expected.found) {
@@ -413,7 +413,7 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 			if (expected.found) {
 
                 Node *variable_binding = node_allocate();
-				if (!environment_get(*context->variables, symbol, variable_binding)) { // NOTE: This code only works with GCC, not clang / MSVC.
+				if (!environment_get(*context->variables, symbol, variable_binding)) { // FIXME: This code only works with GCC, not clang / MSVC.
 					// TODO: Add source location or something to the error.
 					// TODO: Create new error type.
 					printf("ID of undeclared variable: \"%s\"\n", symbol->value.symbol);

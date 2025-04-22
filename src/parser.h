@@ -101,8 +101,7 @@ typedef struct ParsingContext {
   // FIXME: "struct ParsingContext* parent;" ???
   /// TYPE
   /// `-- SYMBOL (IDENTIFIER) -> TYPE (NODE_TYPE)
-  /// 	                         `-- BYTE_SIZE (N) -> LIST (members) -> LIST (functions)
-  ///                                                 `-- members...    `-- member functions...
+  /// 	                         `-- BYTE_SIZE (N)
 	Environment* types;
 	Environment* variables;
 } ParsingContext;
