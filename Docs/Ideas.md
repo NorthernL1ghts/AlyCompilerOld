@@ -75,3 +75,10 @@ A simple linked-list representation of scoped identifiers:
 ```
 
 This structure supports arithmetic operations and conditional expressions while maintaining clear identifier scoping.
+
+CONTEXT
+   TYPES
+      TYPE_SYMBOL -> TYPE INFO OF SOME SORT
+                     `-- SIZE IN BYTES
+   VARIABLES
+      VAR_SYMBOL -> TYPE SYMBOL
