@@ -383,9 +383,9 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 		if (parse_integer(&current_token, result)) {
 
 			// TODO: Look ahead for binary operators that include integers.
-			// It would be cool to use an operator environment to look up
-			// operators instead of hard-coding them. This would eventually
-			// allow for user-defined operators, or stuff like that!
+			// TODO: It would be cool to use an operator environment to look up
+			// TODO: operators instead of hard-coding them. This would eventually
+			// TODO: allow for user-defined operators, or stuff like that!
 
 			return ok;
 		}
@@ -395,13 +395,13 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 		// TODO: Check for unary prefix operators.
 
 		// TODO: Check that it isn't a binary operator (we should encounter left
-		// side first and peek forward, rather than encounter it at top level).
+		// TODO: side first and peek forward, rather than encounter it at top level).
 
 		Node* symbol = node_symbol_from_buffer(current_token.beginning, token_length);
 
 		// TODO: Check if valid symbol for variable environment,
-		// then attempt to pattern match variable access, assignment,
-		// declaration, or declaration with initialization.
+		// TODO: then attempt to pattern match variable access, assignment,
+		// TODO: declaration, or declaration with initialization.
 
 		EXPECT(expected, ":", current_token, token_length, end);
 		if (expected.found) {
@@ -424,12 +424,10 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 				// FIXME: This recursive call is kind of the worse :^)
 				Node* reassign_expr = node_allocate();
 				err = parse_expr(context, current_token.end, end, reassign_expr);
-				if (err.type != ERROR_NONE) {
-					return err;
-				}
+				if (err.type != ERROR_NONE) { return err; }
 
 				// TODO: FIXME: Proper type-checking (this only accepts literals)
-				// We will have to figure out the return value of the expression.
+				// TODO: We will have to figure out the return value of the expression.
 				if (reassign_expr->type != variable_binding->type) {
 					free(variable_binding);
 					ERROR_PREP(err, ERROR_TYPE, "Variable assignment expression has mismatched type.");
@@ -483,6 +481,16 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 			// Node contents transfer ownership, var_decl is now hollow shell.
 			free(var_decl);
 
+			// Context variables environment gains new binding.
+			Node* symbol_for_env = node_allocate();
+			node_copy(symbol, symbol_for_env);
+			int status = environment_set(context->variables, symbol_for_env, type_node);
+			if (status != 1) {
+				printf("Variable: \"%s\", status: %d\n", symbol_for_env->value.symbol, status);
+				ERROR_PREP(err, ERROR_GENERIC, "Failed to define variable!");
+				return err;
+            }
+
 			EXPECT(expected, "=", current_token, token_length, end);
 			if (expected.found) {
 
@@ -504,16 +512,6 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 				type_node->value = assigned_expr->value;
 				// Node contents transfer ownership, assigned_expr is now hollow shell.
 				free(assigned_expr);
-			}
-
-			// Context variables environment gains new binding.
-			Node* symbol_for_env = node_allocate();
-			node_copy(symbol, symbol_for_env);
-			int status = environment_set(context->variables, symbol_for_env, type_node);
-			if (status != 1) {
-				printf("Variable: \"%s\", status: %d\n", symbol_for_env->value.symbol, status);
-				ERROR_PREP(err, ERROR_GENERIC, "Failed to define variable!");
-				return err;
 			}
 
 			return ok;
