@@ -7,11 +7,11 @@
 Error codegen_program_x86_64_att_asm(Node *program) {
   Error err = ok;
   if (!program || program->type != NODE_TYPE_PROGRAM) {
-    ERROR_PREP(err, ERROR_ARGUMENTS, "codegen_program() requires a program!");
+    ERROR_PREP(err, ERROR_ARGUMENTS, "codegen_program() requiresp rogram!");
     return err;
   }
 
-  FILE *code = fopen("code.txt", "wb");
+  FILE* code = fopen("code.txt", "wb");
   if (!code) {
     ERROR_PREP(err, ERROR_GENERIC, "codegen_program() could not open code file");
     return err;
