@@ -25,9 +25,9 @@ int comment_at_beginning(Token token) {
 	return 0;
 }
 
-// NOTE: This is the old lexer, which had the problem of comments causing segmentation faults.
-/// Lex the next token from SOURCE, and point to it with BEG and END.
-/// If BEG and END of token are equal, there is nothing more to lex.
+// ============================================================ BEG old lexer
+// / Lex the next token from SOURCE, and point to it with BEG and END.
+// / If BEG and END of token are equal, there is nothing more to lex.
 // Error lex(char* source, Token* token) {
 // 	Error err = ok;
 // 	if (!source || !token) {
@@ -58,7 +58,9 @@ int comment_at_beginning(Token token) {
 // 	}
 // 	return err;
 // }
+// ============================================================ END old lexer
 
+// ============================================================ BEG new lexer
 // NOTE: This is the new lexer, which fixes the problem of comments causing segmentation faults.
 Error lex(char* source, Token* token) {
 	Error err = ok;
@@ -89,14 +91,10 @@ Error lex(char* source, Token* token) {
 		token->beginning += strspn(token->beginning, whitespace); // Skip any leading whitespace.
 		token->end = token->beginning;
 
-		if (!token->beginning || *token->beginning == '\0') {
-			return err;
-		}
+		if (!token->beginning || *token->beginning == '\0') { return err; }
 	}
 
-	if (!token->end || *(token->end) == '\0') {
-		return err;
-	}
+	if (!token->end || *(token->end) == '\0') { return err; }
 
 	token->end += strcspn(token->beginning, delimiters); // Move to next delimiter.
 
@@ -106,7 +104,6 @@ Error lex(char* source, Token* token) {
 
 	return err;
 }
-
 
 int token_string_equalp(char* string, Token* token) {
 	if (!string || !token) { return 0; }
@@ -126,7 +123,7 @@ void print_token(Token t) {
 		printf("%.*s", t.end - t.beginning, t.beginning);
 	}
 }
-// ============================================================ END lexer
+// ============================================================ END new lexer
 
 Node* node_allocate() {
 	Node* node = calloc(1, sizeof(Node));
