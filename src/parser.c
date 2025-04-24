@@ -25,38 +25,88 @@ int comment_at_beginning(Token token) {
 	return 0;
 }
 
+// NOTE: This is the old lexer, which had the problem of comments causing segmentation faults.
 /// Lex the next token from SOURCE, and point to it with BEG and END.
 /// If BEG and END of token are equal, there is nothing more to lex.
+// Error lex(char* source, Token* token) {
+// 	Error err = ok;
+// 	if (!source || !token) {
+// 		ERROR_PREP(err, ERROR_ARGUMENTS, "Can not lex empty source.");
+// 		return err;
+// 	}
+// 	token->beginning = source;
+// 	token->beginning += strspn(token->beginning, whitespace); // Skip the whitespace at the beginning.
+// 	token->end = token->beginning;
+// 	if (*(token->end) == '\0') { return err; }
+// 	// Check if current line is a comment, and skip past it.
+// 	while (comment_at_beginning(*token)) {
+// 		// Skip to after next newline.
+// 		token->beginning = strpbrk(token->beginning, "\n");
+// 		if (!token->beginning) {
+// 			// If last line of file is comment, we're done lexing.
+// 			token->end = token->beginning;
+// 			return err;
+// 		}
+// 		// Skip to beginning of next token after comment.
+// 		token->beginning += strspn(token->beginning, whitespace);
+// 		token->end = token->beginning;
+// 	}
+// 	if (*(token->end) == '\0') { return err; }
+// 	token->end += strcspn(token->beginning, delimiters); // Skip everything not in delimiters.
+// 	if (token->end == token->beginning) {
+// 		token->end += 1;
+// 	}
+// 	return err;
+// }
+
+// NOTE: This is the new lexer, which fixes the problem of comments causing segmentation faults.
 Error lex(char* source, Token* token) {
 	Error err = ok;
+
 	if (!source || !token) {
-		ERROR_PREP(err, ERROR_ARGUMENTS, "Can not lex empty source.");
+		ERROR_PREP(err, ERROR_ARGUMENTS, "Cannot lex empty source.");
 		return err;
 	}
+
 	token->beginning = source;
-	token->beginning += strspn(token->beginning, whitespace); // Skip the whitespace at the beginning.
+	token->beginning += strspn(token->beginning, whitespace); // Skip initial whitespace.
 	token->end = token->beginning;
-	if (*(token->end) == '\0') { return err; }
+
+	if (!token->end || *(token->end) == '\0') {
+		return err;
+	}
+
 	// Check if current line is a comment, and skip past it.
 	while (comment_at_beginning(*token)) {
-		// Skip to after next newline.
-		token->beginning = strpbrk(token->beginning, "\n");
-		if (!token->beginning) {
-			// If last line of file is comment, we're done lexing.
-			token->end = token->beginning;
+		char* newline = strpbrk(token->beginning, "\n");
+		if (!newline) {
+			// If last line is a comment and no newline, we’re done.
+			token->beginning = token->end = token->beginning + strlen(token->beginning);
 			return err;
 		}
-		// Skip to beginning of next token after comment.
-		token->beginning += strspn(token->beginning, whitespace);
+
+		token->beginning = newline + 1; // Move past newline.
+		token->beginning += strspn(token->beginning, whitespace); // Skip any leading whitespace.
 		token->end = token->beginning;
+
+		if (!token->beginning || *token->beginning == '\0') {
+			return err;
+		}
 	}
-	if (*(token->end) == '\0') { return err; }
-	token->end += strcspn(token->beginning, delimiters); // Skip everything not in delimiters.
+
+	if (!token->end || *(token->end) == '\0') {
+		return err;
+	}
+
+	token->end += strcspn(token->beginning, delimiters); // Move to next delimiter.
+
 	if (token->end == token->beginning) {
 		token->end += 1;
 	}
+
 	return err;
 }
+
 
 int token_string_equalp(char* string, Token* token) {
 	if (!string || !token) { return 0; }
@@ -415,9 +465,9 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 			if (expected.found) {
 
 				Node* variable_binding = node_allocate();
-				// NOTE: The `environment_get` line was causing severe heap corruption in MSVC, 
+				// NOTE: The `environment_get` line was causing severe heap corruption in MSVC,
 				// likely due to quirks in Windows' memory handling.
-				// Interestingly, it worked fine in GCC. After adjusting the control flow of the recursion, 
+				// Interestingly, it worked fine in GCC. After adjusting the control flow of the recursion,
 				// the issue was resolved, and the function now operates continuously without failure.
 				if (!environment_get(*context->variables, symbol, variable_binding)) {
 					// TODO: Add source location or something to the error.
