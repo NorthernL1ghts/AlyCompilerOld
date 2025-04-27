@@ -26,42 +26,44 @@ int comment_at_beginning(Token token) {
 }
 
 // ============================================================ BEG old lexer
-// / Lex the next token from SOURCE, and point to it with BEG and END.
-// / If BEG and END of token are equal, there is nothing more to lex.
-//Error lex(char* source, Token* token) {
-//	Error err = ok;
-//	if (!source || !token) {
-//		ERROR_PREP(err, ERROR_ARGUMENTS, "Can not lex empty source.");
-//		return err;
-//	}
-//	token->beginning = source;
-//	token->beginning += strspn(token->beginning, whitespace); // Skip the whitespace at the beginning.
-//	token->end = token->beginning;
-//	if (*(token->end) == '\0') { return err; }
-//	// Check if current line is a comment, and skip past it.
-//	while (comment_at_beginning(*token)) {
-//		// Skip to after next newline.
-//		token->beginning = strpbrk(token->beginning, "\n");
-//		if (!token->beginning) {
-//			// If last line of file is comment, we're done lexing.
-//			token->end = token->beginning;
-//			return err;
-//		}
-//		// Skip to beginning of next token after comment.
-//		token->beginning += strspn(token->beginning, whitespace);
-//		token->end = token->beginning;
-//	}
-//	if (*(token->end) == '\0') { return err; }
-//	token->end += strcspn(token->beginning, delimiters); // Skip everything not in delimiters.
-//	if (token->end == token->beginning) {
-//		token->end += 1;
-//	}
-//	return err;
-//}
+// Lex the next token from SOURCE, and point to it with BEG and END.
+// If BEG and END of token are equal, there is nothing more to lex.
+/*Error lex(char* source, Token* token) {
+	Error err = ok;
+	if (!source || !token) {
+		ERROR_PREP(err, ERROR_ARGUMENTS, "Can not lex empty source.");
+		return err;
+	}
+	token->beginning = source;
+	token->beginning += strspn(token->beginning, whitespace); // Skip the whitespace at the beginning.
+	token->end = token->beginning;
+	if (*(token->end) == '\0') { return err; }
+	// Check if current line is a comment, and skip past it.
+	while (comment_at_beginning(*token)) {
+		// Skip to after next newline.
+		token->beginning = strpbrk(token->beginning, "\n");
+		if (!token->beginning) {
+			// If last line of file is comment, we're done lexing.
+			token->end = token->beginning;
+			return err;
+		}
+		// Skip to beginning of next token after comment.
+		token->beginning += strspn(token->beginning, whitespace);
+		token->end = token->beginning;
+	}
+	if (*(token->end) == '\0') { return err; }
+	token->end += strcspn(token->beginning, delimiters); // Skip everything not in delimiters.
+	if (token->end == token->beginning) {
+		token->end += 1;
+	}
+	return err;
+}*/
 // ============================================================ END old lexer
 
 // ============================================================ BEG new lexer
 // NOTE: This is the new lexer, which fixes the problem of comments causing segmentation faults.
+// Lex the next token from SOURCE, and point to it with BEG and END.
+// If BEG and END of token are equal, there is nothing more to lex.
 Error lex(char* source, Token* token) {
 	Error err = ok;
 
