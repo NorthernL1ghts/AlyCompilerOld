@@ -6,6 +6,18 @@
 - [fsetpos](https://en.cppreference.com/w/c/io/fsetpos) - Sets the file position.
 - [fseek](https://en.cppreference.com/w/c/io/fseek) - Moves the file position indicator.
 
+## File Writing and Output Functions
+
+- [fwrite](https://en.cppreference.com/w/c/io/fwrite) - Writes data to a file.
+- [printf](https://en.cppreference.com/w/c/io/fprintf) - Standard output function.
+- [fprintf](https://en.cppreference.com/w/c/io/fprintf) - Writes formatted output to a stream.
+- [sprintf](https://www.tutorialspoint.com/c_standard_library/c_function_sprintf.htm) - Writes formatted output to a string.
+- [snprintf](https://en.cppreference.com/w/c/io/fprintf) - Writes formatted output with buffer size limitations.
+- [printf_s](https://en.cppreference.com/w/c/io/fprintf) - Secure version of `printf`.
+- [fprintf_s](https://en.cppreference.com/w/c/io/fprintf) - Secure version of `fprintf`.
+- [sprintf_s](https://en.cppreference.com/w/c/io/fprintf) - Secure version of `sprintf`.
+- [snprintf_s](https://en.cppreference.com/w/c/io/fprintf) - Secure version of `snprintf`.
+
 ## String Functions in C
 
 - [strspn](https://en.cppreference.com/w/c/string/byte/strspn) - Computes the length of the initial segment of the string.
@@ -17,11 +29,17 @@
 ## Conversion Functions
 
 - [strtoll](https://en.cppreference.com/w/c/string/byte/strtol) - Converts a string to a long long integer.
+- [Integer to String Conversion in C](https://www.tutorialkart.com/c-programming/how-to-convert-an-integer-to-a-string-in-c/) - Overview of converting integers to strings.
+- [ltoa (Long to String Conversion)](https://www.ibm.com/docs/en/zos/2.4.0?topic=functions-ltoa-convert-long-into-string) - Converts a long integer to a string.
 
 ## Additional Concepts
 
 - [Delimiters in Programming](https://www.geeksforgeeks.org/delimiters-in-programming-languages/) - Understanding delimiters.
 - [Abstract Syntax Tree (AST)](https://en.wikipedia.org/wiki/Abstract_syntax_tree) - Explanation of AST in parsing.
+
+## Data Type Limits
+
+- [How long can a `long long` be?](https://www.geeksforgeeks.org/c-long/) - Explanation of `long long` data type limitations.
 
 ## GNU and Related Resources
 
@@ -41,5 +59,3 @@
 
 - [Tree-Sitter Overview](https://tree-sitter.github.io/tree-sitter/) - A parser generator for syntax highlighting and code analysis.
 - [Clang-Tidy](https://clang.llvm.org/extra/clang-tidy/) - A tool for static analysis and linting in C++.
-
----
