@@ -4,3 +4,4 @@ b: .space 8
 a: .space 8
 .section .text
 _start:
+_start:
