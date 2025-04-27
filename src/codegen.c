@@ -4,6 +4,7 @@
 #include <parser.h>
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 // TODO: Actually name the compiler and the language, this name may change.
@@ -24,9 +25,20 @@ Error fwrite_line(char* bytestring, FILE* file) {
 // TODO: Move to some kind of new file, either helper or Codegen related.
 Error fwrite_bytes(char* bytestring, FILE* file) {
 	ERROR_CREATE(err, ERROR_GENERIC, "fwrite_bytes(): Could not write bytes");
+	if (!file) { return err; }
 	size_t length = strlen(bytestring);
 	size_t bytes_written = fwrite(bytestring, 1, length, file);
 	if (bytes_written != length) { return err; }
+	return ok;
+}
+
+#define FWRITE_INT_STRING_BUFFER_SIZE 21
+static char number[FWRITE_INT_STRING_BUFFER_SIZE];
+Error fwrite_integer(long long integer, FILE* file) {
+	ERROR_CREATE(err, ERROR_GENERIC, "fwrite_integer(): Could not write integer");
+	if (!file) { return err; }
+	sprintf(number, "%lld", integer);
+	err = fwrite_bytes(number, file);
 	return ok;
 }
 
@@ -60,12 +72,12 @@ Error codegen_program_x86_64_att_asm(ParsingContext* context, Node* program) {
 		default:
 			break;
 		case NODE_TYPE_VARIABLE_DECLARATION:
-			// TODO: Get size of type, generate `<identifier>: .space <size>`. 
+			// TODO: Get size of type, generate `<identifier>: .space <size>`.
 			// Keep track of identifier somehow.
 
-			// NOTE: 'tmpnode' is used because variable allocation inside a switch case 
+			// NOTE: 'tmpnode' is used because variable allocation inside a switch case
 			// requires explicit scoping with {} in C.
-			// Retrieves the type symbol ID for a variable from the variables context 
+			// Retrieves the type symbol ID for a variable from the variables context
 			// using its associated symbol ID.
 			environment_get(*context->variables, expression->children, tmpnode1);
 
@@ -74,8 +86,9 @@ Error codegen_program_x86_64_att_asm(ParsingContext* context, Node* program) {
 
 			err = fwrite_bytes(expression->children->value.symbol, code);
 			if (err.type) { return err; }
-			err = fwrite_bytes(": ", code);
+			err = fwrite_bytes(": .space ", code);
 			if (err.type) { return err; }
+			err = fwrite_integer(expression->children->next_child->value.integer, code);
 			err = fwrite_bytes("\n", code);
 			if (err.type) { return err; }
 
