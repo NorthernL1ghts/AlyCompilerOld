@@ -36,7 +36,7 @@ Error codegen_program_x86_64_att_asm(ParsingContext* context, Node* program) {
 		ERROR_PREP(err, ERROR_GENERIC, "codegen_program() could not open code file");
 		return err;
 	}
-
+	fwrite_bytes(";#; ", code);
 	fwrite_line((char*)codegen_header, code);
 
 	// TODO: Generate code for program :^>
