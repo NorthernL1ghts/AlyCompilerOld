@@ -102,6 +102,8 @@ Error codegen_program_x86_64_att_asm(ParsingContext* context, Node* program) {
 	codegen_program_x86_64_att_asm_data_section(context, code);
 
 	fwrite_line(".section .text", code);
+
+	// Top level program header
 	fwrite_line("_start:", code);
 
 	Node* expression = program->children;
@@ -113,6 +115,9 @@ Error codegen_program_x86_64_att_asm(ParsingContext* context, Node* program) {
 		}
 		expression = expression->next_child;
 	}
+
+	// Top level program footer
+	fwrite_line("_start:", code);
 
 	fclose(code);
 	return ok;
