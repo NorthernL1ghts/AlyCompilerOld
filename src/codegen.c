@@ -32,6 +32,8 @@ Error fwrite_bytes(char* bytestring, FILE* file) {
 	return ok;
 }
 
+// NOTE: We only actually need 19 as long long is 2^63 or 8 bytes; 
+// However, allocation need 1 so we have extra in buffer.
 #define FWRITE_INT_STRING_BUFFER_SIZE 21
 static char number[FWRITE_INT_STRING_BUFFER_SIZE];
 Error fwrite_integer(long long integer, FILE* file) {
@@ -54,7 +56,6 @@ Error codegen_program_x86_64_att_asm(ParsingContext* context, Node* program) {
 		ERROR_PREP(err, ERROR_GENERIC, "codegen_program() could not open code file");
 		return err;
 	}
-
 
 	err = fwrite_bytes(";#; ", code);
 	if (err.type) { return err; }
@@ -84,11 +85,13 @@ Error codegen_program_x86_64_att_asm(ParsingContext* context, Node* program) {
 			// Get type information of type from type context usign type symbol ID.
 			environment_get(*context->types, tmpnode1, tmpnode1);
 
+			// Possible TODO: Maybe create a error check macro for simplification.
 			err = fwrite_bytes(expression->children->value.symbol, code);
 			if (err.type) { return err; }
 			err = fwrite_bytes(": .space ", code);
 			if (err.type) { return err; }
-			err = fwrite_integer(expression->children->next_child->value.integer, code);
+			err = fwrite_integer(tmpnode1->children->value.integer, code);
+			if (err.type) { return err; }
 			err = fwrite_bytes("\n", code);
 			if (err.type) { return err; }
 
