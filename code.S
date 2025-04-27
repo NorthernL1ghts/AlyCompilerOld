@@ -4,4 +4,17 @@ b: .space 8
 a: .space 8
 .section .text
 _start:
+<<<<<<< HEAD
 _start:
+=======
+push %rbp
+mov %rsp, %rbp
+lea a(%rip), %rax
+movq $420, (%rax)
+lea b(%rip), %rax
+movq $42, (%rax)
+add $32, %rsp
+movq (%rax), %rax
+pop %rbp
+ret
+>>>>>>> c256c81 (Reconnected repository after accidental deletion)
