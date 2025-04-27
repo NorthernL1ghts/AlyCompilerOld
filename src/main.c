@@ -27,9 +27,9 @@ int main(int argc, char** argv) {
 		program->type = NODE_TYPE_PROGRAM;
 		Node* expression = node_allocate();
 		char* contents_it = contents;
-        for (;;) {
+		for (;;) {
 
-          	Node* expression = node_allocate();
+			Node* expression = node_allocate();
 			node_add_child(program, expression);
 			err = parse_expr(context, contents_it, &contents_it, expression);
 			if (err.type != ERROR_NONE) {
@@ -42,16 +42,16 @@ int main(int argc, char** argv) {
 			//printf("Parsed expression:\n");
 			//print_node(expression, 0);
 			//putchar('\n');
-        }
+		}
 
 		print_node(program, 0);
 		putchar('\n');
 
-        if (err.type == ERROR_NONE) {
+		if (err.type == ERROR_NONE) {
 			printf("Generating code!\n");
 			codegen_program(OUTPUT_FMT_DEFAULT, context, program);
 			printf("Code generated.\n");
-        }
+		}
 
 		node_free(program);
 		free(contents);

@@ -28,36 +28,36 @@ int comment_at_beginning(Token token) {
 // ============================================================ BEG old lexer
 // / Lex the next token from SOURCE, and point to it with BEG and END.
 // / If BEG and END of token are equal, there is nothing more to lex.
-// Error lex(char* source, Token* token) {
-// 	Error err = ok;
-// 	if (!source || !token) {
-// 		ERROR_PREP(err, ERROR_ARGUMENTS, "Can not lex empty source.");
-// 		return err;
-// 	}
-// 	token->beginning = source;
-// 	token->beginning += strspn(token->beginning, whitespace); // Skip the whitespace at the beginning.
-// 	token->end = token->beginning;
-// 	if (*(token->end) == '\0') { return err; }
-// 	// Check if current line is a comment, and skip past it.
-// 	while (comment_at_beginning(*token)) {
-// 		// Skip to after next newline.
-// 		token->beginning = strpbrk(token->beginning, "\n");
-// 		if (!token->beginning) {
-// 			// If last line of file is comment, we're done lexing.
-// 			token->end = token->beginning;
-// 			return err;
-// 		}
-// 		// Skip to beginning of next token after comment.
-// 		token->beginning += strspn(token->beginning, whitespace);
-// 		token->end = token->beginning;
-// 	}
-// 	if (*(token->end) == '\0') { return err; }
-// 	token->end += strcspn(token->beginning, delimiters); // Skip everything not in delimiters.
-// 	if (token->end == token->beginning) {
-// 		token->end += 1;
-// 	}
-// 	return err;
-// }
+//Error lex(char* source, Token* token) {
+//	Error err = ok;
+//	if (!source || !token) {
+//		ERROR_PREP(err, ERROR_ARGUMENTS, "Can not lex empty source.");
+//		return err;
+//	}
+//	token->beginning = source;
+//	token->beginning += strspn(token->beginning, whitespace); // Skip the whitespace at the beginning.
+//	token->end = token->beginning;
+//	if (*(token->end) == '\0') { return err; }
+//	// Check if current line is a comment, and skip past it.
+//	while (comment_at_beginning(*token)) {
+//		// Skip to after next newline.
+//		token->beginning = strpbrk(token->beginning, "\n");
+//		if (!token->beginning) {
+//			// If last line of file is comment, we're done lexing.
+//			token->end = token->beginning;
+//			return err;
+//		}
+//		// Skip to beginning of next token after comment.
+//		token->beginning += strspn(token->beginning, whitespace);
+//		token->end = token->beginning;
+//	}
+//	if (*(token->end) == '\0') { return err; }
+//	token->end += strcspn(token->beginning, delimiters); // Skip everything not in delimiters.
+//	if (token->end == token->beginning) {
+//		token->end += 1;
+//	}
+//	return err;
+//}
 // ============================================================ END old lexer
 
 // ============================================================ BEG new lexer
@@ -65,18 +65,19 @@ int comment_at_beginning(Token token) {
 Error lex(char* source, Token* token) {
 	Error err = ok;
 
+	// Validate input arguments to prevent null pointer dereference.
 	if (!source || !token) {
 		ERROR_PREP(err, ERROR_ARGUMENTS, "Cannot lex empty source.");
 		return err;
 	}
 
+	// Initialize token position and skip initial whitespace.
 	token->beginning = source;
-	token->beginning += strspn(token->beginning, whitespace); // Skip initial whitespace.
+	token->beginning += strspn(token->beginning, whitespace);
 	token->end = token->beginning;
 
-	if (!token->end || *(token->end) == '\0') {
-		return err;
-	}
+	// If there's nothing left to lex, return early.
+	if (!token->end || *(token->end) == '\0') { return err; }
 
 	// Check if current line is a comment, and skip past it.
 	while (comment_at_beginning(*token)) {
@@ -87,20 +88,23 @@ Error lex(char* source, Token* token) {
 			return err;
 		}
 
-		token->beginning = newline + 1; // Move past newline.
-		token->beginning += strspn(token->beginning, whitespace); // Skip any leading whitespace.
+		// Move past newline and skip any leading whitespace.
+		token->beginning = newline + 1;
+		token->beginning += strspn(token->beginning, whitespace);
 		token->end = token->beginning;
 
+		// If we've reached the end, return early.
 		if (!token->beginning || *token->beginning == '\0') { return err; }
 	}
 
+	// If there's nothing left to lex after skipping comments, return.
 	if (!token->end || *(token->end) == '\0') { return err; }
 
-	token->end += strcspn(token->beginning, delimiters); // Move to next delimiter.
+	// Move to the next delimiter to mark the end of the token.
+	token->end += strcspn(token->beginning, delimiters);
 
-	if (token->end == token->beginning) {
-		token->end += 1;
-	}
+	// Ensure token length is at least 1, even if empty.
+	if (token->end == token->beginning) { token->end += 1; }
 
 	return err;
 }
@@ -119,7 +123,8 @@ int token_string_equalp(char* string, Token* token) {
 void print_token(Token t) {
 	if (t.end - t.beginning < 1) {
 		printf("INVALID TOKEN POINTERS\n");
-	} else {
+	}
+	else {
 		printf("%.*s", t.end - t.beginning, t.beginning);
 	}
 }
@@ -139,7 +144,8 @@ void node_add_child(Node* parent, Node* new_child) {
 			child = child->next_child;
 		}
 		child->next_child = new_child;
-	} else {
+	}
+	else {
 		parent->children = new_child;
 	}
 }
@@ -160,11 +166,10 @@ int node_compare(Node* a, Node* b) {
 		break;
 	case NODE_TYPE_SYMBOL:
 		if (a->value.symbol && b->value.symbol) {
-			if (strcmp(a->value.symbol, b->value.symbol) == 0) {
-				return 1;
-			}
+			if (strcmp(a->value.symbol, b->value.symbol) == 0) { return 1; }
 			break;
-		} else if (!a->value.symbol && !b->value.symbol) { return 1; }
+		}
+		else if (!a->value.symbol && !b->value.symbol) { return 1; }
 		break;
 	case NODE_TYPE_BINARY_OPERATOR:
 		printf("TODO: node_compare() BINARY OPERATOR\n");
@@ -325,7 +330,8 @@ void node_copy(Node* a, Node* b) {
 		if (child_it) {
 			child_it->next_child = new_child;
 			child_it = child_it->next_child;
-		} else {
+		}
+		else {
 			b->children = new_child;
 			child_it = new_child;
 		}
@@ -398,9 +404,9 @@ ExpectReturnValue lex_expect(char* expected, Token* current, size_t* current_len
 	return out;
 }
 
-#define EXPECT(expected, expected_string, current_token, current_length, end)             \
-	expected = lex_expect(expected_string, &current_token, &current_length, end);          \
-	if (expected.err.type) { return expected.err; }                                         \
+#define EXPECT(expected, expected_string, current_token, current_length, end)      \
+	expected = lex_expect(expected_string, &current_token, &current_length, end);   \
+	if (expected.err.type) { return expected.err; }                                  \
 	if (expected.done) { return ok; }
 
 int parse_integer(Token* token, Node* node) {
@@ -409,10 +415,12 @@ int parse_integer(Token* token, Node* node) {
 	if (token->end - token->beginning == 1 && *(token->beginning) == '0') {
 		node->type = NODE_TYPE_INTEGER;
 		node->value.integer = 0;
-	} else if ((node->value.integer = strtoll(token->beginning, &end, 10)) != 0) {
+	}
+	else if ((node->value.integer = strtoll(token->beginning, &end, 10)) != 0) {
 		if (end != token->end) { return 0; }
 		node->type = NODE_TYPE_INTEGER;
-	} else { return 0; }
+	}
+	else { return 0; }
 	return 1;
 }
 
@@ -428,7 +436,7 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 	Node* working_result = result;
 
 	while ((err = lex_advance(&current_token, &token_length, end)).type == ERROR_NONE) {
-		//printf("lexed: "); print_token(current_token); putchar('\n');
+		//printf("lexed: "); print_token(current_token); putchar('\n'); // FIXME: We can remove this, just for DEBUG.
 		if (token_length == 0) { return ok; }
 
 		if (parse_integer(&current_token, working_result)) {

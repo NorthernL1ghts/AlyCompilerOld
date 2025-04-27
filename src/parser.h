@@ -16,42 +16,42 @@ void print_token(Token t);
 Error lex(char* source, Token* token);
 
 typedef enum NodeType {
-  // BEGIN LITERALS
+	// BEGIN LITERALS
 
-  /// The definition of nothing; false, etc.
-  NODE_TYPE_NONE,
+	/// The definition of nothing; false, etc.
+	NODE_TYPE_NONE,
 
-  /// Just an integer.
-  NODE_TYPE_INTEGER,
+	/// Just an integer.
+	NODE_TYPE_INTEGER,
 
-  /// When a literal is expected but no other literal is valid,
-  /// it becomes a symbol.
-  NODE_TYPE_SYMBOL,
+	/// When a literal is expected but no other literal is valid,
+	/// it becomes a symbol.
+	NODE_TYPE_SYMBOL,
 
-  // END LITERALS
+	// END LITERALS
 
-  /// Contains two children.
-  /// 1. SYMBOL (VARIABLE IDENTIFIER)
-  /// 2. INITIALIZE EXPRESSION, or None.
-  NODE_TYPE_VARIABLE_DECLARATION,
-  NODE_TYPE_VARIABLE_DECLARATION_INITIALIZED,
+	/// Contains two children.
+	/// 1. SYMBOL (VARIABLE IDENTIFIER)
+	/// 2. INITIALIZE EXPRESSION, or None.
+	NODE_TYPE_VARIABLE_DECLARATION,
+	NODE_TYPE_VARIABLE_DECLARATION_INITIALIZED,
 
-  /// Contains two children.
-  /// 1. SYMBOL (VARIABLE IDENTIFIER)
-  /// 2. VALUE EXPRESSION
-  NODE_TYPE_VARIABLE_REASSIGNMENT,
+	/// Contains two children.
+	/// 1. SYMBOL (VARIABLE IDENTIFIER)
+	/// 2. VALUE EXPRESSION
+	NODE_TYPE_VARIABLE_REASSIGNMENT,
 
-  /// Contains two children that determine left and right acceptable
-  /// types.
-  NODE_TYPE_BINARY_OPERATOR,
-  NODE_TYPE_PROGRAM,
+	/// Contains two children that determine left and right acceptable
+	/// types.
+	NODE_TYPE_BINARY_OPERATOR,
+	NODE_TYPE_PROGRAM,
 
-  /// Contains a list of expressions to execute in sequence.
-  NODE_TYPE_MAX,
+	/// Contains a list of expressions to execute in sequence.
+	NODE_TYPE_MAX,
 } NodeType;
 
 typedef struct Node {
-  	// TODO: Think about how to document node types and how they fit in the AST.
+	// TODO: Think about how to document node types and how they fit in the AST.
 	int type;
 	union NodeValue {
 		long long integer;
@@ -98,10 +98,10 @@ int token_string_equalp(char* string, Token* token);
 int parse_integer(Token* token, Node* node);
 
 typedef struct ParsingContext {
-  // FIXME: "struct ParsingContext* parent;" ???
-  /// TYPE
-  /// `-- SYMBOL (IDENTIFIER) -> TYPE (NODE_TYPE)
-  /// 	                         `-- BYTE_SIZE (N)
+	// FIXME: "struct ParsingContext* parent;" ???
+	/// TYPE
+	/// `-- SYMBOL (IDENTIFIER) -> TYPE (NODE_TYPE)
+	/// 	                         `-- BYTE_SIZE (N)
 	Environment* types;
 	Environment* variables;
 } ParsingContext;

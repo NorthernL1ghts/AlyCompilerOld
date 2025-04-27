@@ -28,7 +28,7 @@ Environment* environment_create(Environment* parent);
  */
 int environment_set(Environment* env, Node* id, Node* value);
 
-/** Full RESULT with value bound to ID in ENV, if successful.
+/** Fill RESULT with value bound to ID in ENV, if successful.
  *
  * @return Boolean-like value; 1 for success, 0 for failure.
  */
