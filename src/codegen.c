@@ -34,11 +34,7 @@ Error fwrite_bytes(char* bytestring, FILE* file) {
 	return ok;
 }
 
-<<<<<<< HEAD
-// NOTE: We only actually need 19 as long long is 2^63 or 8 bytes; 
-=======
 // NOTE: We only actually need 19 as long long is 2^63 or 8 bytes;
->>>>>>> c256c81 (Reconnected repository after accidental deletion)
 // However, allocation need 1 so we have extra in buffer.
 #define FWRITE_INT_STRING_BUFFER_SIZE 21
 static char number[FWRITE_INT_STRING_BUFFER_SIZE];
@@ -56,10 +52,6 @@ Error fwrite_integer(long long integer, FILE* file) {
 Error codegen_program_x86_64_att_asm_data_section(ParsingContext* context, FILE* code) {
 	Error err = ok;
 
-<<<<<<< HEAD
-=======
-    // TODO: Deal with initialization of global variables somehow. Not really sure how to do this yet.
->>>>>>> c256c81 (Reconnected repository after accidental deletion)
 	fwrite_line(".section .data", code);
 	if (err.type) { return err; }
 
@@ -74,11 +66,7 @@ Error codegen_program_x86_64_att_asm_data_section(ParsingContext* context, FILE*
 		// Get type information of type from type context usign type symbol ID.
 		environment_get(*context->types, type_id, type_info);
 
-<<<<<<< HEAD
-		// Write identifier corresponding to variable 
-=======
 		// Write identifier corresponding to variable
->>>>>>> c256c81 (Reconnected repository after accidental deletion)
 		// (pass through literally, for now).
 		err = fwrite_bytes(var_id->value.symbol, code);
 		if (err.type) { return err; }
@@ -117,12 +105,6 @@ Error codegen_program_x86_64_att_asm(ParsingContext* context, Node* program) {
 
 	// Top level program header
 	fwrite_line("_start:", code);
-<<<<<<< HEAD
-=======
-	fwrite_line("push %rbp", code); // Preserve base pointer�mostly redundant, we don't really need to do this.
-	fwrite_line("mov %rsp, %rbp", code);
-	// fwrite_line("sub $32, %rsp", code); // Again, this isn't really needed but may keep 64 byte alignment.
->>>>>>> c256c81 (Reconnected repository after accidental deletion)
 
 	Node* expression = program->children;
 	Node* tmpnode1 = node_allocate();
@@ -130,38 +112,12 @@ Error codegen_program_x86_64_att_asm(ParsingContext* context, Node* program) {
 		switch (expression->type) {
 		default:
 			break;
-<<<<<<< HEAD
-=======
-		case NODE_TYPE_VARIABLE_REASSIGNMENT:
-			// TODO: Evaluate reassignment expression and get return value
-			//       So that we can actually use.
-			fwrite_bytes("lea ", code);
-			fwrite_bytes(expression->children->value.symbol, code);
-			fwrite_line("(%rip), %rax", code);
-			fwrite_bytes("movq $", code);
-			// TODO: FIXME: This assumes integer type, and is bad bad bad!!!
-			fwrite_integer(expression->children->next_child->value.integer, code);
-			fwrite_line(", (%rax)", code);
-
-			// RAX : 0xffffffffffffffffffffffff -> memory address and write at that address.
-			// *RAX = 42;
-			// *RAX = *RAX;
-			// ...
-			break;
->>>>>>> c256c81 (Reconnected repository after accidental deletion)
 		}
 		expression = expression->next_child;
 	}
 
 	// Top level program footer
-<<<<<<< HEAD
 	fwrite_line("_start:", code);
-=======
-	fwrite_line("add $32, %rsp", code);
-	fwrite_line("movq (%rax), %rax", code);
-	fwrite_line("pop %rbp", code);
-	fwrite_line("ret", code);
->>>>>>> c256c81 (Reconnected repository after accidental deletion)
 
 	fclose(code);
 	return ok;

@@ -42,9 +42,10 @@ Alternatively, you can use the provided scripts:
 - Windows: `Scripts/Win-GenerateProject.bat`
 - Linux/macOS: `Scripts/GenerateProject.sh`
 
-3️⃣ Building Generated x86_64 ASM on Windows
+3️⃣ Building Generated x86_64 ASM on Windows under MinGW
 ```sh
-as code.S -o code.o && ld code.o -o code.exe && code.exe
+as code.S -o code.o
+ld code.o -o code.exe && code.exe
 ```
 
 TODO: We have to work on getting Linux to work with this project, nothing is preventing it -- Just means we need to use VM.
