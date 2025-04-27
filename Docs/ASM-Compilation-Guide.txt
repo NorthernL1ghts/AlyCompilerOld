@@ -1,0 +1,18 @@
+Now AlyCompiler - How to Generate Code from AT&T x86_64 GNU Assembly
+
+To assemble and link your assembly source file (`code.S`), use the following commands:
+
+1. Assemble the source file:
+   as code.S -o code.o
+
+2. Link the object file to create a Windows console executable:
+   as code.S -o code.o && ld code.o -subsystem=console
+
+3. If you want to specify the output file explicitly:
+   as code.S -o code.o && ld code.o -subsystem=console -o code.exe
+
+Notes:
+- On Windows, specifying `-subsystem=console` ensures it runs as a console application.
+- On Linux, you do **not** need to specify the subsystem.
+
+By using these commands, you can generate executable code efficiently in AlyCompiler.
