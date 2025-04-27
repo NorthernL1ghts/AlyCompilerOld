@@ -73,3 +73,10 @@
 - [ ] **Write End-to-End Tests in Algol**
   - Step 1: Learn Algol.
   - Step 2: Write tests in it.
+
+# Misc
+
+- [ ] **Make CodeGen structure with function pointers and such**
+  - This would allow each implementation to actually be generated the same way, just have slightly different semantics.
+
+  - it's kind of the same thing we're doing now, just moved into structure data instead of switch case in function.
