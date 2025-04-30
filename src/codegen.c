@@ -108,11 +108,7 @@ Error codegen_program_x86_64_att_asm(ParsingContext* context, Node* program) {
 	fwrite_line("_start:", code);
 	fwrite_line("push %rbp", code); // Preserve base pointer�mostly redundant, we don't really need to do this.
 	fwrite_line("mov %rsp, %rbp", code);
-<<<<<<< HEAD
-	fwrite_line("sub $32, %rsp", code); // Again, this isn't really needed but may keep 64 byte alignment.
-=======
 	// fwrite_line("sub $32, %rsp", code); // Again, this isn't really needed but may keep 64 byte alignment.
->>>>>>> 9ac731b3aa4f6f33d28aa9c8e98fe29e33e8936e
 
 	Node* expression = program->children;
 	Node* tmpnode1 = node_allocate();
@@ -141,13 +137,8 @@ Error codegen_program_x86_64_att_asm(ParsingContext* context, Node* program) {
 	}
 
 	// Top level program footer
-<<<<<<< HEAD
-	fwrite_line("movq (%rax), %rax", code);
-	fwrite_line("add $32, %rsp", code);
-=======
 	fwrite_line("add $32, %rsp", code);
 	fwrite_line("movq (%rax), %rax", code);
->>>>>>> 9ac731b3aa4f6f33d28aa9c8e98fe29e33e8936e
 	fwrite_line("pop %rbp", code);
 	fwrite_line("ret", code);
 
