@@ -6,12 +6,20 @@ a: .space 8
 _start:
 push %rbp
 mov %rsp, %rbp
+<<<<<<< HEAD
 sub $32, %rsp
+=======
+>>>>>>> 9ac731b3aa4f6f33d28aa9c8e98fe29e33e8936e
 lea a(%rip), %rax
 movq $420, (%rax)
 lea b(%rip), %rax
 movq $42, (%rax)
+<<<<<<< HEAD
 movq (%rax), %rax
 add $32, %rsp
+=======
+add $32, %rsp
+movq (%rax), %rax
+>>>>>>> 9ac731b3aa4f6f33d28aa9c8e98fe29e33e8936e
 pop %rbp
 ret
