@@ -107,7 +107,7 @@ Error codegen_program_x86_64_att_asm(ParsingContext* context, Node* program) {
     fwrite_line("_start:", code);
     fwrite_line("push %rbp", code); // Preserve base pointer�mostly redundant, we don't really need to do this.
     fwrite_line("mov %rsp, %rbp", code);
-    // fwrite_line("sub $32, %rsp", code); // Again, this isn't really needed but may keep 64 byte alignment.
+    fwrite_line("sub $32, %rsp", code); // Again, this isn't really needed but may keep 64 byte alignment.
 
     Node* expression = program->children;
     Node* tmpnode1 = node_allocate();

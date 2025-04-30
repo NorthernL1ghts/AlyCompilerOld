@@ -6,6 +6,7 @@ a: .space 8
 _start:
 push %rbp
 mov %rsp, %rbp
+sub $32, %rsp
 lea a(%rip), %rax
 movq $420, (%rax)
 lea b(%rip), %rax

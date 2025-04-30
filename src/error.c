@@ -18,7 +18,7 @@ void print_error(Error err) {
 		printf("TODO (not implemented)");
 		break;
 	case ERROR_SYNTAX:
-		printf("Invalid Syntax");
+		printf("Invalid syntax");
 		break;
 	case ERROR_TYPE:
 		printf("Mismatched types");
