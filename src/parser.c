@@ -458,6 +458,8 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 		// TODO: Check that it isn't a binary operator (we should encounter left
 		// side first and peek forward, rather than encounter it at top level).
 
+		// 2:11:13
+
 		Node* symbol = node_symbol_from_buffer(current_token.beginning, token_length);
 
 		// TODO: Check if valid symbol for variable environment,
