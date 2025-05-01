@@ -67,7 +67,7 @@
 - [ ] **Unnamed Variable Declarations**
   - Support for assigning to or declaring a variable without naming it, affecting a single unnamed environment variable.
 
-- [ ] **Assertions Not Working**
+- [x] **Assertions Not Working**
   - The `NODE_TYPE_MAX` assertions may not be firing. Might need to cast enum values to integers.
 
 ## Parsing & Lexing Architecture
@@ -94,8 +94,8 @@
 
   - I think the idea is just to store a list of binding in a node, each of which contains a left side (key) and a right side (value). We can then just rewrite our environment code to operate on those structures, instead of on the custom Environment structure. I believe this will also allow for other things that I just can't think of right now. Oh yeah! The environment will then be able to be freed and/or garbage collected in the same way as the rest of the nide, which greatly simplifies the memory management :^)
 
-  - [ ] **Compile with `--Wall` and `--Wextra`, fix warnings!**
-    - I haven't done this and the codebase is somewhat sizeable; if hunting for something to do, compile with extra flags and fix warnings.
+- [x] **Compile with `--Wall` and `--Wextra`, fix warnings!**
+  - I haven't done this and the codebase is somewhat sizeable; if hunting for something to do, compile with extra flags and fix warnings.
 
 - [ ] **Have the ability to pass arguments in any order, if named**
  - The definition must contain parameter ID's in order for local scope binding to work.
