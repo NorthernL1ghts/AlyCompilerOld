@@ -3,9 +3,9 @@
  */
 
 /*
- * SHA HASH: 74be94ac584e04951570f6730145288a6598ddb834bd6ebbb904ecaf4a691f76
+ * SHA HASH: 11c4f79f591f05e102fc4c0a617423f43904ca9d0bdc475d09d19bfb58d2d165
  * Filename: src/file_io.c
- * Updated: 2025-05-01, 13:13:40
+ * Updated: 2025-05-01, 14:06:24
 */
 #include <file_io.h>
 #include <errno.h>

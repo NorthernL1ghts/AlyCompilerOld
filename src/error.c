@@ -3,9 +3,9 @@
  */
 
 /*
- * SHA HASH: eabe9ae1faf81e68c7dfa2cedc1f64a4741ebcb8e536c35499e51ad55e451290
+ * SHA HASH: 5370b2bc12ab38663e85fa89ff6831bcb344bbd6db90807c676ab6932ee651b6
  * Filename: src/error.c
- * Updated: 2025-05-01, 13:13:40
+ * Updated: 2025-05-01, 14:06:24
 */
 #include <error.h>
 

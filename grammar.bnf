@@ -1,7 +1,7 @@
 ;#; Copyright (c) 2025 NorthernL1ghts
-;#; SHA HASH: d4d4815a3e583309b4968eabe4290e191a252c66b5d2045548ceb9fe6169975f
+;#; SHA HASH: 28610611d003a7d11a8a35473bbcf32ab11d4693cad3ecb9d81cb6af60561155
 ;#; Filename: grammar.bnf
-;#; Updated: 2025-05-01, 13:13:40
+;#; Updated: 2025-05-01, 14:06:24
 
 /// Top-level rule.
 <file> ::= <preamble> { <expression> | ";" }

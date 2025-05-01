@@ -3,9 +3,9 @@
  */
 
 /*
- * SHA HASH: 8f0a2f09b6ac0f153934cdfbf1ceecc6d2fa3588d9529d898e072ed42dbfe309
+ * SHA HASH: 8ffae137dc9cb0c903f6499b887f913db351a88c2d5ee44fb35cd29d8c169be6
  * Filename: src/environment.h
- * Updated: 2025-05-01, 13:13:40
+ * Updated: 2025-05-01, 14:06:24
 */
 #ifndef COMPILER_ENVIRONMENT_H
 #define COMPILER_ENVIRONMENT_H

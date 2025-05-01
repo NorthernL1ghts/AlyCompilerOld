@@ -3,9 +3,9 @@
  */
 
 /*
- * SHA HASH: f84e6c0991004dcf0ab602cb40769ac2aefd181d1a8f7a106c164f6fc7e05a4e
+ * SHA HASH: dca3ad33d2e103942e680924628a22c9fb8766b11e9d7f23e084a68bed6efa4e
  * Filename: src/parser.h
- * Updated: 2025-05-01, 13:13:40
+ * Updated: 2025-05-01, 14:06:24
 */
 #ifndef COMPILER_PARSER_H
 #define COMPILER_PARSER_H

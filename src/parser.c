@@ -3,9 +3,9 @@
  */
 
 /*
- * SHA HASH: 81a8fa50e80c3b43b1e285510595bd1a68ea58a391d6dd8652d70b6445b31c5a
+ * SHA HASH: 6edb6fafda9072d35da8cd2905d931236f9cf106ba220f75bcdf16f69ca6e8bb
  * Filename: src/parser.c
- * Updated: 2025-05-01, 13:13:40
+ * Updated: 2025-05-01, 14:06:24
 */
 #include <parser.h>
 #include <environment.h>

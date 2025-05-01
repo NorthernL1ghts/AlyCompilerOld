@@ -1,67 +1,67 @@
 Tracked Source Files
 Filename: src/codegen.c
-Current Hash: c0c76024dad6ee88c3778ff35bad9ee3b0f656e83a463089ca5ef636ce70dad9
-Updated: 2025-05-01, 13:13:40
+Current Hash: a6abc53d21da4adaf5e0e178bd8918d0c0fa6f4161ca63e9330d18f4916445f1
+Updated: 2025-05-01, 14:06:24
 
 Filename: src/environment.c
-Current Hash: 9c35ca3b4c23cac3944685e67f62f51748e4df0fd6865b8b89b561e9fa183168
-Updated: 2025-05-01, 13:13:40
+Current Hash: 4805f39caba04cc6edda985351caa1fe8463ee7f4a06e0871a681f972e83422a
+Updated: 2025-05-01, 14:06:24
 
 Filename: src/error.c
-Current Hash: eabe9ae1faf81e68c7dfa2cedc1f64a4741ebcb8e536c35499e51ad55e451290
-Updated: 2025-05-01, 13:13:40
+Current Hash: 5370b2bc12ab38663e85fa89ff6831bcb344bbd6db90807c676ab6932ee651b6
+Updated: 2025-05-01, 14:06:24
 
 Filename: src/file_io.c
-Current Hash: 74be94ac584e04951570f6730145288a6598ddb834bd6ebbb904ecaf4a691f76
-Updated: 2025-05-01, 13:13:40
+Current Hash: 11c4f79f591f05e102fc4c0a617423f43904ca9d0bdc475d09d19bfb58d2d165
+Updated: 2025-05-01, 14:06:24
 
 Filename: src/main.c
-Current Hash: e04d5a5473a831f1afbe6ac90968cf5cb8e92dc7b7738371046e79734bc2e598
-Updated: 2025-05-01, 13:13:40
+Current Hash: eba94970d6241850e2846762d1b79ac281123566b46f811e5e19257779b6704c
+Updated: 2025-05-01, 14:06:24
 
 Filename: src/parser.c
-Current Hash: 81a8fa50e80c3b43b1e285510595bd1a68ea58a391d6dd8652d70b6445b31c5a
-Updated: 2025-05-01, 13:13:40
+Current Hash: 6edb6fafda9072d35da8cd2905d931236f9cf106ba220f75bcdf16f69ca6e8bb
+Updated: 2025-05-01, 14:06:24
 
 Filename: src/codegen.h
-Current Hash: a9adc6c8ff760d4831767a8fd86cd53a6c942140bef2006573a2779d544ea327
-Updated: 2025-05-01, 13:13:40
+Current Hash: 04fd962bad7d49dc3efb6afbe5246ce2a6c05715e008b95d08176c07accabe9e
+Updated: 2025-05-01, 14:06:24
 
 Filename: src/environment.h
-Current Hash: 8f0a2f09b6ac0f153934cdfbf1ceecc6d2fa3588d9529d898e072ed42dbfe309
-Updated: 2025-05-01, 13:13:40
+Current Hash: 8ffae137dc9cb0c903f6499b887f913db351a88c2d5ee44fb35cd29d8c169be6
+Updated: 2025-05-01, 14:06:24
 
 Filename: src/error.h
-Current Hash: fdc825b7f7d3ab0670ae2be9f6b2ae1adc7016d2d313cbfa103fde52d03b8e63
-Updated: 2025-05-01, 13:13:40
+Current Hash: dcf97f255cf8e1022fe58b8b3dacb9e0668bbe0a522c06bd9093f98407c8bba9
+Updated: 2025-05-01, 14:06:24
 
 Filename: src/file_io.h
-Current Hash: 0663eff0b3c707d6ae08049060b194f947fe9ecf05892dc462368bd603e96fd3
-Updated: 2025-05-01, 13:13:40
+Current Hash: db3db72a01de98d833c44b891587fa9e3bf131cb4a6a16a42b6fd9a5e1e09d93
+Updated: 2025-05-01, 14:06:24
 
 Filename: src/parser.h
-Current Hash: f84e6c0991004dcf0ab602cb40769ac2aefd181d1a8f7a106c164f6fc7e05a4e
-Updated: 2025-05-01, 13:13:40
+Current Hash: dca3ad33d2e103942e680924628a22c9fb8766b11e9d7f23e084a68bed6efa4e
+Updated: 2025-05-01, 14:06:24
 
 Tracked Scripts/Examples
 Filename: example.aly
-Current Hash: 7502feba93c799cf4434666c4d0e44a084a12ee77eacc4d1263f03ff129bf1ed
-Updated: 2025-05-01, 13:13:40
+Current Hash: 94188ccb212af3b49e06bcef85a34793c7126a87eb225d81f489aa3a6ddcfe8e
+Updated: 2025-05-01, 14:06:24
 
 Filename: simple.aly
-Current Hash: ee1e8503ff6f73975ebd13f42788468d9605b39dd34885ca9eede0a5ae0982d8
-Updated: 2025-05-01, 13:13:40
+Current Hash: 51d52dda041efadf948bad1307f0db5346971d7149dd03ca2fa88ee94de463c3
+Updated: 2025-05-01, 14:06:24
 
 Filename: code.S
-Current Hash: 78db439b7e436cd9f41993469d98aff1dc52257a47a3ac21e78c413e6256bd47
-Updated: 2025-05-01, 13:13:40
+Current Hash: 9945080976964ea859605ef0a7ce88b271a21c846a575f317c139539f3342f96
+Updated: 2025-05-01, 14:06:24
 
 Tracked BNF
 Filename: grammar.bnf
-Current Hash: d4d4815a3e583309b4968eabe4290e191a252c66b5d2045548ceb9fe6169975f
-Updated: 2025-05-01, 13:13:40
+Current Hash: 28610611d003a7d11a8a35473bbcf32ab11d4693cad3ecb9d81cb6af60561155
+Updated: 2025-05-01, 14:06:24
 
 Filename: isel-grammar.bnf
-Current Hash: 9dc9b07597c9de2839d5816016287e7258d9d873602d9084043665d0181623aa
-Updated: 2025-05-01, 13:13:40
+Current Hash: ea5317b591620541bce2935300ffc147308a6de12c7749a7da9ea3add7bfb364
+Updated: 2025-05-01, 14:06:24
 

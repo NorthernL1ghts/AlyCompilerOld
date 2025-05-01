@@ -3,9 +3,9 @@
  */
 
 /*
- * SHA HASH: fdc825b7f7d3ab0670ae2be9f6b2ae1adc7016d2d313cbfa103fde52d03b8e63
+ * SHA HASH: dcf97f255cf8e1022fe58b8b3dacb9e0668bbe0a522c06bd9093f98407c8bba9
  * Filename: src/error.h
- * Updated: 2025-05-01, 13:13:40
+ * Updated: 2025-05-01, 14:06:24
 */
 #ifndef COMPILER_ERROR_H
 #define COMPILER_ERROR_H
