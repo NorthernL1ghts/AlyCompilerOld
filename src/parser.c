@@ -2,11 +2,11 @@
  * Copyright (c) 2025 NorthernL1ghts
  */
 
-/*
- * SHA HASH: 6edb6fafda9072d35da8cd2905d931236f9cf106ba220f75bcdf16f69ca6e8bb
- * Filename: src/parser.c
- * Updated: 2025-05-01, 14:06:24
-*/
+ /*
+  * SHA HASH: 6edb6fafda9072d35da8cd2905d931236f9cf106ba220f75bcdf16f69ca6e8bb
+  * Filename: src/parser.c
+  * Updated: 2025-05-01, 14:06:24
+ */
 #include <parser.h>
 #include <environment.h>
 #include <error.h>
@@ -16,8 +16,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-// ============================================================ BEG lexer
-// TODO: Allow multi-byte comment delimiters.
+ // ============================================================ BEG lexer
+ // TODO: Allow multi-byte comment delimiters.
 const char* comment_delimiters = ";#";
 const char* whitespace = " \r\n";
 const char* delimiters = " \r\n,():";
