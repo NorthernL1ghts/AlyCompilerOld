@@ -87,7 +87,10 @@
 - [ ] **Make CodeGen structure with function pointers and such**
   - This would allow each implementation to actually be generated the same way, just have slightly different semantics.
 
-  - it's kind of the same thing we're doing now, just moved into structure data instead of switch case in function.
+  - It's kind of the same thing we're doing now, just moved into structure data instead of switch case in function.
+
+- [ ] **Add an environment to the parsing context that contains operators to handle**
+
 
 -  [ ] **Convert `Environment` type in an AST Node**
   - This mimics LISP much more closely, and also doesn't change anything from out current linked list implementation.

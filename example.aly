@@ -30,7 +30,6 @@ defun foo (c:integer, b:integer):integer {
     c := 69
     c := 420
     c := 69
-
 }
 
 ; This is a function call.
