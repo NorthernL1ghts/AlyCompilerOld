@@ -121,12 +121,15 @@ typedef struct ParsingContext {
 	/// VARIABLE
 	/// `-- SYMBOL (NAME) -> SYMBOL (TYPE)
 	Environment* variables;
+	/// VARIABLE
+	/// `-- SYMBOL (NAME) -> SYMBOL (TYPE)
+	Environment* functions;
 } ParsingContext;
 
 Error parse_get_type(ParsingContext* context, Node* id, Node* result);
 
-ParsingContext* parse_context_default_create();
 ParsingContext* parse_context_create(ParsingContext* parent);
+ParsingContext* parse_context_default_create();
 
 Error parse_expr(ParsingContext* context, char* source, char** end, Node* result);
 

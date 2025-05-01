@@ -350,24 +350,22 @@ void node_copy(Node* a, Node* b) {
     }
 }
 
-ParsingContext* parse_context_default_create() {
-    ParsingContext* ctx = calloc(1, sizeof(ParsingContext));
-    assert(ctx && "Could not allocate memory for parsing context.");
-    ctx->types = environment_create(NULL);
-    Error err = node_add_type(ctx->types, NODE_TYPE_INTEGER, node_symbol("integer"), sizeof(long long));
-    if (err.type != ERROR_NONE) {
-        printf("ERROR: Failed to set builtin type in types environment.\n");
-    }
-    ctx->variables = environment_create(NULL);
-    return ctx;
-}
-
 ParsingContext* parse_context_create(ParsingContext* parent) {
     ParsingContext* ctx = calloc(1, sizeof(ParsingContext));
     assert(ctx && "Could not allocate memory for parsing context.");
     ctx->parent = parent;
     ctx->types = environment_create(NULL);
     ctx->variables = environment_create(NULL);
+    ctx->functions = environment_create(NULL);
+    return ctx;
+}
+
+ParsingContext* parse_context_default_create() {
+    ParsingContext* ctx = parse_context_create(NULL);
+    Error err = node_add_type(ctx->types, NODE_TYPE_INTEGER, node_symbol("integer"), sizeof(long long));
+    if (err.type != ERROR_NONE) {
+        printf("ERROR: Failed to set builtin type in types environment.\n");
+    }
     return ctx;
 }
 
@@ -566,6 +564,13 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
                 Node* function_return_type = node_symbol_from_buffer(current_token.beginning, token_length);
                 node_add_child(working_result, function_return_type);
 
+                // Bind function to function name in functions environment.
+                // NOTE: `working_result` is verbatim (owned) by function. 
+                // This also lets us think about if we want to have top-level
+                // or first class functions in the AST, or if we even 
+                // need them there?
+                environment_set(context->functions, function_name, working_result);
+
                 // Parse function body.
                 EXPECT(expected, "{", current_token, token_length, end);
                 if (expected.done || !expected.found) {
@@ -592,8 +597,10 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
                 Node* param_it = working_result->children->children;
                 environment_set(context->variables, param_it->children, param_it->children->next_child); // Variables: context, name and type.
 
+                Node* function_body = node_allocate();
                 Node* function_first_expression = node_allocate();
-                node_add_child(working_result, function_first_expression);
+                node_add_child(function_body, function_first_expression);
+                node_add_child(working_result, function_body);
                 working_result = function_first_expression;
                 continue;
             }
@@ -710,9 +717,6 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
         if (strcmp(operator->value.symbol, "defun") == 0) {
             // TODO: Evaluate next expression value unless it's a closing brace.
             EXPECT(expected, "}", current_token, token_length, end);
-            print_token(current_token);
-            putchar('\n');
-            print_node(result, 0);
             if (expected.found) {
                 break; // ??
             }
