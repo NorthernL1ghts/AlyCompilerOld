@@ -136,7 +136,7 @@ void print_token(Token t) {
         printf("INVALID TOKEN POINTERS\n");
     }
     else {
-        printf("%.*s", t.end - t.beginning, t.beginning);
+        printf("%.*s", (int)(t.end - t.beginning), t.beginning);
     }
 }
 // ============================================================ END new lexer
@@ -462,7 +462,6 @@ int parse_integer(Token* token, Node* node) {
 
 Error parse_expr(ParsingContext* context, char* source, char** end, Node* result) {
     ExpectReturnValue expected;
-    size_t token_count = 0;
     size_t token_length = 0;
     Token current_token;
     current_token.beginning = source;

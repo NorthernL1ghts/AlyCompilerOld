@@ -107,7 +107,7 @@ Error codegen_program_x86_64_att_asm(ParsingContext* context, Node* program) {
         return err;
     }
 
-    err = fwrite_bytes(";#; ", code);
+    err = fwrite_bytes(";;#; ", code);
     if (err.type) { return err; }
     fwrite_line((char*)codegen_header, code);
     if (err.type) { return err; }
@@ -120,10 +120,9 @@ Error codegen_program_x86_64_att_asm(ParsingContext* context, Node* program) {
     fwrite_line("_start:", code);
     fwrite_line("push %rbp", code); // Preserve base pointer mostly redundant, we don't really need to do this.
     fwrite_line("mov %rsp, %rbp", code);
-    //fwrite_line("sub $32, %rsp", code); // Again, this isn't really needed but may keep 64 byte alignment.
+    fwrite_line("sub $32, %rsp", code); // Again, this isn't really needed but may keep 64 byte alignment.
 
     Node* expression = program->children;
-    Node* tmpnode1 = node_allocate();
     while (expression) {
         switch (expression->type) {
         default:
@@ -139,10 +138,6 @@ Error codegen_program_x86_64_att_asm(ParsingContext* context, Node* program) {
             fwrite_integer(expression->children->next_child->value.integer, code);
             fwrite_line(", (%rax)", code);
 
-            // RAX : 0xffffffffffffffffffffffff -> memory address and write at that address.
-            // *RAX = 42;
-            // *RAX = *RAX;
-            // ...
             break;
         }
         expression = expression->next_child;
