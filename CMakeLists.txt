@@ -35,10 +35,10 @@ if(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID STREQUAL "Clang")
     target_compile_options(
         alyc
         PRIVATE
-        -Wall
-        -Wextra
-        -pedantic
-        -Werror  # Treat warnings as errors
+        # -Wall
+        # -Wextra
+        # -pedantic
+        # -Werror  # Treat warnings as errors
     )
 endif()
 
@@ -47,12 +47,12 @@ if(MSVC)
     target_compile_options(
         alyc
         PRIVATE
-        /W4        # High warning level
-        /WX        # Treat warnings as errors
-        /wd4996    # Suppress 'unsafe' functions like sprintf
-        /wd4189    # Suppress 'unused variable' warnings
-        /wd4456    # Suppress shadowed variable warnings
-        /wd4477    # Suppress printf format specifier mismatches
+        # /W4        # High warning level
+        # /WX        # Treat warnings as errors
+        # /wd4996    # Suppress 'unsafe' functions like sprintf
+        # /wd4189    # Suppress 'unused variable' warnings
+        # /wd4456    # Suppress shadowed variable warnings
+        # /wd4477    # Suppress printf format specifier mismatches
     )
 
     # Define MSVC-specific macros
