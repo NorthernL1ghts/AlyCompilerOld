@@ -1,0 +1,67 @@
+Tracked Source Files
+Filename: src/codegen.c
+Current Hash: c0c76024dad6ee88c3778ff35bad9ee3b0f656e83a463089ca5ef636ce70dad9
+Updated: 2025-05-01, 13:13:40
+
+Filename: src/environment.c
+Current Hash: 9c35ca3b4c23cac3944685e67f62f51748e4df0fd6865b8b89b561e9fa183168
+Updated: 2025-05-01, 13:13:40
+
+Filename: src/error.c
+Current Hash: eabe9ae1faf81e68c7dfa2cedc1f64a4741ebcb8e536c35499e51ad55e451290
+Updated: 2025-05-01, 13:13:40
+
+Filename: src/file_io.c
+Current Hash: 74be94ac584e04951570f6730145288a6598ddb834bd6ebbb904ecaf4a691f76
+Updated: 2025-05-01, 13:13:40
+
+Filename: src/main.c
+Current Hash: e04d5a5473a831f1afbe6ac90968cf5cb8e92dc7b7738371046e79734bc2e598
+Updated: 2025-05-01, 13:13:40
+
+Filename: src/parser.c
+Current Hash: 81a8fa50e80c3b43b1e285510595bd1a68ea58a391d6dd8652d70b6445b31c5a
+Updated: 2025-05-01, 13:13:40
+
+Filename: src/codegen.h
+Current Hash: a9adc6c8ff760d4831767a8fd86cd53a6c942140bef2006573a2779d544ea327
+Updated: 2025-05-01, 13:13:40
+
+Filename: src/environment.h
+Current Hash: 8f0a2f09b6ac0f153934cdfbf1ceecc6d2fa3588d9529d898e072ed42dbfe309
+Updated: 2025-05-01, 13:13:40
+
+Filename: src/error.h
+Current Hash: fdc825b7f7d3ab0670ae2be9f6b2ae1adc7016d2d313cbfa103fde52d03b8e63
+Updated: 2025-05-01, 13:13:40
+
+Filename: src/file_io.h
+Current Hash: 0663eff0b3c707d6ae08049060b194f947fe9ecf05892dc462368bd603e96fd3
+Updated: 2025-05-01, 13:13:40
+
+Filename: src/parser.h
+Current Hash: f84e6c0991004dcf0ab602cb40769ac2aefd181d1a8f7a106c164f6fc7e05a4e
+Updated: 2025-05-01, 13:13:40
+
+Tracked Scripts/Examples
+Filename: example.aly
+Current Hash: 7502feba93c799cf4434666c4d0e44a084a12ee77eacc4d1263f03ff129bf1ed
+Updated: 2025-05-01, 13:13:40
+
+Filename: simple.aly
+Current Hash: ee1e8503ff6f73975ebd13f42788468d9605b39dd34885ca9eede0a5ae0982d8
+Updated: 2025-05-01, 13:13:40
+
+Filename: code.S
+Current Hash: 78db439b7e436cd9f41993469d98aff1dc52257a47a3ac21e78c413e6256bd47
+Updated: 2025-05-01, 13:13:40
+
+Tracked BNF
+Filename: grammar.bnf
+Current Hash: d4d4815a3e583309b4968eabe4290e191a252c66b5d2045548ceb9fe6169975f
+Updated: 2025-05-01, 13:13:40
+
+Filename: isel-grammar.bnf
+Current Hash: 9dc9b07597c9de2839d5816016287e7258d9d873602d9084043665d0181623aa
+Updated: 2025-05-01, 13:13:40
+

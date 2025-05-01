@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2025 NorthernL1ghts
+ */
+
+/*
+ * SHA HASH: 9c35ca3b4c23cac3944685e67f62f51748e4df0fd6865b8b89b561e9fa183168
+ * Filename: src/environment.c
+ * Updated: 2025-05-01, 13:13:40
+*/
 #include <environment.h>
 #include <parser.h>
 

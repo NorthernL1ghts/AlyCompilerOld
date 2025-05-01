@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2025 NorthernL1ghts
+ */
+
+/*
+ * SHA HASH: 81a8fa50e80c3b43b1e285510595bd1a68ea58a391d6dd8652d70b6445b31c5a
+ * Filename: src/parser.c
+ * Updated: 2025-05-01, 13:13:40
+*/
 #include <parser.h>
 #include <environment.h>
 #include <error.h>
@@ -498,7 +507,7 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 
                 lex_advance(&current_token, &token_length, end);
                 Node* function_name = node_symbol_from_buffer(current_token.beginning, token_length);
-                // TODO: Bind function_name to function node in functions environment. 
+                // TODO: Bind function_name to function node in functions environment.
                 //       We could also just have a symbol table, at compile time?
 
                 EXPECT(expected, "(", current_token, token_length, end);
@@ -565,9 +574,9 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
                 node_add_child(working_result, function_return_type);
 
                 // Bind function to function name in functions environment.
-                // NOTE: `working_result` is verbatim (owned) by function. 
+                // NOTE: `working_result` is verbatim (owned) by function.
                 // This also lets us think about if we want to have top-level
-                // or first class functions in the AST, or if we even 
+                // or first class functions in the AST, or if we even
                 // need them there?
                 environment_set(context->functions, function_name, working_result);
 
@@ -702,7 +711,7 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
             }
         }
 
-        // This only happens when you finish parsing integers, 
+        // This only happens when you finish parsing integers,
         // essentially eat the stack.
         if (!context->parent) {
             break;

@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2025 NorthernL1ghts
+ */
+
+/*
+ * SHA HASH: 74be94ac584e04951570f6730145288a6598ddb834bd6ebbb904ecaf4a691f76
+ * Filename: src/file_io.c
+ * Updated: 2025-05-01, 13:13:40
+*/
 #include <file_io.h>
 #include <errno.h>
 

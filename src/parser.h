@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2025 NorthernL1ghts
+ */
+
+/*
+ * SHA HASH: f84e6c0991004dcf0ab602cb40769ac2aefd181d1a8f7a106c164f6fc7e05a4e
+ * Filename: src/parser.h
+ * Updated: 2025-05-01, 13:13:40
+*/
 #ifndef COMPILER_PARSER_H
 #define COMPILER_PARSER_H
 

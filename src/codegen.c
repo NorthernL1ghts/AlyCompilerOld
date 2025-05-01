@@ -1,4 +1,12 @@
-#include <codegen.h>
+/*
+ * Copyright (c) 2025 NorthernL1ghts
+ */
+
+/*
+ * SHA HASH: c0c76024dad6ee88c3778ff35bad9ee3b0f656e83a463089ca5ef636ce70dad9
+ * Filename: src/codegen.c
+ * Updated: 2025-05-01, 13:13:40
+*/
 #include <environment.h>
 #include <error.h>
 #include <parser.h>

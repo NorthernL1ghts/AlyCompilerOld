@@ -1,4 +1,13 @@
-﻿#include <assert.h>
+/*
+ * Copyright (c) 2025 NorthernL1ghts
+ */
+
+/*
+ * SHA HASH: e04d5a5473a831f1afbe6ac90968cf5cb8e92dc7b7738371046e79734bc2e598
+ * Filename: src/main.c
+ * Updated: 2025-05-01, 13:13:40
+*/
+#include <assert.h>
 #include <codegen.h>
 #include <environment.h>
 #include <file_io.h>
