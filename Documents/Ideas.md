@@ -1,6 +1,4 @@
-# TODO List
-
-## Ideas
+# Ideas
 
 1. **Identifier Management**
    - Implement a structured list of known identifiers. Ideally, include:
