@@ -363,6 +363,8 @@ ParsingContext* parse_context_create(ParsingContext* parent) {
     ParsingContext* ctx = calloc(1, sizeof(ParsingContext));
     assert(ctx && "Could not allocate memory for parsing context.");
     ctx->parent = parent;
+    ctx->operator = NULL;
+    ctx->result = NULL;
     ctx->types = environment_create(NULL);
     ctx->variables = environment_create(NULL);
     ctx->functions = environment_create(NULL);
@@ -506,8 +508,6 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 
                 lex_advance(&current_token, &token_length, end);
                 Node* function_name = node_symbol_from_buffer(current_token.beginning, token_length);
-                // TODO: Bind function_name to function node in functions environment.
-                //       We could also just have a symbol table, at compile time?
 
                 EXPECT(expected, "(", current_token, token_length, end);
                 if (!expected.found) {
@@ -518,6 +518,9 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 
                 Node* parameter_list = node_allocate();
 
+                // FIXME: Should we possible create a parser stack and evaulate the
+                // next expression, then ensure return value is variable decl, in stack
+                // handling below?
                 for (;;) {
                     EXPECT(expected, ")", current_token, token_length, end);
                     if (expected.found) { break; }
@@ -573,10 +576,6 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
                 node_add_child(working_result, function_return_type);
 
                 // Bind function to function name in functions environment.
-                // NOTE: `working_result` is verbatim (owned) by function.
-                // This also lets us think about if we want to have top-level
-                // or first class functions in the AST, or if we even
-                // need them there?
                 environment_set(context->functions, function_name, working_result);
 
                 // Parse function body.
@@ -586,30 +585,19 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
                     return err;
                 }
 
-                // TODO: Parse body of function.
-                // Before parsing, enter nested scope with parameter names bound to variables
-                // (create new parsing context as child of current, bind variables in environment.).
-
-                // Check for end of function body
-                // If found, return function
-                // If not found, allocate new expression node and parse into that
-
-                // A := 2
-                // 6 -> working_result update is this empty node.
-
-                // Update working_result and be able to parse next single expression into function body.
-
                 context = parse_context_create(context);
                 context->operator = node_symbol("defun");
-
                 Node* param_it = working_result->children->children;
                 environment_set(context->variables, param_it->children, param_it->children->next_child); // Variables: context, name and type.
 
+                // NOTE: When parsing a function, we use this stack and get the 
+                // expression within function body, saving the result.
                 Node* function_body = node_allocate();
                 Node* function_first_expression = node_allocate();
                 node_add_child(function_body, function_first_expression);
                 node_add_child(working_result, function_body);
                 working_result = function_first_expression;
+                context->result = working_result;
                 continue;
             }
             else {
@@ -723,14 +711,14 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
         }
 
         if (strcmp(operator->value.symbol, "defun") == 0) {
-            // TODO: Evaluate next expression value unless it's a closing brace.
+            // Evaluate next expression value unless it's a closing brace.
             EXPECT(expected, "}", current_token, token_length, end);
-            if (expected.found) {
-                break; // ??
-            }
-        }
-        return ok;
+            if (expected.found) { break; }
 
+            context->result->next_child = node_allocate();
+            working_result = context->result->next_child;
+            context->result = working_result;
+        }
     }
 
     return err;

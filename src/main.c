@@ -2,11 +2,11 @@
  * Copyright (c) 2025 NorthernL1ghts
  */
 
-/*
- * SHA HASH: eba94970d6241850e2846762d1b79ac281123566b46f811e5e19257779b6704c
- * Filename: src/main.c
- * Updated: 2025-05-01, 14:06:24
-*/
+ /*
+  * SHA HASH: eba94970d6241850e2846762d1b79ac281123566b46f811e5e19257779b6704c
+  * Filename: src/main.c
+  * Updated: 2025-05-01, 14:06:24
+ */
 #include <assert.h>
 #include <codegen.h>
 #include <environment.h>
@@ -67,6 +67,8 @@ int main(int argc, char** argv) {
         node_free(program);
         free(contents);
     }
+
+    printf("COMPLETE\n");
 
     return 0;
 }

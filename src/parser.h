@@ -2,11 +2,11 @@
  * Copyright (c) 2025 NorthernL1ghts
  */
 
-/*
- * SHA HASH: dca3ad33d2e103942e680924628a22c9fb8766b11e9d7f23e084a68bed6efa4e
- * Filename: src/parser.h
- * Updated: 2025-05-01, 14:06:24
-*/
+ /*
+  * SHA HASH: dca3ad33d2e103942e680924628a22c9fb8766b11e9d7f23e084a68bed6efa4e
+  * Filename: src/parser.h
+  * Updated: 2025-05-01, 14:06:24
+ */
 #ifndef COMPILER_PARSER_H
 #define COMPILER_PARSER_H
 
@@ -114,7 +114,9 @@ int token_string_equalp(char* string, Token* token);
 /// @return Boolean-like value; 1 upon success, 0 for failure.
 int parse_integer(Token* token, Node* node);
 
+// TODO: Separate context from stack...
 typedef struct ParsingStack {
+	struct ParsingStack* parent;
 	Node* operator;
 	Node* result;
 } ParsingStack;
@@ -122,7 +124,9 @@ typedef struct ParsingStack {
 // FIXME: Should this be an environment that contains other environments and things?
 typedef struct ParsingContext {
 	struct ParsingContext* parent;
+	/// Used for stack continuation while parsing.
 	Node* operator;
+	Node* result;
 	/// TYPE
 	/// `-- SYMBOL (IDENTIFIER) -> TYPE (NODE_TYPE)
 	/// 	                         `-- BYTE_SIZE (N)
