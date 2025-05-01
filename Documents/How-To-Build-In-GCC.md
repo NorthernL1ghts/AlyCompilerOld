@@ -11,23 +11,22 @@ This document details the steps required to build and execute the AlyCompiler pr
 * **Install MinGW and CMake:**
   * **Open MSYS2 MinGW 64-bit Shell:** Launch `mingw64.exe` from your MSYS2 installation directory.
   * **Update Packages:**
+      ```bash
+      pacman -Syu
+      ```
 
-        ```bash
-        pacman -Syu
-        ```
-
-        You might need to run this command twice, closing the shell in between if prompted.
+      - You might need to run this command twice, closing the shell in between if prompted.
   * **Install GCC (C Compiler):**
 
-        ```bash
-        pacman -S mingw-w64-x86_64-gcc
-        ```
+      ```bash
+      pacman -S mingw-w64-x86_64-gcc
+      ```
 
   * **Install CMake (Cross-Platform Build System):**
 
-        ```bash
-        pacman -S mingw-w64-x86_64-cmake
-        ```
+      ```bash
+      pacman -S mingw-w64-x86_64-cmake
+      ```
 
   * **Package Manager (`pacman`):** For more information, see the MSYS2 `pacman` wiki: [https://www.msys2.org/wiki/Pacman/](https://www.msys2.org/wiki/Pacman/)
 
@@ -59,16 +58,16 @@ This document details the steps required to build and execute the AlyCompiler pr
 * After a successful build, the `alyc.exe` executable will be in the `bld` subdirectory.
   * **Navigate to the `bld` Directory:**
 
-        ```bash
-        cd bld
-        ```
+      ```bash
+      cd bld
+      ```
 
   * **Execute the Executable:**
 
-        ```bash
-        ./alyc.exe
-        ```
+      ```bash
+      ./alyc.exe <path_to_file_to_compile>
+      ```
 
-        The `./` prefix is needed in Unix-like shells to run an executable in the current directory.
+      - The `./` prefix is needed in Unix-like shells to run an executable in the current directory.
 
 By following these steps, you should be able to build and run the AlyCompiler project on your Windows system using MinGW and CMake. Remember to adjust the directory paths as needed for your specific setup.
