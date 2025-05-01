@@ -2,7 +2,7 @@
 
 ![AlyCompiler Logo](/Resources/AlyCompilerLogo.png)
 
-I don't really have a plan, I just want to make a compiler; it sounds fun. There's is an example of some code that should be valid and able to be compile in [`example`](example) file.
+I don't really have a plan, I just want to make a compiler; it sounds fun. There's is an example of some code that should be valid and able to be compile in [`example`](examply.aly) file.
 
 ## Usage
 
