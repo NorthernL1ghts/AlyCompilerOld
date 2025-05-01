@@ -2,11 +2,7 @@
  * Copyright (c) 2025 NorthernL1ghts
  */
 
-/*
- * SHA HASH: d5632c04070941b120071561ba9834b3852a53c3afd79113ccc9f2df15f84a4b
- * Filename: src/error.c
- * Updated: 2025-05-01, 17:36:02
-*/
+
 #include <error.h>
 
 #include <assert.h>

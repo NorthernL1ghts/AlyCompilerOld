@@ -92,7 +92,6 @@ Error codegen_program_x86_64_att_asm_data_section(ParsingContext* context, FILE*
 /// Arguments passed in: RCX, RDX, R8, R9 -> stack
 Error codegen_program_x86_64_att_asm_mswin(ParsingContext* context, Node* program) {
     Error err = ok;
-
     if (!program || program->type != NODE_TYPE_PROGRAM) {
         ERROR_PREP(err, ERROR_ARGUMENTS, "codegen_program() requires program!");
         return err;
@@ -128,26 +127,44 @@ Error codegen_program_x86_64_att_asm_mswin(ParsingContext* context, Node* progra
         default:
             break;
         case NODE_TYPE_FUNCTION_CALL:
-            // TODO: Actually codegen arguments expressions.
-            tmpnode = expression->children;
+            // TODO: Actually codegen argument expressiobs.
+            tmpnode = expression->children->next_child->children;
             while (tmpnode) {
                 switch (tmpcount) {
                 default:
+                    printf("TODO: Codegen stack allocated arguments\n");
                     // stack stuff
                     break;
                 case 0:
-                    fwrite_bytes("mov ", code);
+                    fwrite_bytes("mov $", code);
                     // TODO: FIXME: This assumes integer type, and is bad bad bad!!!
                     fwrite_integer(tmpnode->value.integer, code);
-                    fwrite_line(", %rax", code);
+                    fwrite_line(", %rcx", code);
+                    break;
+                case 1:
+                    fwrite_bytes("mov $", code);
+                    // TODO: FIXME: This assumes integer type, and is bad bad bad!!!
+                    fwrite_integer(tmpnode->value.integer, code);
+                    fwrite_line(", %rdx", code);
+                    break;
+                case 2:
+                    fwrite_bytes("mov $", code);
+                    // TODO: FIXME: This assumes integer type, and is bad bad bad!!!
+                    fwrite_integer(tmpnode->value.integer, code);
+                    fwrite_line(", %r8", code);
+                    break;
+                case 3:
+                    fwrite_bytes("mov $", code);
+                    // TODO: FIXME: This assumes integer type, and is bad bad bad!!!
+                    fwrite_integer(tmpnode->value.integer, code);
+                    fwrite_line(", %r9", code);
                     break;
                 }
                 tmpnode = tmpnode->next_child;
-                tmpnode += 1;
+                tmpcount += 1;
             }
-
-            fwrite_bytes("call", code);
-            fwrite_bytes(expression->children->value.symbol, code);
+            fwrite_bytes("call ", code);
+            fwrite_line(expression->children->value.symbol, code);
             break;
         case NODE_TYPE_VARIABLE_REASSIGNMENT:
             // TODO: Evaluate reassignment expression and get return value
@@ -159,7 +176,6 @@ Error codegen_program_x86_64_att_asm_mswin(ParsingContext* context, Node* progra
             // TODO: FIXME: This assumes integer type, and is bad bad bad!!!
             fwrite_integer(expression->children->next_child->value.integer, code);
             fwrite_line(", (%rax)", code);
-
             break;
         }
         expression = expression->next_child;
@@ -185,7 +201,7 @@ Error codegen_program(CodegenOutputFormat format, ParsingContext* context, Node*
     switch (format) {
     case OUTPUT_FMT_DEFAULT:
     case OUTPUT_FMT_x86_64_AT_T_ASM:
-        return codegen_program_x86_64_att_asm(context, program);
+        return codegen_program_x86_64_att_asm_mswin(context, program);
     }
     return ok;
 }

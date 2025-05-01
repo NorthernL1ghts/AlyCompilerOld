@@ -2,20 +2,7 @@
  * Copyright (c) 2025 NorthernL1ghts
  */
 
-/*
- * SHA HASH: ae76f24f97480e8c662e29f4e745dbb99d8a9ad3d2f502b5c07d12f2aea5aafa
- * Filename: src/parser.c
- * Updated: 2025-05-01, 17:36:02
-*/
-/*
- * Copyright (c) 2025 NorthernL1ghts
- */
 
- /*
-  * SHA HASH: 6edb6fafda9072d35da8cd2905d931236f9cf106ba220f75bcdf16f69ca6e8bb
-  * Filename: src/parser.c
-  * Updated: 2025-05-01, 14:06:24
- */
 #include <parser.h>
 #include <environment.h>
 #include <error.h>
@@ -606,7 +593,7 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
                 Node* param_it = working_result->children->children;
                 environment_set(context->variables, param_it->children, param_it->children->next_child); // Variables: context, name and type.
 
-                // NOTE: When parsing a function, we use this stack and get the 
+                // NOTE: When parsing a function, we use this stack and get the
                 // expression within function body, saving the result.
                 Node* function_body = node_allocate();
                 Node* function_first_expression = node_allocate();
@@ -718,7 +705,7 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
                         node_add_child(working_result, argument_list);
                         working_result = first_argument;
 
-                        // Create a parsing stack with function call operator I guess, 
+                        // Create a parsing stack with function call operator I guess,
                         // and then start parsing function argument expressions.
                         context = parse_context_create(context);
                         context->operator = node_symbol("funcall");

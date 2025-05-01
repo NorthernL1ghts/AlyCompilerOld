@@ -2,20 +2,7 @@
  * Copyright (c) 2025 NorthernL1ghts
  */
 
-/*
- * SHA HASH: 333e000bf7a058663e07a4a2f8cb1dafab382921c2d306c251642bc635169e37
- * Filename: src/main.c
- * Updated: 2025-05-01, 17:36:02
-*/
-/*
- * Copyright (c) 2025 NorthernL1ghts
- */
 
- /*
-  * SHA HASH: eba94970d6241850e2846762d1b79ac281123566b46f811e5e19257779b6704c
-  * Filename: src/main.c
-  * Updated: 2025-05-01, 14:06:24
- */
 #include <assert.h>
 #include <codegen.h>
 #include <environment.h>

@@ -1,7 +1,4 @@
 ;#; Copyright (c) 2025 NorthernL1ghts
-;#; SHA HASH: dc44401cac8bb6517d2d3fdf0522c2971e122be9a13c9287f58c9cf5ab3241e0
-;#; Filename: isel-grammar.bnf
-;#; Updated: 2025-05-01, 17:36:02
 
 <match-pattern> ::= "match" <inst-spec> { <inst-spec> }
                     ( "emit" | "discard" ) ( <inst-block> | <inst-spec> )

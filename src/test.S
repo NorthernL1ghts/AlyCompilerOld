@@ -1,7 +1,4 @@
 ;#; Copyright (c) 2025 NorthernL1ghts
-;#; SHA HASH: 7105755354a3f395f89fc2492a27c4063f44f709d1afc257d485eeeb5006513a
-;#; Filename: src/test.S
-;#; Updated: 2025-05-01, 12:57:40
 
 .data
 gStart:

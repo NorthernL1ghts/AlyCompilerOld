@@ -2,11 +2,7 @@
  * Copyright (c) 2025 NorthernL1ghts
  */
 
-/*
- * SHA HASH: c38ce8a7ccc4496ae3f60c00ce00d10d7472867dc9d324a31d86d78486eba81d
- * Filename: src/environment.h
- * Updated: 2025-05-01, 17:36:02
-*/
+
 #ifndef COMPILER_ENVIRONMENT_H
 #define COMPILER_ENVIRONMENT_H
 

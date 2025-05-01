@@ -2,11 +2,6 @@
  * Copyright (c) 2025 NorthernL1ghts
  */
 
-/*
- * SHA HASH: 2b50add1fc5d21c18265fbbc4ba7ed4b819d50a1d59af4aad4962da65ae1090d
- * Filename: src/error.h
- * Updated: 2025-05-01, 17:36:02
-*/
 #ifndef COMPILER_ERROR_H
 #define COMPILER_ERROR_H
 
