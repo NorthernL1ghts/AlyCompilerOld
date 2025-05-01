@@ -19,7 +19,7 @@ It is highly recommended to use tree-sitter if you can, as it provides much bett
 - **[CMake](https://cmake.org/)** (Version 3.14 or later)
 - **[GCC](https://gcc.gnu.org/)** or any other C Compiler (e.g., Clang, MSVC)
 
-NOTE: If on Windows and using Visual Studio, see this document [here](https://github.com/NorthernL1ghts/AlyCompiler/blob/main/Docs/VISUAL_STUDIO.org) instead.
+NOTE: If on Windows and using Visual Studio, see this document [here](https://github.com/NorthernL1ghts/AlyCompiler/blob/main/Documents/VISUAL_STUDIO.org) instead.
 
 ### 1️⃣ Generate Build Tree
 
