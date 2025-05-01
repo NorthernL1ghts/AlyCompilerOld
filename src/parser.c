@@ -554,9 +554,10 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 
                 node_add_child(working_result, parameter_list);
 
+                // Parse return type.
                 EXPECT(expected, ":", current_token, token_length, end);
                 // TODO/FIXME: Should we allow implicit return type?
-                if (!expected.found) {
+                if (expected.done || !expected.found) {
                     ERROR_PREP(err, ERROR_SYNTAX, "Function definition requires return type annotation following parameter list");
                     return err;
                 }
@@ -564,6 +565,13 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
                 lex_advance(&current_token, &token_length, end);
                 Node* function_return_type = node_symbol_from_buffer(current_token.beginning, token_length);
                 node_add_child(working_result, function_return_type);
+
+                // Parse function body.
+                EXPECT(expected, "{", current_token, token_length, end);
+                if (expected.done || !expected.found) {
+                    ERROR_PREP(err, ERROR_SYNTAX, "Function definition requires body following return type: \"{ a + b }\"");
+                    return err;
+                }
 
                 // TODO: Parse body of function.
                 // Before parsing, enter nested scope with parameter names bound to variables
@@ -580,6 +588,14 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 
                 context = parse_context_create(context);
                 context->operator = node_symbol("defun");
+
+                Node* param_it = working_result->children->children;
+                environment_set(context->variables, param_it->children, param_it->children->next_child); // Variables: context, name and type.
+
+                Node* function_first_expression = node_allocate();
+                node_add_child(working_result, function_first_expression);
+                working_result = function_first_expression;
+                continue;
             }
             else {
 
@@ -692,8 +708,14 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
         }
 
         if (strcmp(operator->value.symbol, "defun") == 0) {
-            // Evaluate next expression value unless it's a closing brace.
-            printf("here\n");
+            // TODO: Evaluate next expression value unless it's a closing brace.
+            EXPECT(expected, "}", current_token, token_length, end);
+            print_token(current_token);
+            putchar('\n');
+            print_node(result, 0);
+            if (expected.found) {
+                break; // ??
+            }
         }
         return ok;
 
