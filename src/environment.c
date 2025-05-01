@@ -3,9 +3,9 @@
  */
 
 /*
- * SHA HASH: 4805f39caba04cc6edda985351caa1fe8463ee7f4a06e0871a681f972e83422a
+ * SHA HASH: 7f59e9f4cc3172a8aec7fc1c220a3846f5877009b67edfe1d0bfc472fd37ac41
  * Filename: src/environment.c
- * Updated: 2025-05-01, 14:06:24
+ * Updated: 2025-05-01, 17:36:02
 */
 #include <environment.h>
 #include <parser.h>

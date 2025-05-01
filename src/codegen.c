@@ -2,12 +2,6 @@
  * Copyright (c) 2025 NorthernL1ghts
  */
 
-/*
- * SHA HASH: a6abc53d21da4adaf5e0e178bd8918d0c0fa6f4161ca63e9330d18f4916445f1
- * Filename: src/codegen.c
- * Updated: 2025-05-01, 14:06:24
-*/
-
 #include <codegen.h>
 #include <environment.h>
 #include <error.h>
@@ -94,8 +88,11 @@ Error codegen_program_x86_64_att_asm_data_section(ParsingContext* context, FILE*
     return err;
 }
 
-Error codegen_program_x86_64_att_asm(ParsingContext* context, Node* program) {
+/// Emit x86_64 AT&T Assembly with MS Window's function calling convention.
+/// Arguments passed in: RCX, RDX, R8, R9 -> stack
+Error codegen_program_x86_64_att_asm_mswin(ParsingContext* context, Node* program) {
     Error err = ok;
+
     if (!program || program->type != NODE_TYPE_PROGRAM) {
         ERROR_PREP(err, ERROR_ARGUMENTS, "codegen_program() requires program!");
         return err;
@@ -123,13 +120,38 @@ Error codegen_program_x86_64_att_asm(ParsingContext* context, Node* program) {
     fwrite_line("sub $32, %rsp", code); // Again, this isn't really needed but may keep 64 byte alignment.
 
     Node* expression = program->children;
+    Node* tmpnode = node_allocate();
+    size_t tmpcount;
     while (expression) {
+        tmpcount = 0;
         switch (expression->type) {
         default:
             break;
+        case NODE_TYPE_FUNCTION_CALL:
+            // TODO: Actually codegen arguments expressions.
+            tmpnode = expression->children;
+            while (tmpnode) {
+                switch (tmpcount) {
+                default:
+                    // stack stuff
+                    break;
+                case 0:
+                    fwrite_bytes("mov ", code);
+                    // TODO: FIXME: This assumes integer type, and is bad bad bad!!!
+                    fwrite_integer(tmpnode->value.integer, code);
+                    fwrite_line(", %rax", code);
+                    break;
+                }
+                tmpnode = tmpnode->next_child;
+                tmpnode += 1;
+            }
+
+            fwrite_bytes("call", code);
+            fwrite_bytes(expression->children->value.symbol, code);
+            break;
         case NODE_TYPE_VARIABLE_REASSIGNMENT:
             // TODO: Evaluate reassignment expression and get return value
-            // So that we can actually use.
+            //       That we can actually use.
             fwrite_bytes("lea ", code);
             fwrite_bytes(expression->children->value.symbol, code);
             fwrite_line("(%rip), %rax", code);
@@ -142,6 +164,7 @@ Error codegen_program_x86_64_att_asm(ParsingContext* context, Node* program) {
         }
         expression = expression->next_child;
     }
+    free(tmpnode);
 
     // Top level program footer
     fwrite_line("add $32, %rsp", code);

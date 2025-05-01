@@ -1,7 +1,4 @@
 ;#; Copyright (c) 2025 NorthernL1ghts
-;#; SHA HASH: 51d52dda041efadf948bad1307f0db5346971d7149dd03ca2fa88ee94de463c3
-;#; Filename: simple.aly
-;#; Updated: 2025-05-01, 14:06:24
 
 a : integer = 69
 a := 420

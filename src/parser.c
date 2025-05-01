@@ -2,6 +2,15 @@
  * Copyright (c) 2025 NorthernL1ghts
  */
 
+/*
+ * SHA HASH: ae76f24f97480e8c662e29f4e745dbb99d8a9ad3d2f502b5c07d12f2aea5aafa
+ * Filename: src/parser.c
+ * Updated: 2025-05-01, 17:36:02
+*/
+/*
+ * Copyright (c) 2025 NorthernL1ghts
+ */
+
  /*
   * SHA HASH: 6edb6fafda9072d35da8cd2905d931236f9cf106ba220f75bcdf16f69ca6e8bb
   * Filename: src/parser.c
@@ -558,9 +567,7 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
                     node_add_child(parameter_list, parameter);
 
                     EXPECT(expected, ",", current_token, token_length, end);
-                    if (expected.found) {
-                        continue;
-                    }
+                    if (expected.found) { continue; }
 
                     EXPECT(expected, ")", current_token, token_length, end);
                     if (!expected.found) {

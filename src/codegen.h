@@ -3,9 +3,9 @@
  */
 
 /*
- * SHA HASH: 04fd962bad7d49dc3efb6afbe5246ce2a6c05715e008b95d08176c07accabe9e
+ * SHA HASH: e7c44e77e4057579030b5cb459f4306804a2e487f550f09b59aece803ec970e7
  * Filename: src/codegen.h
- * Updated: 2025-05-01, 14:06:24
+ * Updated: 2025-05-01, 17:36:02
 */
 #ifndef COMPILER_CODEGEN_H
 #define COMPILER_CODEGEN_H

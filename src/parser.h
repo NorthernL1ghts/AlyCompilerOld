@@ -2,6 +2,15 @@
  * Copyright (c) 2025 NorthernL1ghts
  */
 
+/*
+ * SHA HASH: 428e424abede50f67a0da9ba7874a0247ce65f1faf5cd2a81c3eefb2c6c23cd1
+ * Filename: src/parser.h
+ * Updated: 2025-05-01, 17:36:02
+*/
+/*
+ * Copyright (c) 2025 NorthernL1ghts
+ */
+
  /*
   * SHA HASH: dca3ad33d2e103942e680924628a22c9fb8766b11e9d7f23e084a68bed6efa4e
   * Filename: src/parser.h
