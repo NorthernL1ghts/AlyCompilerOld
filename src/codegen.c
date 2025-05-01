@@ -113,6 +113,7 @@ Error codegen_program_x86_64_att_asm_mswin(ParsingContext* context, Node* progra
     fwrite_line(".section .text", code);
 
     // Top level program header
+    fwrite_line(".global _start:", code);
     fwrite_line("_start:", code);
     fwrite_line("push %rbp", code); // Preserve base pointer mostly redundant, we don't really need to do this.
     fwrite_line("mov %rsp, %rbp", code);

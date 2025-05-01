@@ -3,6 +3,7 @@
 b: .space 8
 a: .space 8
 .section .text
+.global _start:
 _start:
 push %rbp
 mov %rsp, %rbp
