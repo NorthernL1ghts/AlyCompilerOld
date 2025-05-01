@@ -33,8 +33,8 @@ target_include_directories(
 # Compiler options for GCC and Clang (strict warnings)
 if(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID STREQUAL "Clang")
     target_compile_options(
-        alyc
-        PRIVATE
+        # alyc
+        # PRIVATE
         # -Wall
         # -Wextra
         # -pedantic
@@ -45,8 +45,8 @@ endif()
 # Suppress specific MSVC warnings while keeping /W4 for general checks
 if(MSVC)
     target_compile_options(
-        alyc
-        PRIVATE
+        # alyc
+        # PRIVATE
         # /W4        # High warning level
         # /WX        # Treat warnings as errors
         # /wd4996    # Suppress 'unsafe' functions like sprintf
