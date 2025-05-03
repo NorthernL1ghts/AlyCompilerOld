@@ -21,7 +21,7 @@
 5. **Prioritizing Simplicity**
    - Keep language design minimalistic and focused.
 6. **Potential Transpilation**
-   - Consider transpiling to C or another lower-level language in the future.
+   - Consider trans-piling to C or another lower-level language in the future.
 7. **Top-Level Declarations**
    - Evaluate whether to allow top-level function declarations like Python (e.g., `foo()`).
    - Not sure if this aligns with our design philosophy.
