@@ -5,7 +5,7 @@
 - [x] **Lexing**
   Convert source code into tokens.
 
-- [ ] **Parsing**
+- [x] **Parsing**
   Transform tokens into an AST (Abstract Syntax Tree) — a structure representing the program.
 
 - [ ] **Compilation**

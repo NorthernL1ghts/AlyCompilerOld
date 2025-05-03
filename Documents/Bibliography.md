@@ -59,3 +59,8 @@
 
 - [Tree-Sitter Overview](https://tree-sitter.github.io/tree-sitter/) - A parser generator for syntax highlighting and code analysis.
 - [Clang-Tidy](https://clang.llvm.org/extra/clang-tidy/) - A tool for static analysis and linting in C++.
+
+
+### Things that I need to add to this list
+
+- [Microsoft Window's x86_64 / x64 naming conventions](https://learn.microsoft.com/en-us/cpp/build/x64-calling-convention?view=msvc-170)

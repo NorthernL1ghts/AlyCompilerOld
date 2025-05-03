@@ -2,7 +2,7 @@
 
 ## Core Features
 
-- [ ] Statically typed architecture
+- [x] Statically typed architecture
 - [x] Whitespace agnostic parsing
 - [x] Custom comment delimiters (`;` for assembly-like familiarity, `#` for Python-like usage)
 - [x] Avoiding semicolon (`;`) as a line terminator (delimiter)

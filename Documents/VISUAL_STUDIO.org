@@ -2,7 +2,7 @@
 
 Although it is not recommended, if you prefer to work in Visual Studio, the following is a guide to help you out.
 
-It should be noted that Aly compiler likely does not compile with MSVC due to the use of ~typeof~, a C23 language feature currently only supported by GCC and Clang. Luckily, Visual Studio can work with =clang-cl=, a tool that mimics MSVC on the command line but is just Clang in a trenchcoat.
+It should be noted that Aly compiler likely does not compile with MSVC due to the use of ~typeof~, a C23 language feature currently only supported by GCC and Clang. Luckily, Visual Studio can work with =clang-cl=, a tool that mimics MSVC on the command line but is just Clang in a trench-coat.
 
 NOTE: This assumes you already have some version of Visual Studio installed, and that you are on Windows.
 
