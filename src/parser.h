@@ -1,21 +1,16 @@
 /*
- * Copyright (c) 2025 NorthernL1ghts
+ * Copyright (c) 2025 NorthernL1ghts. All rights reserved.
+ *
+ * This file is part of the Aly Language / AlyCompiler.
+ * Unauthorized copying, modification, or distribution of this file,
+ * via any medium, is strictly prohibited except as permitted under
+ * the terms outlined in the LICENSE file.
+ *
+ * For licensing details, contributions, or inquiries, refer to LICENSE
+ * or contact:
+ * NorthernL1ghts Software Division
  */
 
-/*
- * SHA HASH: 428e424abede50f67a0da9ba7874a0247ce65f1faf5cd2a81c3eefb2c6c23cd1
- * Filename: src/parser.h
- * Updated: 2025-05-01, 17:36:02
-*/
-/*
- * Copyright (c) 2025 NorthernL1ghts
- */
-
- /*
-  * SHA HASH: dca3ad33d2e103942e680924628a22c9fb8766b11e9d7f23e084a68bed6efa4e
-  * Filename: src/parser.h
-  * Updated: 2025-05-01, 14:06:24
- */
 #ifndef COMPILER_PARSER_H
 #define COMPILER_PARSER_H
 

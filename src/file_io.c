@@ -1,7 +1,15 @@
 /*
- * Copyright (c) 2025 NorthernL1ghts
+ * Copyright (c) 2025 NorthernL1ghts. All rights reserved.
+ *
+ * This file is part of the Aly Language / AlyCompiler.
+ * Unauthorized copying, modification, or distribution of this file,
+ * via any medium, is strictly prohibited except as permitted under
+ * the terms outlined in the LICENSE file.
+ *
+ * For licensing details, contributions, or inquiries, refer to LICENSE
+ * or contact:
+ * NorthernL1ghts Software Division
  */
-
 
 #include <file_io.h>
 #include <errno.h>
@@ -12,7 +20,7 @@
 
 size_t file_size(FILE* file) {
     if (!file) { return 0; }
-    // Cast required for cross-compatability.
+    // Cast required for cross-compatibility.
     fpos_t original;
     if (fgetpos(file, &original) != 0) {
         printf("fgetpos() failed: %i\n", errno);

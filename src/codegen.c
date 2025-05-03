@@ -1,5 +1,14 @@
 /*
- * Copyright (c) 2025 NorthernL1ghts
+ * Copyright (c) 2025 NorthernL1ghts. All rights reserved.
+ *
+ * This file is part of the Aly Language / AlyCompiler.
+ * Unauthorized copying, modification, or distribution of this file,
+ * via any medium, is strictly prohibited except as permitted under
+ * the terms outlined in the LICENSE file.
+ *
+ * For licensing details, contributions, or inquiries, refer to LICENSE
+ * or contact:
+ * NorthernL1ghts Software Division
  */
 
 #include <codegen.h>
@@ -59,7 +68,7 @@ Error fwrite_integer(long long integer, FILE* file) {
 Error codegen_program_x86_64_att_asm_data_section(ParsingContext* context, FILE* code) {
     Error err = ok;
 
-    // TODO: Deal with initialization of global variables somehow. Not really sure how to do this yet.
+    // TODO: Deal with initialization of global variables somehow.
     fwrite_line(".section .data", code);
     if (err.type) { return err; }
 
@@ -73,8 +82,7 @@ Error codegen_program_x86_64_att_asm_data_section(ParsingContext* context, FILE*
         // Get type information of type from type context usign type symbol ID.
         environment_get(*context->types, type_id, type_info);
 
-        // Write identifier corresponding to variable
-        // (pass through literally, for now).
+        // Write identifier corresponding to variable (pass through literally, for now).
         err = fwrite_bytes(var_id->value.symbol, code);
         if (err.type) { return err; }
         err = fwrite_bytes(": .space ", code);
@@ -111,6 +119,28 @@ Error codegen_program_x86_64_att_asm_mswin(ParsingContext* context, Node* progra
     codegen_program_x86_64_att_asm_data_section(context, code);
 
     fwrite_line(".section .text", code);
+
+    // Generate global functions
+    Node* function = node_allocate();
+    Binding* function_it = context->functions->bind;
+    while (function_it) {
+        Node* function_id = function_it->id;
+        function = function_it->value;
+        function_it = function_it->next;
+
+        print_node(function, 0);
+        putchar('\n');
+
+        // Write identifier corresponding to variable (pass through literally, for now).
+        err = fwrite_bytes(function_id->value.symbol, code);
+        if (err.type) { return err; }
+        err = fwrite_line(":", code);
+        if (err.type) { return err; }
+
+        // TODO: Write function body? -- 14433
+    }
+    free(function);
+    return err;
 
     // Top level program header
     fwrite_line(".global _start:", code);
