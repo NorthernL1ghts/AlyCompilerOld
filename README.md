@@ -1,12 +1,9 @@
 # AlyCompiler
 
 ![License](https://img.shields.io/badge/License-MIT-blue)
-![Language](https://img.shields.io/github/languages/top/NorthernL1ghts/AlyCompiler)
-![Windows](https://img.shields.io/badge/Platform-Windows-blue)
-![Linux](https://img.shields.io/badge/Platform-Linux-yellow)
-![x86-64](https://img.shields.io/badge/Arch-x86--64-blue)
-![x64](https://img.shields.io/badge/Arch-x64-green)
-
+![Platform](https://img.shields.io/badge/Platform-Windows%20|%20Linux-blue)
+![Arch](https://img.shields.io/badge/Arch-x86--64%20|%20x64-green)
+![Language](https://img.shields.io/badge/Language-C-blue)
 ![AlyCompiler Logo](/Resources/AlyCompilerLogo.png)
 
 I don't really have a plan, I just want to make a compiler; it sounds fun. There's an example of some code that should be valid and able to be compile in [`example`](example.aly) file.
