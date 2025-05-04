@@ -758,7 +758,7 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
         if (strcmp(operator->value.symbol, "funcall") == 0) {
             EXPECT(expected, ")", current_token, token_length, end);
             if (expected.done || expected.found) {
-                printf("Found closing parenthesis\n");
+                //printf("Found closing parenthesis\n"); // Do we need this, isn't this just DEBUG?
                 break;
             }
 

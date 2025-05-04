@@ -82,8 +82,7 @@ Error codegen_program_x86_64_att_asm_data_section(ParsingContext* context, FILE*
         // Get type information of type from type context usign type symbol ID.
         environment_get(*context->types, type_id, type_info);
 
-        // Write identifier corresponding to variable
-        // (pass through literally, for now).
+        // Write identifier corresponding to variable (pass through literally, for now).
         err = fwrite_bytes(var_id->value.symbol, code);
         if (err.type) { return err; }
         err = fwrite_bytes(": .space ", code);
@@ -97,7 +96,8 @@ Error codegen_program_x86_64_att_asm_data_section(ParsingContext* context, FILE*
     return err;
 }
 
-Error codegen_expression_list_x86_64_att_asm_mswin(Node* expression, FILE* code) {
+// If TOP_LEVEL is non-zero, it is assumed that expression are in top level of program
+Error codegen_expression_list_x86_64_att_asm_mswin(ParsingContext* context, Node* expression, FILE* code) {
     Node* tmpnode = node_allocate();
     size_t tmpcount;
     while (expression) {
@@ -106,7 +106,7 @@ Error codegen_expression_list_x86_64_att_asm_mswin(Node* expression, FILE* code)
         default:
             break;
         case NODE_TYPE_FUNCTION_CALL:
-            // TODO: Actually codegen argument expressiobs.
+            // TODO: Actually codegen argument expressions.
             tmpnode = expression->children->next_child->children;
             while (tmpnode) {
                 switch (tmpcount) {
@@ -146,22 +146,33 @@ Error codegen_expression_list_x86_64_att_asm_mswin(Node* expression, FILE* code)
             fwrite_line(expression->children->value.symbol, code);
             break;
         case NODE_TYPE_VARIABLE_REASSIGNMENT:
-            // TODO: Evaluate reassignment expression and get return value
-            //       That we can actually use.
-            fwrite_bytes("lea ", code);
-            fwrite_bytes(expression->children->value.symbol, code);
-            fwrite_line("(%rip), %rax", code);
-            fwrite_bytes("movq $", code);
-            // TODO: FIXME: This assumes integer type, and is bad bad bad!!!
-            fwrite_integer(expression->children->next_child->value.integer, code);
-            fwrite_line(", (%rax)", code);
+            // TODO: Evaluate reassignment expression and get return value,
+            //       that way we can actually use.
+
+            // Global var reassign only, the code below checks for top level,
+            // if not then we are in nested codegen context scope.
+            if (!context->parent) {
+                fwrite_bytes("lea ", code);
+                fwrite_bytes(expression->children->value.symbol, code);
+                fwrite_line("(%rip), %rax", code);
+                fwrite_bytes("movq $", code);
+                // TODO: FIXME: This assumes integer type, and is bad bad bad!!!
+                fwrite_integer(expression->children->next_child->value.integer, code);
+                fwrite_line(", (%rax)", code);
+            }
+            else {
+                // Get index of argument within function parameter list
+                // Use index of argument to write to proper address/register
+            }
             break;
         }
+
         expression = expression->next_child;
     }
     free(tmpnode);
-}
 
+    return ok;
+}
 
 /// Emit x86_64 AT&T Assembly with MS Window's function calling convention.
 /// Arguments passed in: RCX, RDX, R8, R9 -> stack
@@ -194,8 +205,7 @@ Error codegen_program_x86_64_att_asm_mswin(ParsingContext* context, Node* progra
         Node* function = function_it->value;
         function_it = function_it->next;
 
-        // Write identifier corresponding to variable
-        // (pass through literally, for now).
+        // Write identifier corresponding to variable (pass through literally, for now).
         err = fwrite_bytes(function_id->value.symbol, code);
         if (err.type) { return err; }
         err = fwrite_line(":", code);
@@ -205,6 +215,12 @@ Error codegen_program_x86_64_att_asm_mswin(ParsingContext* context, Node* progra
         fwrite_line("mov %rsp, %rbp", code);
         fwrite_line("sub $32, %rsp", code);
 
+        context = parse_context_create(context);
+        codegen_expression_list_x86_64_att_asm_mswin(context, function->children->next_child->next_child->children, code);
+        // TODO: Free used context.
+        context = context->parent;
+
+        fwrite_line("add $32, %rsp", code);
         fwrite_line("pop %rbp", code);
         fwrite_line("ret", code);
     }
@@ -217,11 +233,10 @@ Error codegen_program_x86_64_att_asm_mswin(ParsingContext* context, Node* progra
     fwrite_line("sub $32, %rsp", code);
 
     // Program body
-    codegen_expression_list_x86_64_att_asm_mswin(program->children, code);
+    codegen_expression_list_x86_64_att_asm_mswin(context, program->children, code);
 
     // Top level program footer
     fwrite_line("add $32, %rsp", code);
-    fwrite_line("movq (%rax), %rax", code);
     fwrite_line("pop %rbp", code);
     fwrite_line("ret", code);
 
