@@ -13,7 +13,6 @@
 # This is also a comment.
 
 ; This is a variable declaration with initialization.
-
 a : integer = 69
 
 ; This is a variable re-assignment.
@@ -30,6 +29,7 @@ b := 42
 ; This is a function definition with two integer arguments that returns
 ; an integer.
 defun foo (c:integer, b:integer):integer {
+    ; These lines of code are to test function body.
     c := 10
     c := 5
     c := 42
