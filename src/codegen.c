@@ -97,61 +97,7 @@ Error codegen_program_x86_64_att_asm_data_section(ParsingContext* context, FILE*
     return err;
 }
 
-/// Emit x86_64 AT&T Assembly with MS Window's function calling convention.
-/// Arguments passed in: RCX, RDX, R8, R9 -> stack
-Error codegen_program_x86_64_att_asm_mswin(ParsingContext* context, Node* program) {
-    Error err = ok;
-    if (!program || program->type != NODE_TYPE_PROGRAM) {
-        ERROR_PREP(err, ERROR_ARGUMENTS, "codegen_program() requires program!");
-        return err;
-    }
-
-    FILE* code = fopen("code.S", "wb");
-    if (!code) {
-        ERROR_PREP(err, ERROR_GENERIC, "codegen_program() could not open code file");
-        return err;
-    }
-
-    err = fwrite_bytes(";;#; ", code);
-    if (err.type) { return err; }
-    fwrite_line((char*)codegen_header, code);
-    if (err.type) { return err; }
-
-    codegen_program_x86_64_att_asm_data_section(context, code);
-
-    fwrite_line(".section .text", code);
-
-    // Generate global functions
-    Binding* function_it = context->functions->bind;
-    while (function_it) {
-        Node* function_id = function_it->id;
-        Node* function = function_it->value;
-        function_it = function_it->next;
-
-        // Write identifier corresponding to variable
-        // (pass through literally, for now).
-        err = fwrite_bytes(function_id->value.symbol, code);
-        if (err.type) { return err; }
-        err = fwrite_line(":", code);
-        if (err.type) { return err; }
-
-        // Function body
-        fwrite_line("push %rbp", code);
-        fwrite_line("mov %rsp, %rbp", code);
-        fwrite_line("sub $32, %rsp", code);
-
-        fwrite_line("pop %rbp", code);
-        fwrite_line("ret", code);
-    }
-
-    // Top level program header
-    fwrite_line(".global _start", code);
-    fwrite_line("_start:", code);
-    fwrite_line("push %rbp", code);
-    fwrite_line("mov %rsp, %rbp", code);
-    fwrite_line("sub $32, %rsp", code);
-
-    Node* expression = program->children;
+Error codegen_expression_list_x86_64_att_asm_mswin(Node* expression, FILE* code) {
     Node* tmpnode = node_allocate();
     size_t tmpcount;
     while (expression) {
@@ -214,6 +160,64 @@ Error codegen_program_x86_64_att_asm_mswin(ParsingContext* context, Node* progra
         expression = expression->next_child;
     }
     free(tmpnode);
+}
+
+
+/// Emit x86_64 AT&T Assembly with MS Window's function calling convention.
+/// Arguments passed in: RCX, RDX, R8, R9 -> stack
+Error codegen_program_x86_64_att_asm_mswin(ParsingContext* context, Node* program) {
+    Error err = ok;
+    if (!program || program->type != NODE_TYPE_PROGRAM) {
+        ERROR_PREP(err, ERROR_ARGUMENTS, "codegen_program() requires program!");
+        return err;
+    }
+
+    FILE* code = fopen("code.S", "wb");
+    if (!code) {
+        ERROR_PREP(err, ERROR_GENERIC, "codegen_program() could not open code file");
+        return err;
+    }
+
+    err = fwrite_bytes(";;#; ", code);
+    if (err.type) { return err; }
+    fwrite_line((char*)codegen_header, code);
+    if (err.type) { return err; }
+
+    codegen_program_x86_64_att_asm_data_section(context, code);
+
+    fwrite_line(".section .text", code);
+
+    // Generate global functions
+    Binding* function_it = context->functions->bind;
+    while (function_it) {
+        Node* function_id = function_it->id;
+        Node* function = function_it->value;
+        function_it = function_it->next;
+
+        // Write identifier corresponding to variable
+        // (pass through literally, for now).
+        err = fwrite_bytes(function_id->value.symbol, code);
+        if (err.type) { return err; }
+        err = fwrite_line(":", code);
+        if (err.type) { return err; }
+
+        fwrite_line("push %rbp", code);
+        fwrite_line("mov %rsp, %rbp", code);
+        fwrite_line("sub $32, %rsp", code);
+
+        fwrite_line("pop %rbp", code);
+        fwrite_line("ret", code);
+    }
+
+    // Top level program header
+    fwrite_line(".global _start", code);
+    fwrite_line("_start:", code);
+    fwrite_line("push %rbp", code);
+    fwrite_line("mov %rsp, %rbp", code);
+    fwrite_line("sub $32, %rsp", code);
+
+    // Program body
+    codegen_expression_list_x86_64_att_asm_mswin(program->children, code);
 
     // Top level program footer
     fwrite_line("add $32, %rsp", code);
