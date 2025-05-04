@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2025 NorthernL1ghts. All rights reserved.
  *
- * This file is part of the Aly Language / AlyCompiler.
+ * This file is part of the AlyCompiler.
  * Unauthorized copying, modification, or distribution of this file,
  * via any medium, is strictly prohibited except as permitted under
  * the terms outlined in the LICENSE file.
@@ -216,7 +216,7 @@ Error codegen_program_x86_64_att_asm_mswin(ParsingContext* context, Node* progra
         fwrite_line("sub $32, %rsp", code);
 
         context = parse_context_create(context);
-        codegen_expression_list_x86_64_att_asm_mswin(context, function->children->next_child->next_child->children, code);
+        codegen_expression_list_x86_64_att_asm_mswin(context, function->children->next_child->next_child->children, code); // FIXME: This is awful.
         // TODO: Free used context.
         context = context->parent;
 

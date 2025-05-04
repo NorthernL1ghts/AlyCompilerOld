@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2025 NorthernL1ghts. All rights reserved.
  *
- * This file is part of the Aly Language / AlyCompiler.
+ * This file is part of the AlyCompiler.
  * Unauthorized copying, modification, or distribution of this file,
  * via any medium, is strictly prohibited except as permitted under
  * the terms outlined in the LICENSE file.
@@ -757,10 +757,7 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
         }
         if (strcmp(operator->value.symbol, "funcall") == 0) {
             EXPECT(expected, ")", current_token, token_length, end);
-            if (expected.done || expected.found) {
-                //printf("Found closing parenthesis\n"); // Do we need this, isn't this just DEBUG?
-                break;
-            }
+            if (expected.done || expected.found) { break; }
 
             // FIXME: Should comma be optional?
             EXPECT(expected, ",", current_token, token_length, end);
