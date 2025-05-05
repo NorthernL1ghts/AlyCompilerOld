@@ -53,6 +53,8 @@ as code.S -o code.o
 ld code.o -o code.exe && code.exe
 ```
 
+Or if you have MinGW installed and you know your path for it you can do this:
+
 ```sh
 as code.S -o code.o
 ld code.o -L<path-to-MinGW-lib> -lmsvcrt -o code.exe
