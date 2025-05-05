@@ -154,11 +154,27 @@ Error codegen_expression_x86_64_mswin(FILE* code, Register* r, CodegenContext* c
             //break;
         }
         else {
-            err = codegen_expression_x86_64_mswin(code, r, cg_context, context, expression->children->next_child);
-            if (err.type) { return err; }
-            char* result_register = register_name(r, expression->children->next_child->result_register);
-            fprintf(code, "mov %s, %s\n", result_register, symbol_to_address(expression->children));
-            register_deallocate(r, expression->children->next_child->result_register);
+            char* result = NULL;
+            if (expression->children->next_child->type == NODE_TYPE_INTEGER) {
+                // Slight optimisation so we don't have to go through rax, 
+                // we can just go directly to integer..
+                result = malloc(64);
+                if (!result) {
+                    ERROR_PREP(err, ERROR_GENERIC, "Could not allocate integer result string buffer :(");
+                    return err;
+                }
+                snprintf(result, 64, "$%lld", expression->children->next_child->value.integer);
+                result = register_name(r, expression->children->next_child->result_register);
+                fprintf(code, "mov %s, %s\n", result, symbol_to_address(expression->children));
+                free(result);
+            }
+            else {
+                err = codegen_expression_x86_64_mswin(code, r, cg_context, context, expression->children->next_child);
+                if (err.type) { return err; }
+                result = register_name(r, expression->children->next_child->result_register);
+                fprintf(code, "mov %s, %s\n", result, symbol_to_address(expression->children));
+                register_deallocate(r, expression->children->next_child->result_register);
+            }
         }
         break;
     }
@@ -264,7 +280,7 @@ Error codegen_program_x86_64_mswin(FILE* code, CodegenContext* cg_context, Parsi
         expression = expression->next_child;
     }
 
-    fprintf(code, "mov $0, %%rax\n"); // This is the return code for 'main'.
+    fprintf(code, "mov $69, %%rax\n"); // This is the return code for 'main'.
     fprintf(code, "%s", function_footer_x86_64);
 
     return ok;
