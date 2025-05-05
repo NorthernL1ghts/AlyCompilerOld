@@ -64,3 +64,5 @@
 ### Things that I need to add to this list
 
 - [Microsoft Window's x86_64 / x64 naming conventions](https://learn.microsoft.com/en-us/cpp/build/x64-calling-convention?view=msvc-170)
+
+[ASCII table](https://commons.wikimedia.org/wiki/File:ASCII-Table.svg)
