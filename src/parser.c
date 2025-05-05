@@ -291,7 +291,7 @@ void print_node(Node* node, size_t indent_level) {
         }
         break;
     case NODE_TYPE_BINARY_OPERATOR:
-        printf("TODO: print_node() BINARY_OPERATOR");
+        printf("BINARY_OPERATOR:%s", node->value.symbol);
         break;
     case NODE_TYPE_VARIABLE_REASSIGNMENT:
         printf("VARIABLE REASSIGNMENT");
@@ -499,6 +499,7 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
     Error err = ok;
 
     Node* working_result = result;
+    long long working_precedence = 0;
 
     while ((err = lex_advance(&current_token, &token_length, end)).type == ERROR_NONE) {
         //printf("lexed: "); print_token(current_token); putchar('\n'); // FIXME: We can remove this, just for DEBUG.
@@ -740,12 +741,64 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
             }
         }
 
-        // Look ahead for a binary infix operator
+        // Look ahead for a binary infix operator, right?
+        Token current_copy = current_token;
+        size_t length_copy = token_length;
+        char* end_copy = *end;
+        err = lex_advance(&current_copy, &length_copy, &end_copy);
+        if (err.type != ERROR_NONE) { return err; }
 
+        Node* operator_symbol = node_symbol_from_buffer(current_copy.beginning, length_copy);
+        Node* operator_value = node_allocate();
+        ParsingContext* global = context;
+        while (global->parent) { global = global->parent; }
+        if (environment_get(*global->binary_operators, operator_symbol, operator_value)) {
+            current_token = current_copy;
+            token_length = length_copy;
+            *end = end_copy;
+            long long precedence = operator_value->children->value.integer;
+
+            //printf("Got op. %s with precedence %lld(working %lld)\n", operator_symbol->value.symbol, precedence, working_precedence);
+
+            //printf("working precedence: %lld\n", working_precedence);
+            if (precedence <= working_precedence) {
+                Node* result_copy = node_allocate();
+                node_copy(result, result_copy);
+                result->type = NODE_TYPE_BINARY_OPERATOR;
+                result->value.symbol = operator_symbol->value.symbol;
+                node_add_child(result, result_copy);
+
+                //print_node(result, 0);
+            }
+            else {
+                Node* result_copy = node_allocate();
+                node_copy(working_result, result_copy);
+                working_result->type = NODE_TYPE_BINARY_OPERATOR;
+                working_result->value.symbol = operator_symbol->value.symbol;
+                node_add_child(working_result, result_copy);
+            }
+
+            Node* rhs = node_allocate();
+            node_add_child(working_result, rhs);
+            working_result = rhs;
+
+            working_precedence = precedence;
+
+            free(operator_symbol);
+            free(operator_value);
+
+            continue;
+        }
+        node_free(operator_symbol);
+        free(operator_value);
+
+        // TODO: If it works, update current token
 
         // This operation occurs upon completing integer parsing,
         // effectively clearing the stack.
-        if (!context->parent) { break; }
+        if (!context->parent) {
+            break;
+        }
 
         Node* operator = context->operator;
         if (operator->type != NODE_TYPE_SYMBOL) {
