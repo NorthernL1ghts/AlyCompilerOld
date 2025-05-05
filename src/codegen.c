@@ -156,7 +156,7 @@ Error codegen_expression_x86_64_mswin(FILE* code, Register* r, CodegenContext* c
         else {
             char* result = NULL;
             if (expression->children->next_child->type == NODE_TYPE_INTEGER) {
-                // Slight optimisation so we don't have to go through rax, 
+                // Slight optimisation so we don't have to go through rax,
                 // we can just go directly to integer..
                 result = malloc(64);
                 if (!result) {
@@ -164,8 +164,7 @@ Error codegen_expression_x86_64_mswin(FILE* code, Register* r, CodegenContext* c
                     return err;
                 }
                 snprintf(result, 64, "$%lld", expression->children->next_child->value.integer);
-                result = register_name(r, expression->children->next_child->result_register);
-                fprintf(code, "mov %s, %s\n", result, symbol_to_address(expression->children));
+                fprintf(code, "movq %s, %s\n", result, symbol_to_address(expression->children));
                 free(result);
             }
             else {
