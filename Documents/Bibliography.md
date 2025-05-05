@@ -66,3 +66,4 @@
 - [Microsoft Window's x86_64 / x64 naming conventions](https://learn.microsoft.com/en-us/cpp/build/x64-calling-convention?view=msvc-170)
 
 [ASCII table](https://commons.wikimedia.org/wiki/File:ASCII-Table.svg)
+[Overview of x64 ABI conventions](https://learn.microsoft.com/en-us/cpp/build/x64-software-conventions?view=msvc-170)
