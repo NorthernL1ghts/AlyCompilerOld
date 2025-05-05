@@ -245,7 +245,7 @@ Node* node_symbol_from_buffer(char* buffer, size_t length) {
 }
 
 // Take ownership of type_symbol.
-Error node_add_type(Environment* types, int type, Node* type_symbol, long long byte_size) {
+Error define_type(Environment* types, int type, Node* type_symbol, long long byte_size) {
     assert(types && "Could not add type to NULL environment");
     assert(type_symbol && "Could not add NULL type symbol to types environment");
     assert(byte_size >= 0 && "Can not define new type with zero or negative byte size");
@@ -379,15 +379,29 @@ ParsingContext* parse_context_create(ParsingContext* parent) {
     ctx->types = environment_create(NULL);
     ctx->variables = environment_create(NULL);
     ctx->functions = environment_create(NULL);
+    ctx->binary_operators = environment_create(NULL);
     return ctx;
 }
 
 ParsingContext* parse_context_default_create() {
     ParsingContext* ctx = parse_context_create(NULL);
-    Error err = node_add_type(ctx->types, NODE_TYPE_INTEGER, node_symbol("integer"), sizeof(long long));
+    Error err = define_type(ctx->types, NODE_TYPE_INTEGER, node_symbol("integer"), sizeof(long long));
+
     if (err.type != ERROR_NONE) {
         printf("ERROR: Failed to set builtin type in types environment.\n");
     }
+    // TODO: Should we use type ID's vs type symbols?
+    // FIXME: Use precedence enum!
+    const char* binop_error_message = "ERROR: Failed to set builtin operator in environment.";
+    err = define_binary_operator(ctx, "+", 5, "integer", "integer", "integer");
+    if (err.type != ERROR_NONE) { puts(binop_error_message); }
+    err = define_binary_operator(ctx, "-", 5, "integer", "integer", "integer");
+    if (err.type != ERROR_NONE) { puts(binop_error_message); }
+    err = define_binary_operator(ctx, "*", 10, "integer", "integer", "integer");
+    if (err.type != ERROR_NONE) { puts(binop_error_message); }
+    err = define_binary_operator(ctx, "/", 10, "integer", "integer", "integer");
+    if (err.type != ERROR_NONE) { puts(binop_error_message); }
+
     return ctx;
 }
 
@@ -601,7 +615,6 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
                 Node* param_it = working_result->children->children;
                 while (param_it) {
                     environment_set(context->variables, param_it->children, param_it->children->next_child);
-
                     param_it = param_it->next_child;
                 }
 
@@ -752,7 +765,10 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
         if (strcmp(operator->value.symbol, "defun") == 0) {
             // Evaluate next expression value unless it's a closing brace.
             EXPECT(expected, "}", current_token, token_length, end);
-            if (expected.done || expected.found) { break; }
+            if (expected.done || expected.found) {
+                // TODO: Should we pop parser context here?
+                break;
+            }
 
             context->result->next_child = node_allocate();
             working_result = context->result->next_child;
@@ -808,6 +824,22 @@ Error parse_program(char* filepath, ParsingContext* context, Node* result) {
     }
 
     free(contents);
+    return ok;
+}
 
+Error define_binary_operator(ParsingContext* context, char* operator, int precedence, char* return_type, char* lhs_type, char* rhs_type) {
+    Node* binop = node_allocate();
+    node_add_child(binop, node_integer(precedence));
+    node_add_child(binop, node_integer(return_type));
+    node_add_child(binop, node_integer(lhs_type));
+    node_add_child(binop, node_integer(rhs_type));
+
+    // FIXME: Every binary operator definition is global for now!
+    while (context->parent) { context = context->parent; }
+    int status = environment_set(context->binary_operators, node_symbol(operator), binop);
+    if (status == 0) {
+        ERROR_CREATE(err, ERROR_GENERIC, "Could not define binary operator in environment");
+        return err;
+    }
     return ok;
 }

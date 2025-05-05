@@ -14,7 +14,6 @@
 
 ## Urgent
 
-
 - [ ] **TODO: Add token member to AST node structure**
  - This would allow for much better error messages that point to the source code that the error originates from.
 
@@ -96,7 +95,6 @@
   - It's kind of the same thing we're doing now, just moved into structure data instead of switch case in function.
 
 - [ ] **Add an environment to the parsing context that contains operators to handle**
-
 
 -  [ ] **Convert `Environment` type in an AST Node**
   - This mimics LISP much more closely, and also doesn't change anything from out current linked list implementation.
