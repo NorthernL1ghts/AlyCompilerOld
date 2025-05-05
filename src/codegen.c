@@ -242,10 +242,7 @@ Error codegen_program_x86_64_mswin(FILE* code, CodegenContext* cg_context, Parsi
         free(type_info);
     }
 
-    fprintf(code, ".section .text\n"
-        ".global main\n"
-        "main:\n"
-        "%s", function_header_x86_64);
+    fprintf(code, ".section .text\n");
 
     // Generate global functions
     Binding* function_it = context->functions->bind;
@@ -255,6 +252,11 @@ Error codegen_program_x86_64_mswin(FILE* code, CodegenContext* cg_context, Parsi
         function_it = function_it->next;
         err = codegen_function_x86_64_att_asm_mswin(r, cg_context, context, function_id->value.symbol, function, code);
     }
+
+    fprintf(code,
+        ".global main\n"
+        "main:\n"
+        "%s", function_header_x86_64);
 
     Node* expression = program->children;
     while (expression) {
