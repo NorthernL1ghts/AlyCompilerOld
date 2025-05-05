@@ -206,9 +206,6 @@ Error codegen_function_x86_64_att_asm_mswin(Register* r, CodegenContext* cg_cont
         expression = expression->next_child;
     }
 
-    printf("HERE\n");
-
-
     // Function footer
     fprintf(code, "%s", function_footer_x86_64);
 
@@ -245,7 +242,10 @@ Error codegen_program_x86_64_mswin(FILE* code, CodegenContext* cg_context, Parsi
         free(type_info);
     }
 
-    fprintf(code, "%s", ".section .text\n");
+    fprintf(code, ".section .text\n"
+        ".global main\n"
+        "main:\n"
+        "%s", function_header_x86_64);
 
     // Generate global functions
     Binding* function_it = context->functions->bind;
@@ -262,8 +262,9 @@ Error codegen_program_x86_64_mswin(FILE* code, CodegenContext* cg_context, Parsi
         expression = expression->next_child;
     }
 
-    ERROR_PREP(err, ERROR_TODO, "codegen_program_x86_64_mswin()");
-    return err;
+    fprintf(code, "%s", function_footer_x86_64);
+
+    return ok;
 }
 
 //============================================================== END CG_FMT_x86_64_MSWIN
@@ -280,8 +281,5 @@ Error codegen_program(enum CodegenOutputFormat format, ParsingContext* context, 
         err = codegen_program_x86_64_mswin(code, cg_context, context, program);
     }
     fclose(code);
-    if (err.type) { return err; }
-
-    ERROR_PREP(err, ERROR_TODO, "codegen_program()");
     return err;
 }
