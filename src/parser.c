@@ -392,7 +392,7 @@ ParsingContext* parse_context_default_create() {
     }
     // TODO: Should we use type ID's vs type symbols?
     // FIXME: Use precedence enum!
-    const char* binop_error_message = "ERROR: Failed to set builtin operator in environment.";
+    const char* binop_error_message = "ERROR: Failed to set builtin binary operator in environment.";
     err = define_binary_operator(ctx, "+", 5, "integer", "integer", "integer");
     if (err.type != ERROR_NONE) { puts(binop_error_message); }
     err = define_binary_operator(ctx, "-", 5, "integer", "integer", "integer");
@@ -628,132 +628,123 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
                 context->result = working_result;
                 continue;
             }
-            else {
 
-                // TODO: Check if valid symbol for variable environment,
-                // then attempt to pattern match variable access, assignment,
-                // declaration, or declaration with initialization.
+            // TODO: Check if valid symbol for variable environment,
+            // then attempt to pattern match variable access, assignment,
+            // declaration, or declaration with initialization.
 
-                EXPECT(expected, ":", current_token, token_length, end);
+            EXPECT(expected, ":", current_token, token_length, end);
+            if (expected.found) {
+
+                // Re-assignment of existing variable (look for =)
+                EXPECT(expected, "=", current_token, token_length, end);
                 if (expected.found) {
-
-                    // Re-assignment of existing variable (look for =)
-                    EXPECT(expected, "=", current_token, token_length, end);
-                    if (expected.found) {
-
-                        Node* variable_binding = node_allocate();
-                        // NOTE: The `environment_get` line was causing severe heap corruption in MSVC,
-                        // likely due to quirks in Windows' memory handling.
-                        // Interestingly, it worked fine in GCC. After adjusting the control flow of the recursion,
-                        // the issue was resolved, and the function now operates continuously without failure.
-                        // TODO: Maybe remove this comment ^^^
-                        if (!environment_get(*context->variables, symbol, variable_binding)) {
-                            // TODO: Add source location or something to the error.
-                            // TODO: Create new error type.
-                            printf("ID of undeclared variable: \"%s\"\n", symbol->value.symbol);
-                            ERROR_PREP(err, ERROR_GENERIC, "Reassignment of a variable that has not been declared!");
-                            return err;
-                        }
-                        free(variable_binding);
-
-                        // At this point, we have a guaranteed valid variable reassignment expression, unless
-                        // errors occur when parsing the actual value expression.
-                        working_result->type = NODE_TYPE_VARIABLE_REASSIGNMENT;
-                        node_add_child(working_result, symbol);
-                        Node* reassign_expr = node_allocate();
-                        node_add_child(working_result, reassign_expr);
-
-                        working_result = reassign_expr;
-                        continue;
-                    }
-
-                    err = lex_advance(&current_token, &token_length, end);
-                    if (err.type != ERROR_NONE) { return err; }
-                    if (token_length == 0) { break; }
-
-                    Node* type_symbol = node_symbol_from_buffer(current_token.beginning, token_length);
-                    Node* type_value = node_allocate();
-                    parse_get_type(context, type_symbol, type_value);
-                    if (nonep(*type_value)) {
-                        ERROR_PREP(err, ERROR_TYPE, "Invalid type within variable declaration");
-                        printf("\nINVALID TYPE: \"%s\"\n", type_symbol->value.symbol);
-                        return err;
-                    }
-                    free(type_value);
-
                     Node* variable_binding = node_allocate();
-                    if (environment_get(*context->variables, symbol, variable_binding)) {
+                    // NOTE: The `environment_get` line was causing severe heap corruption in MSVC,
+                    // likely due to quirks in Windows' memory handling.
+                    // Interestingly, it worked fine in GCC. After adjusting the control flow of the recursion,
+                    // the issue was resolved, and the function now operates continuously without failure.
+                    // TODO: Maybe remove this comment ^^^
+                    if (!environment_get(*context->variables, symbol, variable_binding)) {
+                        // TODO: Add source location or something to the error.
                         // TODO: Create new error type.
-                        printf("ID of redefined variable: \"%s\"\n", symbol->value.symbol);
-                        ERROR_PREP(err, ERROR_GENERIC, "Redefinition of variable!");
+                        printf("ID of undeclared variable: \"%s\"\n", symbol->value.symbol);
+                        ERROR_PREP(err, ERROR_GENERIC, "Reassignment of a variable that has not been declared!");
                         return err;
                     }
-                    // Variable binding is shell-node for enviornment value contents.
                     free(variable_binding);
 
-                    working_result->type = NODE_TYPE_VARIABLE_DECLARATION;
-
-                    Node* value_expression = node_none();
-
-                    // `symbol` is now owned by working_result, a variable declaration.
+                    // At this point, we have a guaranteed valid variable reassignment expression, unless
+                    // errors occur when parsing the actual value expression.
+                    working_result->type = NODE_TYPE_VARIABLE_REASSIGNMENT;
                     node_add_child(working_result, symbol);
-                    node_add_child(working_result, value_expression);
+                    Node* reassign_expr = node_allocate();
+                    node_add_child(working_result, reassign_expr);
 
-                    // Context variables environment gains new binding.
-                    Node* symbol_for_env = node_allocate();
-                    node_copy(symbol, symbol_for_env);
-                    int status = environment_set(context->variables, symbol_for_env, type_symbol);
-                    if (status != 1) {
-                        ERROR_PREP(err, ERROR_GENERIC, "Failed to define variable!");
-                        return err;
-                    }
+                    working_result = reassign_expr;
+                    continue;
+                }
 
-                    EXPECT(expected, "=", current_token, token_length, end);
-                    if (expected.found) {
-                        working_result = value_expression;
-                        continue;
-                    }
+                err = lex_advance(&current_token, &token_length, end);
+                if (err.type != ERROR_NONE) { return err; }
+                if (token_length == 0) { break; }
 
-                    return ok;
+                Node* type_symbol = node_symbol_from_buffer(current_token.beginning, token_length);
+                Node* type_value = node_allocate();
+                parse_get_type(context, type_symbol, type_value);
+                if (nonep(*type_value)) {
+                    ERROR_PREP(err, ERROR_TYPE, "Invalid type within variable declaration");
+                    printf("\nINVALID TYPE: \"%s\"\n", type_symbol->value.symbol);
+                    return err;
+                }
+                free(type_value);
+
+                Node* variable_binding = node_allocate();
+                if (environment_get(*context->variables, symbol, variable_binding)) {
+                    // TODO: Create new error type.
+                    printf("ID of redefined variable: \"%s\"\n", symbol->value.symbol);
+                    ERROR_PREP(err, ERROR_GENERIC, "Redefinition of variable!");
+                    return err;
+                }
+                // Variable binding is shell-node for enviornment value contents.
+                free(variable_binding);
+
+                working_result->type = NODE_TYPE_VARIABLE_DECLARATION;
+
+                Node* value_expression = node_none();
+
+                // `symbol` is now owned by working_result, a variable declaration.
+                node_add_child(working_result, symbol);
+                node_add_child(working_result, value_expression);
+
+                // Context variables environment gains new binding.
+                Node* symbol_for_env = node_allocate();
+                node_copy(symbol, symbol_for_env);
+                int status = environment_set(context->variables, symbol_for_env, type_symbol);
+                if (status != 1) {
+                    ERROR_PREP(err, ERROR_GENERIC, "Failed to define variable!");
+                    return err;
+                }
+
+                EXPECT(expected, "=", current_token, token_length, end);
+                if (expected.found) {
+                    working_result = value_expression;
+                    continue;
+                }
+            }
+            else {
+                // Symbol is not `defun` and it is not followed by an assignment operator `:`.
+
+                // Check if it's a function call (lookahead for symbol)
+                EXPECT(expected, "(", current_token, token_length, end);
+                if (expected.found) {
+                    working_result->type = NODE_TYPE_FUNCTION_CALL;
+                    node_add_child(working_result, symbol);
+                    Node* argument_list = node_allocate();
+                    Node* first_argument = node_allocate();
+                    node_add_child(argument_list, first_argument);
+                    node_add_child(working_result, argument_list);
+                    working_result = first_argument;
+
+                    // Create a parsing stack with function call operator I guess,
+                    // and then start parsing function argument expressions.
+                    context = parse_context_create(context);
+                    context->operator = node_symbol("funcall");
+                    context->result = working_result;
+
+                    continue;
                 }
                 else {
-                    // Symbol is not `defun` and it is not followed by an assignment operator `:`.
-
-                    // Check if it's a function call (lookahead for symbol)
-                    EXPECT(expected, "(", current_token, token_length, end);
-                    if (expected.found) {
-                        working_result->type = NODE_TYPE_FUNCTION_CALL;
-                        node_add_child(working_result, symbol);
-                        Node* argument_list = node_allocate();
-                        Node* first_argument = node_allocate();
-                        node_add_child(argument_list, first_argument);
-                        node_add_child(working_result, argument_list);
-                        working_result = first_argument;
-
-                        // Create a parsing stack with function call operator I guess,
-                        // and then start parsing function argument expressions.
-                        context = parse_context_create(context);
-                        context->operator = node_symbol("funcall");
-                        context->result = working_result;
-
-                        continue;
-                    }
-                    else {
-                        // TODO: Check if it's a variable access (defined variable)
-                    }
+                    // TODO: Check if it's a variable access (defined variable).
                 }
-
-                printf("Unrecognized token: ");
-                print_token(current_token);
-                putchar('\n');
-
-                ERROR_PREP(err, ERROR_SYNTAX, "Unrecognized token reached during parsing");
-                return err;
             }
         }
 
-        // This only happens when you finish parsing integers,
-        // essentially eat the stack.
+        // Look ahead for a binary infix operator
+
+
+        // This operation occurs upon completing integer parsing,
+        // effectively clearing the stack.
         if (!context->parent) { break; }
 
         Node* operator = context->operator;
