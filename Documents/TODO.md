@@ -14,8 +14,6 @@
 
 ## Urgent
 
-- [ ] **Have Compiler able to collect TODO comments and things from source**
-    - This would allow compiler-aided software design in more scenarios.
 
 - [ ] **TODO: Add token member to AST node structure**
  - This would allow for much better error messages that point to the source code that the error originates from.
@@ -74,6 +72,9 @@
   - The `NODE_TYPE_MAX` assertions may not be firing. Might need to cast enum values to integers.
 
 ## Parsing & Lexing Architecture
+
+- [ ] **Have Compiler able to collect TODO comments and things from source**
+    - This would allow compiler-aided software design in more scenarios.
 
 - [ ] **State Machine Parser**
   - As complexity grows, consider using a state machine to handle edge cases and special parsing logic.

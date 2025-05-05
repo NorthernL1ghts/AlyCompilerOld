@@ -53,4 +53,10 @@ as code.S -o code.o
 ld code.o -o code.exe && code.exe
 ```
 
+```sh
+as code.S -o code.o
+ld code.o -L<path-to-MinGW-lib> -lmsvcrt -o code.exe
+./code.exe
+```
+
 TODO: We have to work on getting Linux to work with this project, nothing is preventing it -- Just means we need to use VM.

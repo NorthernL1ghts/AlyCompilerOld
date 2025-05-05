@@ -154,7 +154,6 @@ Error codegen_expression_x86_64_mswin(FILE* code, Register* r, CodegenContext* c
         // TODO: Keep track of local lambda label in environment or something.
         result = label_generate();
         err = codegen_function_x86_64_att_asm_mswin(r, cg_context, context, result, expression, code);
-
         if (err.type) { return err; }
         break;
     case NODE_TYPE_INTEGER:
