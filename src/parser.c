@@ -771,7 +771,6 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
             context->result->next_child = node_allocate();
             working_result = context->result->next_child;
             context->result = working_result;
-
             continue;
         }
     }
@@ -804,6 +803,8 @@ Error parse_program(char* filepath, ParsingContext* context, Node* result) {
         //print_node(expression, 0);
         //putchar('\n');
     }
+
     free(contents);
+
     return ok;
 }
