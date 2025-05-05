@@ -14,6 +14,9 @@
 
 ## Urgent
 
+- [ ] **Have Compiler able to collect TODO comments and things from source**
+    - This would allow compiler-aided software design in more scenarios.
+
 - [ ] **TODO: Add token member to AST node structure**
  - This would allow for much better error messages that point to the source code that the error originates from.
 
