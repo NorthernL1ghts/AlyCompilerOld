@@ -96,14 +96,24 @@ Error codegen_program_x86_64_att_asm_data_section(ParsingContext* context, FILE*
     return err;
 }
 
+// Just forward declaration for the moment whilst we test, this means fix the recursion?
+Error codegen_function_x86_64_att_asm_mswin(ParsingContext* context, char* name, Node* function, FILE* code);
+
 // If TOP_LEVEL is non-zero, it is assumed that expression are in top level of program
 Error codegen_expression_list_x86_64_att_asm_mswin(ParsingContext* context, Node* expression, FILE* code) {
+    Error err = ok;
     Node* tmpnode = node_allocate();
     size_t tmpcount;
     while (expression) {
         tmpcount = 0;
         switch (expression->type) {
         default:
+            break;
+        case NODE_TYPE_FUNCTION:
+            // Handling a function here means a lambda should be generated, I think.
+            // TODO: Generate name from some sort of hashing algorithm or something.
+            err = codegen_function_x86_64_att_asm_mswin(context, "foo", expression, code);
+            if (err.type) { return err; }
             break;
         case NODE_TYPE_FUNCTION_CALL:
             // TODO: Actually codegen argument expressions.
