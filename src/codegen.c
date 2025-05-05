@@ -44,6 +44,7 @@ void register_add(Register* base, char* name) {
     base->next = register_create(name);
 }
 
+// TODO: This is broken :^)
 void register_free(Register* base) {
     Register* to_free = NULL;
     while (base) {
@@ -139,14 +140,32 @@ char* symbol_to_address(Node* symbol) {
     return symbol_string;
 }
 
+// Forward declaration of codegen_function for codegen_expression -> It's explict.
+Error codegen_function_x86_64_att_asm_mswin(Register* r, CodegenContext* cg_context, ParsingContext* context, char* name, Node* function, FILE* code);
+
 Error codegen_expression_x86_64_mswin(FILE* code, Register* r, CodegenContext* cg_context, ParsingContext* context, Node* expression) {
     Error err = ok;
+    char* result = NULL;
     switch (expression->type) {
     default:
+        break;
+    case NODE_TYPE_FUNCTION:
+        if (!cg_context->parent) { break; }
+        // TODO: Keep track of local lambda label in environment or something.
+        result = label_generate();
+        err = codegen_function_x86_64_att_asm_mswin(r, cg_context, context, result, expression, code);
+
+        if (err.type) { return err; }
         break;
     case NODE_TYPE_INTEGER:
         expression->result_register = register_allocate(r);
         fprintf(code, "mov $%lld, %s\n", expression->value.integer, register_name(r, expression->result_register));
+        break;
+    case NODE_TYPE_VARIABLE_DECLARATION:
+        if (!cg_context->parent) { break; }
+        printf("TODO: Local variable declaration");
+        // Allocate space on stack.
+        // Keep track of RBP offset.
         break;
     case NODE_TYPE_VARIABLE_REASSIGNMENT:
         if (cg_context->parent) {
@@ -154,12 +173,11 @@ Error codegen_expression_x86_64_mswin(FILE* code, Register* r, CodegenContext* c
             //break;
         }
         else {
-            char* result = NULL;
+            // Very simple optimization to handle plain integer node assignment.
             if (expression->children->next_child->type == NODE_TYPE_INTEGER) {
-                // Slight optimisation so we don't have to go through rax,
-                // we can just go directly to integer..
                 result = malloc(64);
                 if (!result) {
+                    // Possible TODO: Make a ERROR_MEMORY to handle this better.
                     ERROR_PREP(err, ERROR_GENERIC, "Could not allocate integer result string buffer :(");
                     return err;
                 }
@@ -279,8 +297,11 @@ Error codegen_program_x86_64_mswin(FILE* code, CodegenContext* cg_context, Parsi
         expression = expression->next_child;
     }
 
-    fprintf(code, "mov $69, %%rax\n"); // This is the return code for 'main'.
+    fprintf(code, "mov $0, %%rax\n"); // This is basically the $LASTEXITCODE.
     fprintf(code, "%s", function_footer_x86_64);
+
+    // TODO: This breaks things, but we should do it.
+    //register_free(r);
 
     return ok;
 }
@@ -294,7 +315,6 @@ Error codegen_program(enum CodegenOutputFormat format, ParsingContext* context, 
 
     // Open file for writing.
     FILE* code = fopen("code.S", "w");
-
     if (format == CG_FMT_DEFAULT || format == CG_FMT_x86_64_MSWIN) {
         err = codegen_program_x86_64_mswin(code, cg_context, context, program);
     }
