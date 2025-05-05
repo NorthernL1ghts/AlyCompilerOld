@@ -165,6 +165,10 @@ Error codegen_expression_x86_64_mswin(FILE* code, Register* r, CodegenContext* c
     return err;
 }
 
+const char* function_header_x86_64 = "push %rbp\n" "mov %rsp, %rbp\n" "sub $32, %rsp\n";
+
+const char* function_footer_x86_64 = "add $32, %rsp\n" "pop %rbp\n" "ret\n";
+
 Error codegen_function_x86_64_att_asm_mswin(Register* r, CodegenContext* cg_context, ParsingContext* context, char* name, Node* function, FILE* code) {
     Error err = ok;
 
@@ -189,11 +193,7 @@ Error codegen_function_x86_64_att_asm_mswin(Register* r, CodegenContext* cg_cont
     fprintf(code, "%s:\n", name);
 
     // Function header
-    const char* function_header =
-        "push %rbp\n"
-        "mov %rsp, %rbp\n"
-        "sub $32, %rsp\n";
-    fprintf(code, "%s", function_header);
+    fprintf(code, "%s", function_header_x86_64);
 
     // Function body
     Node* expression = function->children->next_child->next_child->children;
@@ -210,11 +210,7 @@ Error codegen_function_x86_64_att_asm_mswin(Register* r, CodegenContext* cg_cont
 
 
     // Function footer
-    const char* function_footer =
-        "add $32, %rsp\n"
-        "pop %rbp\n"
-        "ret\n";
-    fprintf(code, "%s", function_footer);
+    fprintf(code, "%s", function_footer_x86_64);
 
     // Nested function execution jump label
     fprintf(code, "after%s:\n", name);
