@@ -44,6 +44,8 @@ int main(int argc, char** argv) {
         return 1; // Upon encountering Parsing errors
     }
 
+    // TODO: Typecheck the program!
+
     err = codegen_program(OUTPUT_FMT_DEFAULT, context, program);
     if (err.type) {
         print_error(err);

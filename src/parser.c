@@ -531,6 +531,7 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
                 }
 
                 Node* parameter_list = node_allocate();
+                node_add_child(working_result, parameter_list);
 
                 // FIXME: Should we possible create a parser stack and evaulate the
                 // next expression, then ensure return value is variable decl, in stack
@@ -572,8 +573,6 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
                     }
                     break;
                 }
-
-                node_add_child(working_result, parameter_list);
 
                 // Parse return type.
                 EXPECT(expected, ":", current_token, token_length, end);
@@ -771,6 +770,7 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
             context->result->next_child = node_allocate();
             working_result = context->result->next_child;
             context->result = working_result;
+
             continue;
         }
     }
