@@ -84,6 +84,8 @@
 
 # Misc
 
+- [ ] Implement `environment_free()`.
+
 - [ ] **Make CodeGen structure with function pointers and such**
   - This would allow each implementation to actually be generated the same way, just have slightly different semantics.
 
