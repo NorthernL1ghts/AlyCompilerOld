@@ -17,11 +17,36 @@
 #include <error.h>
 #include <parser.h>
 
-typedef enum CodegenOutputFormat {
-	OUTPUT_FMT_DEFAULT = 0,
-	OUTPUT_FMT_x86_64_AT_T_ASM,
-} CodegenOutputFormat;
+typedef int RegisterDescriptor;
 
-Error codegen_program(CodegenOutputFormat, ParsingContext* context, Node* program);
+typedef struct Register {
+	struct Register* next;
+	/// What will be emitted when referencing this register, i.e "%rax"
+	char* name;
+	/// If non-zero, this register is in use.
+	char in_use;
+} Register;
 
-#endif /* COMPILER_CODEGEN_H */
+/// NAME is now owned by register.
+Register* register_create(char* name);
+
+/// NAME is now owned by register.
+void register_add(Register* base, char* name);
+
+void register_free(Register* base);
+
+RegisterDescriptor register_allocate(Register* base);
+void register_deallocate(Register* base, RegisterDescriptor register_descriptor);
+
+char* register_name(Register* base, RegisterDescriptor register_descriptor);
+
+char* label_generate();
+
+enum CodegenOutputFormat {
+	CG_FMT_DEFAULT = 0,
+	CG_FMT_x86_64_MSWIN,
+};
+
+Error codegen_program(enum CodegenOutputFormat format, ParsingContext* context, Node* program);
+
+#endif COMPILER_CODEGEN_H /* COMPILER_CODEGEN_H */

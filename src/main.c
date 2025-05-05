@@ -41,15 +41,15 @@ int main(int argc, char** argv) {
 
     if (err.type) {
         print_error(err);
-        return 1; // Upon encountering Parsing errors
+        return 1;
     }
 
     // TODO: Typecheck the program!
 
-    err = codegen_program(OUTPUT_FMT_DEFAULT, context, program);
+    err = codegen_program(CG_FMT_DEFAULT, context, program);
     if (err.type) {
         print_error(err);
-        return 2; // Upon encountering CodeGen errors
+        return 2;
     }
 
     node_free(program);
