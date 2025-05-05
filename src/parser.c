@@ -759,38 +759,22 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
             long long precedence = operator_value->children->value.integer;
 
             //printf("Got op. %s with precedence %lld(working %lld)\n", operator_symbol->value.symbol, precedence, working_precedence);
-
             //printf("working precedence: %lld\n", working_precedence);
+
+            // TODO: Handle grouped expressions through parenthesis using precedence stack.
 
             Node* result_pointer = precedence <= working_precedence ? result : working_result;
 
-            if (precedence <= working_precedence) {
-                Node* result_copy = node_allocate();
-                node_copy(result, result_copy);
-                result->type = NODE_TYPE_BINARY_OPERATOR;
-                result->value.symbol = operator_symbol->value.symbol;
-                result->children = result_copy;
-                result->next_child = NULL;
+            Node* result_copy = node_allocate();
+            node_copy(result_pointer, result_copy);
+            result_pointer->type = NODE_TYPE_BINARY_OPERATOR;
+            result_pointer->value.symbol = operator_symbol->value.symbol;
+            result_pointer->children = result_copy;
+            result_pointer->next_child = NULL;
 
-                Node* rhs = node_allocate();
-                node_add_child(result, rhs);
-                working_result = rhs;
-
-                //print_node(result, 0);
-            }
-            else {
-                Node* result_copy = node_allocate();
-                node_copy(working_result, result_copy);
-                working_result->type = NODE_TYPE_BINARY_OPERATOR;
-                working_result->value.symbol = operator_symbol->value.symbol;
-                working_result->children = result_copy;
-                working_result->next_child = NULL;
-
-                Node* rhs = node_allocate();
-                node_add_child(working_result, rhs);
-                working_result = rhs;
-            }
-
+            Node* rhs = node_allocate();
+            node_add_child(result_pointer, rhs);
+            working_result = rhs;
 
             working_precedence = precedence;
 
