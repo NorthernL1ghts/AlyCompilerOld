@@ -20,6 +20,7 @@ mov $420, %rax
 mov %rax, a(%rip)
 mov $42, %rax
 mov %rax, b(%rip)
+mov $0, %rax
 add $32, %rsp
 pop %rbp
 ret

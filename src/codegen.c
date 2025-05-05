@@ -264,6 +264,7 @@ Error codegen_program_x86_64_mswin(FILE* code, CodegenContext* cg_context, Parsi
         expression = expression->next_child;
     }
 
+    fprintf(code, "mov $0, %%rax\n"); // This is the return code for 'main'.
     fprintf(code, "%s", function_footer_x86_64);
 
     return ok;
