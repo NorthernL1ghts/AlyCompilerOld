@@ -232,6 +232,25 @@ Error codegen_program_x86_64_mswin(FILE* code, CodegenContext* cg_context, Parsi
     register_add(r, "%r10");
     register_add(r, "%r11");
 
+    fprintf(code, "%s", ".section .data\n");
+
+    // Generate global variables
+    Binding* var_it = context->variables->bind;
+    while (var_it) {
+        Node* var_id = var_it->id;
+        Node* type = var_it->value;
+        Node* type_info = node_allocate();
+        if (!environment_get(*context->types, type, type_info)) {
+            printf("Type: \"%s\"\n", type->value.symbol);
+            ERROR_PREP(err, ERROR_GENERIC, "Could not get type info from types environment!");
+        }
+        var_it = var_it->next;
+        fprintf(code, "%s: .space %lld\n", var_id->value.symbol, type_info->children->value.integer);
+        free(type_info);
+    }
+
+    fprintf(code, "%s", ".section .text\n");
+
     // Generate global functions
     Binding* function_it = context->functions->bind;
     while (function_it) {

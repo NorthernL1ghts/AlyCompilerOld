@@ -1,3 +1,7 @@
+.section .data
+b: .space 8
+a: .space 8
+.section .text
 jmp afterfoo
 foo:
 push %rbp
