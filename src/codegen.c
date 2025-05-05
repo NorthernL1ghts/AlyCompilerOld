@@ -146,11 +146,11 @@ Error codegen_expression_x86_64_mswin(FILE* code, CodegenContext* cg_context, Pa
         break;
     case NODE_TYPE_VARIABLE_REASSIGNMENT:
         if (cg_context->parent) {
-            ERROR_PREP(err, ERROR_TODO, "codegen_expression_x86_64_mswin(): ""Can not do local variable codegen yet, sorry :p");
-            break;
+            //ERROR_PREP(err, ERROR_TODO, "codegen_expression_x86_64_mswin(): ""Can not do local variable codegen yet, sorry :p");
+            //break;
         }
         else {
-            fprintf(code, "%s", symbol_to_address(expression->children));
+            fprintf(code, "%s\n", symbol_to_address(expression->children));
         }
         break;
     }
@@ -160,45 +160,59 @@ Error codegen_expression_x86_64_mswin(FILE* code, CodegenContext* cg_context, Pa
 Error codegen_function_x86_64_att_asm_mswin(CodegenContext* cg_context, ParsingContext* context, char* name, Node* function, FILE* code) {
     Error err = ok;
 
-    context = parse_context_create(cg_context);
-    // TODO: Store base pointer integer offset within locals environment
-    // FIXME: Assume each argument is 8 bytes for now.
+    cg_context = codegen_context_create(cg_context);
+
+    // Store base pointer integer within local environment.
     // Start at one to make space for pushed RBP in function header.
     size_t param_count = 1;
     Node* parameter = function->children->children;
     while (parameter) {
         param_count++;
         // Bind parameter name to integer base pointer offset.
+        // FIXME: Assume each argument is 8 bytes for now.
+        // TODO: This currently doesn't allow for passing arguments in register, which is much faster.
         environment_set(cg_context->locals, parameter->children, node_integer(-param_count * 8));
+        parameter = parameter->next_child;
     }
-    // Nested function execution protection
-    // jmp after<function_label>
 
+    // Nested function execution protection
+    fprintf(code, "jmp after%s\n", name);
     // Function beginning label
-    // "<function_label>:"
+    fprintf(code, "%s:\n", name);
 
     // Function header
-    // "push %rbp"
-    // "mov %rsp, %rbp"
-    // "sub $32, %rsp mov %rsp, %rbp"
+    const char* function_header =
+        "push %rbp\n"
+        "mov %rsp, %rbp\n"
+        "sub $32, %rsp\n";
+    fprintf(code, "%s", function_header);
 
     // Function body
-    Node* expression = function->next_child->next_child->children;
+    Node* expression = function->children->next_child->next_child->children;
     while (expression) {
         err = codegen_expression_x86_64_mswin(code, cg_context, context, expression);
-        if (err.type) { return err; }
+        if (err.type) {
+            print_error(err);
+            return err;
+        }
         expression = expression->next_child;
     }
-    // TODO: Free context
-    cg_context = cg_context->parent;
+
+    printf("here\n");
+
 
     // Function footer
-    // "add $32, %rsp"
-    // "pop %rbp"
-    // "ret"
+    const char* function_footer =
+        "add $32, %rsp\n"
+        "pop %rbp\n"
+        "ret\n";
+    fprintf(code, "%s", function_footer);
 
     // Nested function execution jump label
-    // after<function_label>
+    fprintf(code, "after%s:\n", name);
+
+    // TODO: Free context
+    cg_context = cg_context->parent;
 
     return ok;
 }
