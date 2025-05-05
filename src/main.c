@@ -29,9 +29,8 @@ void print_usage(char** argv) {
 int main(int argc, char** argv) {
     if (argc < 2) {
         print_usage(argv);
-        exit(0);
+        return 0;
     }
-
 
     Node* program = node_allocate();
     ParsingContext* context = parse_context_default_create();
@@ -42,19 +41,16 @@ int main(int argc, char** argv) {
 
     if (err.type) {
         print_error(err);
-        return 1;
+        return 1; // Upon encountering Parsing errors
     }
 
-    printf("Generating code!\n");
-
     err = codegen_program(OUTPUT_FMT_DEFAULT, context, program);
-    print_error(err);
-
-    printf("Code generated.\n");
+    if (err.type) {
+        print_error(err);
+        return 2; // Upon encountering CodeGen errors
+    }
 
     node_free(program);
-
-    printf("COMPLETE\n");
 
     return 0;
 }

@@ -779,7 +779,6 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
     return err;
 }
 
-// 22540 - Git committed for the movement of main.c code to parse_program
 Error parse_program(char* filepath, ParsingContext* context, Node* result) {
     Error err = ok;
     char* contents = file_contents(filepath);
