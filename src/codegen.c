@@ -215,6 +215,7 @@ Error codegen_function_x86_64_att_asm_mswin(Register* r, CodegenContext* cg_cont
         // Bind parameter name to integer base pointer offset.
         // FIXME: Assume each argument is 8 bytes for now.
         // TODO: This currently doesn't allow for passing arguments in register, which is much faster.
+        //       We need some local binding that refernces to a register vs a base point offset.
         environment_set(cg_context->locals, parameter->children, node_integer(-param_count * 8));
         parameter = parameter->next_child;
     }

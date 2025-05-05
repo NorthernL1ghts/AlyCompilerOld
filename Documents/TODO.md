@@ -20,7 +20,7 @@
 
  - We should also think about line count or something like that; maybe node AST holds custom structure containing token span, as well as file path (if applicable), line number, column number, etc.
 
-- [ ] **Bind all arguments to a function, not just the first one!**
+- [x] **Bind all arguments to a function, not just the first one!**
   - `param_it` needs fixed in `parser.c` around line 570.
 
 - [x] **Comment Handling in Lexer**

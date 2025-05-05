@@ -599,7 +599,11 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
                 context = parse_context_create(context);
                 context->operator = node_symbol("defun");
                 Node* param_it = working_result->children->children;
-                environment_set(context->variables, param_it->children, param_it->children->next_child); // Variables: context, name and type.
+                while (param_it) {
+                    environment_set(context->variables, param_it->children, param_it->children->next_child);
+
+                    param_it = param_it->next_child;
+                }
 
                 // NOTE: When parsing a function, we use this stack and get the
                 // expression within function body, saving the result.
