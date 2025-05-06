@@ -183,28 +183,28 @@ Error codegen_expression_x86_64_mswin(FILE* code, Register* r, CodegenContext* c
         err = codegen_expression_x86_64_mswin(code, r, cg_context, context, expression->children->next_child);
 
         if (strcmp(expression->value.symbol, "+") == 0) {
-            // Use right hand side result register as out result since ADD is destructive.
+            // Use left hand side result register as out result since ADD is destructive.
             expression->result_register = expression->children->next_child->result_register;
 
             fprintf(code, "add %s, %s\n",
                 register_name(r, expression->children->result_register),
                 register_name(r, expression->children->next_child->result_register));
 
-            // Free no-longer-used left hand side result register
+            // Free no-longer-used right hand side result register
             register_deallocate(r, expression->children->result_register);
         }
         else if (strcmp(expression->value.symbol, "-") == 0) {
-            // Use right hand side result register as out result since SUB is destructive.
-            expression->result_register = expression->children->next_child->result_register;
+            // Use left hand side result register as out result since ADD is destructive.
+            expression->result_register = expression->children->result_register;
 
             fprintf(code, "sub %s, %s\n",
                 register_name(r, expression->children->result_register),
                 register_name(r, expression->children->next_child->result_register));
 
-            // Free no-longer-used left hand side result register
-            register_deallocate(r, expression->children->result_register);
+            // Free no-longer-used right hand side result register
+            register_deallocate(r, expression->children->next_child->result_register);
         }
-        
+
         break;
 
     case NODE_TYPE_VARIABLE_DECLARATION:
