@@ -8,6 +8,10 @@ sub $32, %rsp
 mov $2, %rax
 mov $2, %r10
 add %rax, %r10
+mov $8, %rax
+sub %r10, %rax
+mov $6, %r10
+add %rax, %r10
 mov $0, %rax
 add $32, %rsp
 pop %rbp

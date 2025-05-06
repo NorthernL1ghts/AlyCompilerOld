@@ -176,30 +176,35 @@ Error codegen_expression_x86_64_mswin(FILE* code, Register* r, CodegenContext* c
         printf("Codegenning symbol %s\n", expression->value.symbol);
         print_node(tmpnode, 0);
 
+        // Codegen LHS
+        err = codegen_expression_x86_64_mswin(code, r, cg_context, context, expression->children);
+
+        // Codegen RHS
+        err = codegen_expression_x86_64_mswin(code, r, cg_context, context, expression->children->next_child);
+
         if (strcmp(expression->value.symbol, "+") == 0) {
-            // Codegen LHS
-            err = codegen_expression_x86_64_mswin(code, r, cg_context, context, expression->children);
-
-            // Codegen RHS
-            err = codegen_expression_x86_64_mswin(code, r, cg_context, context, expression->children->next_child);
-
-            print_registers(r);
-
-            printf("Result Register LHS: %s (%i)\nResult Register RHS: %s (%i)\n",
-                register_name(r, expression->children->result_register), expression->children->result_register,
-                register_name(r, expression->children->next_child->result_register), expression->children->next_child->result_register);
-
+            // Use right hand side result register as out result since ADD is destructive.
             expression->result_register = expression->children->next_child->result_register;
 
-            // Emit three address instruction
             fprintf(code, "add %s, %s\n",
                 register_name(r, expression->children->result_register),
                 register_name(r, expression->children->next_child->result_register));
 
+            // Free no-longer-used left hand side result register
             register_deallocate(r, expression->children->result_register);
-
-            print_registers(r);
         }
+        else if (strcmp(expression->value.symbol, "-") == 0) {
+            // Use right hand side result register as out result since SUB is destructive.
+            expression->result_register = expression->children->next_child->result_register;
+
+            fprintf(code, "sub %s, %s\n",
+                register_name(r, expression->children->result_register),
+                register_name(r, expression->children->next_child->result_register));
+
+            // Free no-longer-used left hand side result register
+            register_deallocate(r, expression->children->result_register);
+        }
+        
         break;
 
     case NODE_TYPE_VARIABLE_DECLARATION:
