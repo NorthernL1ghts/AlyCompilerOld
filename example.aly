@@ -45,15 +45,12 @@ foo(20, 34)
 ; This is the newly conceptualized way to define functions using a lambda-like syntax.
 ; Functions can now be assigned to variables, allowing for flexible reuse and inline execution.
 ; The structure ensures that argument lists and function bodies remain encapsulated within brackets.
+
 ; This approach could support closures, higher-order functions, and potentially currying.
-;foo : function = [() {}]
+;[integer (a:integer) { a := 25 a }]
 
-; This is an inline lambda expression that takes an integer argument.
-; The function assigns a new value to the parameter and returns it.
-; The last expression in the function body acts as the return value.
+; TODO: Allow function assignment or something
+;bar : function = [integer (x:integer) { x }]
 
-;; TODO: Support this lambda syntax!
-;[(a : integer) { a := 25  a }] ()
-
-; TODO: Allow function assignment or something?
-;foo : function = [(x : integer) { x }]
+; TODO: Shorthand for function assignment
+;baz : [integer (x:integer) { x }]

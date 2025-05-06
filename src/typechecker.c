@@ -37,6 +37,7 @@ int expression_return_type(ParsingContext* context, Node* expression) {
         print_node(result, 0);
         break;
     }
+    return result->type;
 }
 
 Error typecheck_expression(ParsingContext* context, Node* expression) {
@@ -68,9 +69,6 @@ Error typecheck_expression(ParsingContext* context, Node* expression) {
                 printf("Function:%s\n", expression->children->value.symbol);
                 ERROR_PREP(err, ERROR_TYPE, "Argument type does not match declared parameter type");
                 break;
-            }
-            else {
-                printf("TYPES MATCH!\n");
             }
             iterator = iterator->next_child;
             tmpnode = tmpnode->next_child;
