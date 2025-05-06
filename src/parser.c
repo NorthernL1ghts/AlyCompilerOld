@@ -762,7 +762,7 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
             //printf("working precedence: %lld\n", working_precedence);
 
             // TODO: Handle grouped expressions through parenthesis using precedence stack.
-
+            // 1:50:01
             Node* result_pointer = precedence <= working_precedence ? result : working_result;
 
             Node* result_copy = node_allocate();
@@ -790,9 +790,7 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
 
         // This operation occurs upon completing integer parsing,
         // effectively clearing the stack.
-        if (!context->parent) {
-            break;
-        }
+        if (!context->parent) { break; }
 
         Node* operator = context->operator;
         if (operator->type != NODE_TYPE_SYMBOL) {

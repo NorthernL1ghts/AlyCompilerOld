@@ -13,7 +13,6 @@ I don't really have a plan, I just want to make a compiler; it sounds fun. There
 
 Running the compiler executable with no arguments will display a usage message that contains compiler flags and options as well as command layout.
 
-For writing in Aly in Emacs or Vim, there are helpful plugins in the Editor subdirectory.
 For syntax highlighting in any Editor that supports tree-sitter, there is a tree-sitter parser that can be found [here](https://github.com/NorthernL1ghts/tree-sitter-int).
 It is highly recommended to use tree-sitter if you can, as it provides much better syntax highlighting.
 
