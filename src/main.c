@@ -17,7 +17,7 @@
 #include <file_io.h>
 #include <error.h>
 #include <parser.h>
-
+#include <typechecker.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -45,11 +45,16 @@ int main(int argc, char** argv) {
     }
 
     // TODO: Typecheck the program!
+    err = typecheck_program(context, program);
+    if (err.type) {
+        print_error(err);
+        return 2;
+    }
 
     err = codegen_program(CG_FMT_DEFAULT, context, program);
     if (err.type) {
         print_error(err);
-        return 2;
+        return 3;
     }
 
     node_free(program);

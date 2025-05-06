@@ -22,6 +22,7 @@ add_executable(
     src/main.c
     src/parser.c
     src/environment.c
+    src/typechecker.c
 )
 
 # Include path setup

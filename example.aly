@@ -40,7 +40,7 @@ defun foo (c:integer, b:integer):integer {
 
 ; This is a function call
 ; For now, this errors because we no do function calls :^)
-foo(20, 34)
+foo(20, 34, 420)
 
 ; This is the newly conceptualized way to define functions using a lambda-like syntax.
 ; Functions can now be assigned to variables, allowing for flexible reuse and inline execution.
