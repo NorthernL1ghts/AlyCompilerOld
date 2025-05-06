@@ -67,3 +67,10 @@
 
 [ASCII table](https://commons.wikimedia.org/wiki/File:ASCII-Table.svg)
 [Overview of x64 ABI conventions](https://learn.microsoft.com/en-us/cpp/build/x64-software-conventions?view=msvc-170)
+
+- [Felix Cloutier - x86 and amd64 instruction reference](https://www.felixcloutier.com/x86/)
+- [Felix Cloutier - ADD x86 / amd64 ASM](https://www.felixcloutier.com/x86/add)
+- [Felix Cloutier - SUB x86 / amd64 ASM](https://www.felixcloutier.com/x86/sub)
+- [Felix Cloutier - Signed MUL x86 / amd64 ASM](https://www.felixcloutier.com/x86/imul)
+- [Felix Cloutier - Unsigned MUL x86 / amd64 ASM](https://www.felixcloutier.com/x86/mul)
+- [Felix Cloutier - DIV x86 / amd64 ASM](https://www.felixcloutier.com/x86/div)
