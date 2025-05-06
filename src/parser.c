@@ -13,7 +13,7 @@
 
 #include <parser.h>
 #include <environment.h>
-#include <file_io.h>a
+#include <file_io.h>
 #include <error.h>
 
 #include <assert.h>
@@ -865,9 +865,9 @@ Error parse_program(char* filepath, ParsingContext* context, Node* result) {
 Error define_binary_operator(ParsingContext* context, char* operator, int precedence, char* return_type, char* lhs_type, char* rhs_type) {
     Node* binop = node_allocate();
     node_add_child(binop, node_integer(precedence));
-    node_add_child(binop, node_integer(return_type));
-    node_add_child(binop, node_integer(lhs_type));
-    node_add_child(binop, node_integer(rhs_type));
+    node_add_child(binop, node_symbol(return_type));
+    node_add_child(binop, node_symbol(lhs_type));
+    node_add_child(binop, node_symbol(rhs_type));
 
     // FIXME: Every binary operator definition is global for now!
     while (context->parent) { context = context->parent; }
