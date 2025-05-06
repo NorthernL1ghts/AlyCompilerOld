@@ -8,7 +8,7 @@
  *
  * For licensing details, contributions, or inquiries, refer to LICENSE
  * or contact:
- * NorthernL1ghts Software Division
+ * NorthernL1ghts
  */
 
 #ifndef COMPILER_PARSER_H
@@ -151,9 +151,9 @@ typedef struct ParsingContext {
 	Environment* functions;
 	/// BINARY OPERATOR
 	/// `-- SYMBOL (OPERATOR) -> NONE
-	///                          `-- INTEGER (PRECEDENCE) 
-	///                              -> SYMBOL (RETURN TYPE) 
-	///                              -> SYMBOL (LHS TYPE) 
+	///                          `-- INTEGER (PRECEDENCE)
+	///                              -> SYMBOL (RETURN TYPE)
+	///                              -> SYMBOL (LHS TYPE)
 	///                              -> SYMBOL (RHS TYPE)
 	Environment* binary_operators;
 } ParsingContext;

@@ -8,7 +8,7 @@
  *
  * For licensing details, contributions, or inquiries, refer to LICENSE
  * or contact:
- * NorthernL1ghts Software Division
+ * NorthernL1ghts
  */
 
 #include <parser.h>
@@ -762,7 +762,6 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
             //printf("working precedence: %lld\n", working_precedence);
 
             // TODO: Handle grouped expressions through parenthesis using precedence stack.
-            // 1:50:01
             Node* result_pointer = precedence <= working_precedence ? result : working_result;
 
             Node* result_copy = node_allocate();

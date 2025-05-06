@@ -8,7 +8,7 @@
  *
  * For licensing details, contributions, or inquiries, refer to LICENSE
  * or contact:
- * NorthernL1ghts Software Division
+ * NorthernL1ghts
  */
 
 #include <environment.h>
