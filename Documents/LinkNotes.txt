@@ -1,9 +1,0 @@
-Once you have written your assembly code, you need to assemble and link it to create an executable. First, assemble the source file into an object file:
-
-as code.S -o code.o
-
-This command translates the assembly source (code.S) into an object file (code.o). Once the object file is ready, proceed with linking:
-
-ld code.o -L"C:/MinGW/lib" -lmsvcrt -o code.exe
-
-This step links the object file with MSVCRT, generating the final executable code.exe for Windows.
