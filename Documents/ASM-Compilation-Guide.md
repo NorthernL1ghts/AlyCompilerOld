@@ -60,10 +60,11 @@ ld code.o -subsystem=console -o code.exe
   - No `-subsystem` is needed.
   - Example:
 
- ```bash
+```bash
   as code.S -o code.o
   ld code.o -o code
-  ```
+```
+
 -------------------------------------------------------------------------------
 
 ## Summary
