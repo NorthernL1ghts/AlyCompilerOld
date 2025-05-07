@@ -63,7 +63,7 @@ ld code.o -subsystem=console -o code.exe
  ```bash
   as code.S -o code.o
   ld code.o -o code
-```
+  ```
 -------------------------------------------------------------------------------
 
 ## Summary
