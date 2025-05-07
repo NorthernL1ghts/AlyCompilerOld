@@ -1,113 +1,131 @@
-# AlyCompiler TODO
+# AlyCompiler TODO (Prioritized by Urgency)
 
-## Top-Level Tasks
+## 🔥 Urgent 🔥
+
+- [ ] **TODO: Enhance AST Node with Token Information for Error Reporting**
+  - **Details:** Currently, error messages likely lack precise source location information. To improve debugging, each AST node should store a reference to the token(s) from which it was derived.
+  - **Implementation Considerations:**
+    - Add a `token` member (likely a pointer to the `Token` structure) to the `ASTNode` structure.
+    - Consider a more comprehensive `SourceLocation` structure containing:
+      - `filepath` (if applicable, for multi-file projects)
+      - `line_number`
+      - `column_number`
+      - `token_span` (start and end character indices within the line)
+    - Update the parser to populate this information when creating AST nodes.
+  - **Urgency:** High. Significantly improves the user experience by providing actionable error messages.
+
+- [ ] **LISP Runtime Implementation**
+  - **Details:** To execute the compiled LISP-like language, a runtime environment is necessary. This includes fundamental data structures (lists, symbols, etc.) and functions for basic operations (evaluation, function calls, etc.).
+  - **Implementation Considerations:**
+    - Define the core data structures needed at runtime.
+    - Implement essential functions that will be called by the compiled code.
+    - Consider memory management within the runtime.
+  - **Urgency:** High. Essential for making the compiled output executable.
+
+## ⚙️ Top-Level Tasks ⚙️
 
 - [x] **Lexing**
-  Convert source code into tokens.
+  - **Description:** The initial phase of the compiler that converts raw source code into a stream of tokens. Each token represents a basic building block of the language (keywords, identifiers, operators, literals).
 
 - [x] **Parsing**
-  Transform tokens into an AST (Abstract Syntax Tree) — a structure representing the program.
+  - **Description:** The second phase that takes the token stream and constructs an Abstract Syntax Tree (AST). The AST is a hierarchical representation of the program's structure, making it easier for subsequent compilation stages to process.
 
 - [ ] **Compilation**
-  Compile the AST into x86_64 assembly.
-  Alternatively, consider trans-piling into a language like C and compiling from there.
+  - **Description:** The core task of translating the AST into low-level machine code (x86_64 assembly in this case) or an intermediate representation.
+  - **Alternative:** Transpiling to a more widely supported language like C could simplify the backend development by leveraging existing compilers.
+  - **Considerations:**
+    - Define the target instruction set or intermediate language.
+    - Implement the logic to traverse the AST and generate corresponding code.
+    - Handle register allocation, memory management, and other low-level details.
 
-## Urgent
+## ✨ AST and Token Enhancements ✨
 
-- [ ] **TODO: Add token member to AST node structure**
- - This would allow for much better error messages that point to the source code that the error originates from.
+- [ ] **Attach Comprehensive Metadata to AST Nodes**
+  - **Details:** Expanding on the urgent TODO, this involves consistently attaching detailed source location information to all relevant AST nodes.
+  - **Benefits:** Enables highly precise error reporting, supports debugging tools, and could be useful for static analysis.
+  - **Data Structure:** As discussed above, a `SourceLocation` structure containing file path, line number, column number, and token span is recommended.
 
- - We should also think about line count or something like that; maybe node AST holds custom structure containing token span, as well as file path (if applicable), line number, column number, etc.
-
-- [x] **Bind all arguments to a function, not just the first one!**
-  - `param_it` needs fixed in `parser.c` around line 570.
-
-- [x] **Comment Handling in Lexer**
-  Skip over comments during lexing.
-
-- [ ] **LISP Runtime**
-  Implement the LISP runtime in the compiled language.
-
-## AST and Token Enhancements
-
-- [ ] **Attach Token Metadata to AST Nodes**
-  - Enables detailed error messages that point to specific source locations.
-  - Consider a structure that includes token span, file path, line number, column number, etc.
-
-## Alternative Compilation Targets
-
-- [ ] **CHIP-8 ASM Backend**
-  - Inspired by a CHIP-8 toolset in PHP.
-  - Would be interesting to target CHIP-8 as an additional backend.
-
-- [ ] **Brainfuck Compilation**
-  - A random but intriguing idea. Not sure it’s even viable, but could be fun to explore.
-
-## Language Features and Ideas
+## 💡 Language Features and Ideas 💡
 
 ### Type System
 
 - [ ] **Automatic Type Deduction**
-  - If we can already infer expression return types, consider supporting type-less variable declarations.
-    Example syntax: `a :| = 69`
+  - **Details:** Allow the compiler to infer the type of a variable based on its initialization value, reducing the need for explicit type declarations in some cases.
+  - **Example Syntax:** `a :| = 69` (the `:|` could signify type inference).
+  - **Implementation:** Requires analyzing the right-hand side of assignments to determine the type.
 
 - [ ] **Uninitialized Variables**
-  - Possible syntax: `a : integer !`
-  - Alternative: `a : integer = None` with parser support for recognizing this as "uninitialized".
+  - **Details:** Explore allowing variable declarations without an initial value. This introduces the concept of potentially undefined behavior if such variables are used before assignment.
+  - **Possible Syntax:**
+    - `a : integer !` (the `!` could indicate no initial value).
+    - `a : integer = None` (requires parser to recognize `None` in this context).
+  - **Considerations:** How will the compiler handle or warn about the use of uninitialized variables?
 
 - [ ] **Any Type**
-  - A universal type that accepts any other type.
-  - Would likely require a way to inspect types at runtime or during compilation.
+  - **Details:** Introduce a universal type that can hold values of any other type. This can be useful for creating generic data structures or interacting with external systems.
+  - **Implementation Challenges:** Requires mechanisms for type checking or runtime type identification to ensure safe operations on `Any` type values.
 
 - [ ] **Meta-Types**
-  - A type that can represent other types — for meta-programming or reflection-style behavior.
+  - **Details:** Explore the concept of types that can represent other types. This opens possibilities for metaprogramming, where code can manipulate types themselves.
+  - **Use Cases:** Reflection, code generation, advanced type system features.
+  - **Complexity:** This is a more advanced feature with significant implementation challenges.
 
 ### Syntax & Declarations
 
 - [ ] **Unnamed Variable Declarations**
-  - Support for assigning to or declaring a variable without naming it, affecting a single unnamed environment variable.
-
-- [x] **Assertions Not Working**
-  - The `NODE_TYPE_MAX` assertions may not be firing. Might need to cast enum values to integers.
-
-## Parsing & Lexing Architecture
-
-- [ ] **Have Compiler able to collect TODO comments and things from source**
-    - This would allow compiler-aided software design in more scenarios.
-
-- [ ] **State Machine Parser**
-  - As complexity grows, consider using a state machine to handle edge cases and special parsing logic.
-  - For now, current approach may be simpler and faster to implement.
-
-## Testing and Tooling
-
-- [ ] **Write End-to-End Tests in Algol**
-  - Step 1: Learn Algol.
-  - Step 2: Write tests in it.
-
-# Misc
-
-- [ ] Implement `environment_free()`.
-
-- [ ] **Make CodeGen structure with function pointers and such**
-  - This would allow each implementation to actually be generated the same way, just have slightly different semantics.
-
-  - It's kind of the same thing we're doing now, just moved into structure data instead of switch case in function.
-
-- [ ] **Add an environment to the parsing context that contains operators to handle**
-
--  [ ] **Convert `Environment` type in an AST Node**
-  - This mimics LISP much more closely, and also doesn't change anything from out current linked list implementation.
-
-  - I think the idea is just to store a list of binding in a node, each of which contains a left side (key) and a right side (value). We can then just rewrite our environment code to operate on those structures, instead of on the custom Environment structure. I believe this will also allow for other things that I just can't think of right now. Oh yeah! The environment will then be able to be freed and/or garbage collected in the same way as the rest of the nide, which greatly simplifies the memory management :^)
-
-- [x] **Compile with `--Wall` and `--Wextra`, fix warnings!**
-  - I haven't done this and the codebase is somewhat sizeable; if hunting for something to do, compile with extra flags and fix warnings.
+  - **Details:** Investigate syntax to declare or assign to a temporary, unnamed variable, primarily affecting an implicit "environment" or context.
+  - **Potential Use Cases:** Scenarios where a value is needed temporarily without needing a persistent name.
 
 - [ ] **Have the ability to pass arguments in any order, if named**
- - The definition must contain parameter ID's in order for local scope binding to work.
+  - **Details:** Allow function calls where arguments are provided with their corresponding parameter names, enabling out-of-order specification.
+  - **Requirement:** Function definitions must include parameter identifiers to facilitate this mapping.
+  - **Example:** For a function `diff(x: integer, y: integer)`, calls like `diff(y: 9, x: 6)` should be valid.
 
- - Say `diff` is a function with two integer arguments, `X` and `Y`, with an integer return value that is the result of a subtract b.
+## 🎯 Alternative Compilation Targets 🎯
 
-- `diff(9, 6)` would return 3, as expected.
-- `diff(y: 9, 6)` however, would return -3 as expected.
+- [ ] **CHIP-8 ASM Backend**
+  - **Inspiration:** Inspired by a CHIP-8 toolset written in PHP.
+  - **Goal:** To explore the possibility of compiling the Aly language to the assembly language of the CHIP-8 virtual machine, a retro gaming platform.
+  - **Challenges:** Significant differences in architecture and instruction set would require a specialized code generation phase.
+
+- [ ] **Brainfuck Compilation**
+  - **Idea:** A purely experimental and potentially impractical target. Brainfuck is an esoteric programming language with a very limited instruction set.
+  - **Motivation:** A fun challenge to see if a higher-level language like Aly could be translated to such a minimal language.
+
+## 🏗️ Parsing & Lexing Architecture 🏗️
+
+- [ ] **Have Compiler able to collect TODO comments and things from source**
+  - **Details:** Enhance the compiler to parse and report on special comments (like `TODO`, `FIXME`, etc.) within the source code.
+  - **Potential Benefits:** Could be integrated into development workflows for tracking tasks and issues directly within the code.
+
+- [ ] **State Machine Parser**
+  - **Consideration:** As the language syntax becomes more complex, the current parsing approach might become harder to maintain and extend.
+  - **Alternative:** A state machine-based parser could provide a more structured and robust way to handle various grammar rules and edge cases.
+  - **Trade-off:** Might be more complex to initially implement compared to the current approach.
+
+## 🧪 Testing and Tooling 🧪
+
+- [ ] **Write End-to-End Tests in Algol**
+  - **Prerequisites:**
+    - Step 1: Learn the Algol programming language.
+    - Step 2: Develop a suite of tests written in Algol that exercise various features of the Aly compiler and the compiled code.
+  - **Goal:** Ensure the compiler produces correct output for a range of valid Aly programs.
+
+## 🛠️ Misc 🛠️
+
+- [ ] Implement `environment_free()`
+  - **Details:** Ensure proper memory management by implementing a function to deallocate the resources associated with the `Environment` data structure. This is crucial to prevent memory leaks.
+
+- [ ] **Refactor Code Generation with Function Pointers**
+  - **Goal:** Improve the modularity and extensibility of the code generation phase.
+  - **Approach:** Create a structure that holds function pointers for different code generation tasks (e.g., generating code for different AST node types). This would allow for easier addition of new target architectures or code generation strategies.
+
+- [ ] **Integrate Operator Handling into Parsing Environment**
+  - **Details:** Instead of hardcoding operator precedence and associativity within the parser, consider managing this information within the parsing environment. This could make the parser more flexible and easier to extend with new operators.
+
+- [ ] **Convert `Environment` Type to an AST Node Structure**
+  - **Rationale:** This design choice aligns more closely with LISP's approach where environments are first-class entities. Representing environments as AST nodes could simplify memory management (allowing them to be garbage collected alongside other nodes) and potentially enable more advanced language features related to scope and context.
+  - **Implementation:** Each binding in the environment (key-value pair) would be represented as a child node of the environment node.
+
+- [x] **Compile with `--Wall` and `--Wextra`, fix warnings!**
+  - **Action:** Enable comprehensive compiler warnings during the build process and address all reported issues. This is essential for code quality and can help identify potential bugs or areas for improvement.
