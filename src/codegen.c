@@ -363,7 +363,9 @@ Error codegen_program_x86_64_mswin(FILE* code, CodegenContext* cg_context, Parsi
     }
     char* name = register_name(r, last_expression->result_register);
     if (strcmp(name, "%rax")) {
-        fprintf(code, "mov %s, %%rax\n", name); // This is basically the $LASTEXITCODE.
+        // Move the specified register or variable into %rax,
+        // effectively setting up the return code (similar to $LASTEXITCODE in shell scripting).
+        fprintf(code, "mov %s, %%rax\n", name);
     }
     fprintf(code, "%s", function_footer_x86_64);
 

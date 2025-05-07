@@ -97,7 +97,7 @@ CONTEXT
 
 Ideally we want to go parent down rather than the alternative of bottom up, but I don't necessarily think that is possible right. I am just trying to establish some kind of control flow or order.
 
-I am not too sure if this is exactly how I want to do this, but it's looking a lot and quite similar to our NODE structure, maybe we can pack this in an environment?
+I am not too sure if this is exactly how I want to do this, but it's looking a lot and quite similar to our NODE structure, maybe we can pack this in an environment???
 
 Parser:
 Scope

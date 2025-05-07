@@ -11,12 +11,16 @@
  * NorthernL1ghts
  */
 
-#ifndef COMPILER_TYPE_CHECKER_H
-#define COMPILER_TYPE_CHECKER_H
+#ifndef ALY_COMPILER_TYPE_CHECKER_H
+#define ALY_COMPILER_TYPE_CHECKER_H
 
 #include <error.h>
 #include <parser.h>
 
+Error expression_return_type(ParsingContext* context, Node* expression, int* type);
+
+Error typecheck_expression(ParsingContext* context, Node* expression);
+
 Error typecheck_program(ParsingContext* context, Node* program);
 
-#endif /* COMPILER_TYPE_CHECKER_H */
+#endif /* ALY_COMPILER_TYPE_CHECKER_H */
