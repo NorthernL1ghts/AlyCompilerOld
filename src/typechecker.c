@@ -23,6 +23,7 @@
 Error expression_return_type(ParsingContext* context, Node* expression, int* type) {
     Error err = ok;
     ParsingContext* original_context = context;
+    Node* tmpnode = node_allocate();
     Node* result = node_allocate();
     result->type = -1;
     *type = result->type;
@@ -38,7 +39,6 @@ Error expression_return_type(ParsingContext* context, Node* expression, int* typ
         enviornment_get_by_symbol(*context->binary_operators, expression->value.symbol, result);
         err = parse_get_type(original_context, result->children->next_child, result);
         if (err.type) { return err; }
-        printf("%d\n", result->type);
         break;
     case NODE_TYPE_FUNCTION_CALL:
         while (context) {
@@ -49,8 +49,12 @@ Error expression_return_type(ParsingContext* context, Node* expression, int* typ
         }
         // RESULT contains a function node.
         print_node(result, 0);
+        result = result->children->next_child;
+        parse_get_type(original_context, result, tmpnode);
+        result->type = tmpnode->type;
         break;
     }
+    free(tmpnode);
     *type = result->type;
     free(result);
     return err;
