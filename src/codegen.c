@@ -216,6 +216,8 @@ Error codegen_expression_x86_64_mswin(FILE* code, Register* r, CodegenContext* c
             register_deallocate(r, expression->children->next_child->result_register);
         }
 
+        // TODO: Division codegen!
+
         break;
 
     case NODE_TYPE_VARIABLE_DECLARATION:
