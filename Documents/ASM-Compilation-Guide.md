@@ -21,34 +21,31 @@ These tools are available through distributions like MinGW (on Windows) or GCC (
 -------------------------
 
 ### 1. Assemble the Source File
-   -------------------------
-   Convert your `.S` assembly source file into an object file:
+  Convert your `.S` assembly source file into an object file:
 
-    ```bash
-    as code.S -o code.o
-    ```
+  ```bash
+  as code.S -o code.o
+  ```
 
     - `as`: GNU assembler
     - `code.S`: Your assembly source
     - `-o code.o`: Output object file
 
 ### 2. Link the Object File
-   ---------------------
-   Link the object file into an executable (console app for Windows):
+  Link the object file into an executable (console app for Windows):
 
-    ```bash
-    ld code.o -subsystem=console
-    ```
+```bash
+ld code.o -subsystem=console
+```
 
-    This creates an `a.exe` by default.
+This creates an `a.exe` by default.
 
 ### 3. Specify the Output Executable Name (Optional)
-   ---------------------------------------------
-   To name the output executable:
+  To name the output executable:
 
-    ```bash
-    ld code.o -subsystem=console -o code.exe
-    ```
+```bash
+ld code.o -subsystem=console -o code.exe
+```
 
 -------------------------------------------------------------------------------
 
@@ -63,11 +60,10 @@ These tools are available through distributions like MinGW (on Windows) or GCC (
   - No `-subsystem` is needed.
   - Example:
 
-    ```bash
-    as code.S -o code.o
-    ld code.o -o code
-    ```
-
+ ```bash
+  as code.S -o code.o
+  ld code.o -o code
+```
 -------------------------------------------------------------------------------
 
 ## Summary
@@ -75,9 +71,9 @@ These tools are available through distributions like MinGW (on Windows) or GCC (
 
 | Step          | Command                                       | Description                      |
 |---------------|-----------------------------------------------|----------------------------------|
-| Assemble      | `as code.S -o code.o`                           | Converts assembly to object code|
-| Link          | `ld code.o -subsystem=console`                  | Links into executable            |
-| Custom Output | `ld code.o -subsystem=console -o code.exe`      | Names the executable explicitly  |
+| Assemble      | `as code.S -o code.o`                         | Converts assembly to object code |
+| Link          | `ld code.o -subsystem=console`                | Links into executable            |
+| Custom Output | `ld code.o -subsystem=console -o code.exe`    | Names the executable explicitly  |
 
 -------------------------------------------------------------------------------
 
