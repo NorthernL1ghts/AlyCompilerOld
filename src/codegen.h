@@ -11,8 +11,8 @@
  * NorthernL1ghts
  */
 
-#ifndef COMPILER_CODEGEN_H
-#define COMPILER_CODEGEN_H
+#ifndef ALY_COMPILER_CODEGEN_H
+#define ALY_COMPILER_CODEGEN_H
 
 #include <error.h>
 #include <environment.h>
@@ -57,4 +57,4 @@ enum CodegenOutputFormat {
 
 Error codegen_program(enum CodegenOutputFormat format, ParsingContext* context, Node* program);
 
-#endif COMPILER_CODEGEN_H /* COMPILER_CODEGEN_H */
+#endif /* ALY_COMPILER_CODEGEN_H */

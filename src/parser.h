@@ -11,8 +11,8 @@
  * NorthernL1ghts
  */
 
-#ifndef COMPILER_PARSER_H
-#define COMPILER_PARSER_H
+#ifndef ALY_COMPILER_PARSER_H
+#define ALY_COMPILER_PARSER_H
 
 #include <error.h>
 #include <stddef.h>
@@ -71,8 +71,8 @@ typedef enum NodeType {
 	NODE_TYPE_BINARY_OPERATOR,
 
 	/// A valid binary operator. Contains two children.
-	/// 1. Left Hand Side, often abbrehivated as LHS
-	/// 2. Right Hand Side, often abbrehivated as RHS
+	/// 1. Left Hand Side, often abbreviated as LHS
+	/// 2. Right Hand Side, often abbreviated as RHS
 	NODE_TYPE_PROGRAM,
 
 	/// Contains a list of expressions to execute in sequence.
@@ -117,7 +117,7 @@ void print_node(Node* node, size_t indent_level);
 
 void node_free(Node* root);
 
-/// Copy A into B, assertign allocations.
+/// Copy A into B, assertion allocations.
 void node_copy(Node* a, Node* b);
 
 /// @return Boolean-like value; 1 for success, 0 for failure.
@@ -169,4 +169,4 @@ Error parse_program(char* filepath, ParsingContext* context, Node* result);
 
 Error parse_expr(ParsingContext* context, char* source, char** end, Node* result);
 
-#endif /* COMPILER_PARSER_H */
+#endif /* ALY_COMPILER_PARSER_H */

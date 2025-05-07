@@ -11,8 +11,8 @@
  * NorthernL1ghts
  */
 
-#ifndef COMPILER_ERROR_H
-#define COMPILER_ERROR_H
+#ifndef ALY_COMPILER_ERROR_H
+#define ALY_COMPILER_ERROR_H
 
 // TODO: Add file path, byte offset, etc.
 typedef struct Error {
@@ -38,4 +38,4 @@ extern Error ok;
   (n).type = (t);                  \
   (n).msg = (message);
 
-#endif /* COMPILER_ERROR_H */
+#endif /* ALY_COMPILER_ERROR_H */

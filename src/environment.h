@@ -11,8 +11,8 @@
  * NorthernL1ghts
  */
 
-#ifndef COMPILER_ENVIRONMENT_H
-#define COMPILER_ENVIRONMENT_H
+#ifndef ALY_COMPILER_ENVIRONMENT_H
+#define ALY_COMPILER_ENVIRONMENT_H
 
 typedef struct Node Node;
 
@@ -50,4 +50,4 @@ int environment_get(Environment env, Node* id, Node* result);
 /// @return Boolean-like value; 1 for success, 0 for failure.
 int enviornment_get_by_symbol(Environment env, char* symbol, Node* result);
 
-#endif /* COMPILER_ENVIRONMENT_H */
+#endif /* ALY_COMPILER_ENVIRONMENT_H */
