@@ -291,7 +291,7 @@ void print_node(Node* node, size_t indent_level) {
         }
         break;
     case NODE_TYPE_BINARY_OPERATOR:
-        printf("BINARY OPERATOR:%s", node->value.symbol);
+        printf("BINARY_OPERATOR:%s", node->value.symbol);
         break;
     case NODE_TYPE_VARIABLE_REASSIGNMENT:
         printf("VARIABLE REASSIGNMENT");
