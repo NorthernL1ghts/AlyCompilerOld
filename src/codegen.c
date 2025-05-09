@@ -109,7 +109,7 @@ char* register_name(Register* base, RegisterDescriptor register_descriptor) {
 
 #define label_buffer_size 1024
 char label_buffer[label_buffer_size];
-size_t label_index = 0;
+size_t label_index=0;
 size_t label_count = 0;
 char* label_generate() {
     char* label = label_buffer + label_index;
@@ -127,7 +127,7 @@ char* label_generate() {
 
 #define symbol_buffer_size 1024
 char symbol_buffer[symbol_buffer_size];
-size_t symbol_index = 0;
+size_t symbol_index=0;
 size_t symbol_count = 0;
 // NOTE: Aly currently struggles with variable declarations and reassignments.
 // In assembly (ASM), we can't manage this the way we currently do.
@@ -173,8 +173,9 @@ Error codegen_expression_x86_64_mswin(FILE* code, Register* r, CodegenContext* c
         while (context->parent) { context = context->parent; }
         // FIXME: Second argument is memory leaked!
         environment_get(*context->binary_operators, node_symbol(expression->value.symbol), tmpnode);
-        printf("Codegenning symbol %s\n", expression->value.symbol);
-        print_node(tmpnode, 0);
+
+        // printf("Codegenning binary operator %s\n", expression->value.symbol);
+        // print_node(tmpnode, 0);
 
         // Codegen LHS
         err = codegen_expression_x86_64_mswin(code, r, cg_context, context, expression->children);
