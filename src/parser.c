@@ -491,34 +491,47 @@ int parse_integer(Token* token, Node* node) {
 }
 
 // Set FOUND to 1 if an infix operator is found and parsing should continue, otherwise 0.
-Error parse_binary_infix_operator(ParsingContext* context, int* found, Token* current, size_t* length, char** end, long long* working_precedence, Node* result, Node** working_result)
-{
-    Error err = ok;
-    // Look ahead for a binary infix operator.
+Error parse_binary_infix_operator(
+    ParsingContext* context,
+    int* found,
+    Token* current_token,
+    size_t* token_length,
+    char** end,
+    long long* working_precedence,
+    Node* result,
+    Node** working_result
+) {
     *found = 0;
-    Token current_copy = *current;
-    size_t length_copy = *length;
+    Error err = ok;
+
+    // Look ahead for a binary infix operator.
+    Token current_copy = *current_token;
+    size_t length_copy = *token_length;
     char* end_copy = *end;
     err = lex_advance(&current_copy, &length_copy, &end_copy);
-    if (err.type != ERROR_NONE) { return err; }
+    if (err.type != ERROR_NONE) {
+        return err;
+    }
 
     Node* operator_symbol = node_symbol_from_buffer(current_copy.beginning, length_copy);
     Node* operator_value = node_allocate();
+
+    // Climb to the global context
     ParsingContext* global = context;
-    while (global->parent) { global = global->parent; }
+    while (global->parent) {
+        global = global->parent;
+    }
+
     if (environment_get(*global->binary_operators, operator_symbol, operator_value)) {
-        *current = current_copy;
-        *length = length_copy;
+        *current_token = current_copy;
+        *token_length = length_copy;
         *end = end_copy;
+
         long long precedence = operator_value->children->value.integer;
 
-        //printf("Got op. %s with precedence %lld(working %lld)\n", operator_symbol->value.symbol, precedence, working_precedence);
-        //printf("working precedence: %lld\n", working_precedence);
-
-        // TODO: Handle grouped expressions through parenthesis using precedence stack.
+        // Choose where to build the result based on precedence
         Node* result_pointer = precedence <= *working_precedence ? result : *working_result;
 
-        // NOTE: We don't have to pass LHS as a Node because we get it as result below.
         Node* result_copy = node_allocate();
         node_copy(result_pointer, result_copy);
         result_pointer->type = NODE_TYPE_BINARY_OPERATOR;
@@ -536,12 +549,15 @@ Error parse_binary_infix_operator(ParsingContext* context, int* found, Token* cu
         free(operator_value);
 
         *found = 1;
+        return ok;
     }
+
     node_free(operator_symbol);
     free(operator_value);
 
     return ok;
 }
+
 
 Error parse_expr(ParsingContext* context, char* source, char** end, Node* result) {
     ExpectReturnValue expected;
@@ -798,53 +814,10 @@ Error parse_expr(ParsingContext* context, char* source, char** end, Node* result
         err = parse_binary_infix_operator(context, &found, &current_token, &token_length, end, &working_precedence, result, &working_result);
         if (found) { continue; }
 
-        // Look ahead for a binary infix operator, right?
-        // Token current_copy = current_token;
-        // size_t length_copy = token_length;
-        // char* end_copy = *end;
-        // err = lex_advance(&current_copy, &length_copy, &end_copy);
-        // if (err.type != ERROR_NONE) { return err; }
-
-        // Node* operator_symbol = node_symbol_from_buffer(current_copy.beginning, length_copy);
-        // Node* operator_value = node_allocate();
-        // ParsingContext* global = context;
-        // while (global->parent) { global = global->parent; }
-        // if (environment_get(*global->binary_operators, operator_symbol, operator_value)) {
-        //     current_token = current_copy;
-        //     token_length = length_copy;
-        //     *end = end_copy;
-        //     long long precedence = operator_value->children->value.integer;
-
-        //     //printf("Got op. %s with precedence %lld(working %lld)\n", operator_symbol->value.symbol, precedence, working_precedence);
-        //     //printf("working precedence: %lld\n", working_precedence);
-
-        //     // TODO: Handle grouped expressions through parenthesis using precedence stack.
-        //     Node* result_pointer = precedence <= working_precedence ? result : working_result;
-
-        //     Node* result_copy = node_allocate();
-        //     node_copy(result_pointer, result_copy);
-        //     result_pointer->type = NODE_TYPE_BINARY_OPERATOR;
-        //     result_pointer->value.symbol = operator_symbol->value.symbol;
-        //     result_pointer->children = result_copy;
-        //     result_pointer->next_child = NULL;
-
-        //     Node* rhs = node_allocate();
-        //     node_add_child(result_pointer, rhs);
-        //     working_result = rhs;
-
-        //     working_precedence = precedence;
-
-        //     free(operator_symbol);
-        //     free(operator_value);
-
-        //     continue;
-        // }
-        // node_free(operator_symbol);
-        // free(operator_value);
-
-        // This operation occurs upon completing integer parsing,
-        // effectively clearing the stack.
+       // If no more parser stack, return with current result.
         if (!context->parent) { break; }
+
+        // Otherwise, handle parser stack operator.
 
         Node* operator = context->operator;
         if (operator->type != NODE_TYPE_SYMBOL) {
