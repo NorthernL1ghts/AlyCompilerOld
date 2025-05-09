@@ -109,11 +109,11 @@ char* register_name(Register* base, RegisterDescriptor register_descriptor) {
 
 #define label_buffer_size 1024
 char label_buffer[label_buffer_size];
-size_t label_index=0;
+size_t label_index = 0;
 size_t label_count = 0;
 char* label_generate() {
     char* label = label_buffer + label_index;
-    label_index += snprintf(label, label_buffer_size - label_index, ".L%d:", label_count);
+    label_index += snprintf(label, label_buffer_size - label_index, ".L%zu:\n", label_count);
     label_index++;
     if (label_index >= label_buffer_size) {
         label_index = 0;
@@ -127,7 +127,7 @@ char* label_generate() {
 
 #define symbol_buffer_size 1024
 char symbol_buffer[symbol_buffer_size];
-size_t symbol_index=0;
+size_t symbol_index = 0;
 size_t symbol_count = 0;
 // NOTE: Aly currently struggles with variable declarations and reassignments.
 // In assembly (ASM), we can't manage this the way we currently do.
@@ -373,7 +373,7 @@ Error codegen_program_x86_64_mswin(FILE* code, CodegenContext* cg_context, Parsi
     // TODO: This breaks things, but we should do it.
     //register_free(r);
 
-    return ok;
+    return err;
 }
 
 //============================================================== END CG_FMT_x86_64_MSWIN

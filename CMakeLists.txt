@@ -36,10 +36,10 @@ if(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID STREQUAL "Clang")
     target_compile_options(
         alyc
         PRIVATE
-        # -Wall
-        # -Wextra
-        # -pedantic
-        # -Werror  # Treat warnings as errors
+        -Wall
+        -Wextra
+        -pedantic
+        -Werror  # Treat warnings as errors
     )
 endif()
 

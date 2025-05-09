@@ -140,7 +140,7 @@ Error typecheck_expression(ParsingContext* context, Node* expression) {
         }
         if (iterator != NULL) {
             printf("Function:%s\n", expression->children->value.symbol);
-            ERROR_CREATE(err, ERROR_ARGUMENTS, "Too many arguments passed to function!");
+            ERROR_PREP(err, ERROR_ARGUMENTS, "Too many arguments passed to function!");
             break;
         }
         break;
