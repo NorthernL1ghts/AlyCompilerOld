@@ -1,15 +1,22 @@
-;#;Copyright (c) 2025 NorthernL1ghts. All rights reserved.
+; a : integer
 
-;#;This file is part of the AlyCompiler.
-;#;Unauthorized copying, modification, or distribution of this file,
-;#;via any medium, is strictly prohibited except as permitted under
-;#;the terms outlined in the LICENSE file.
+;[integer (z : integer) { z }]
 
-;#;For licensing details, contributions, or inquiries, refer to LICENSE
-;#;or contact:
-;#;NorthernL1ghts
+;x : integer
 
-defun foo (x:integer) : integer { x }
+defun foo (x : integer) : integer {
+    bar : function = [integer (y : integer) { y }]
+    x
+}
 
-;2 * 3 / 5 + 1 / 5
--2 * 3 + 1 + foo(6) + 2
+; TODO: Support binary operator (re)definition
+; _ : operator = (x : integer, y: integer) {
+;
+; }
+
+; 2 * 3 / 5 + 1 / 5
+; TODO: Something breaks here :^(
+
+2 * 3 / 2 + 1
+
+; 2 * 3 + 1 + 2 + foo(5)

@@ -1,18 +1,8 @@
-;#;Copyright (c) 2025 NorthernL1ghts. All rights reserved.
-
-;#;This file is part of the AlyCompiler.
-;#;Unauthorized copying, modification, or distribution of this file,
-;#;via any medium, is strictly prohibited except as permitted under
-;#;the terms outlined in the LICENSE file.
-
-;#;For licensing details, contributions, or inquiries, refer to LICENSE
-;#;or contact:
-;#;NorthernL1ghts
-
 ; This is a comment. It will end at the newline.
 # This is also a comment.
 
 ; This is a variable declaration with initialization.
+
 a : integer = 69
 
 ; This is a variable re-assignment.
@@ -26,31 +16,26 @@ b := 42
 ; This is an error! We should catch this as a variable re-definition.
 ;b : integer
 
-; This is a function definition with two integer arguments that returns
+; This is a function definition with two integer arugments that returns
 ; an integer.
 defun foo (c:integer, b:integer):integer {
-    ; These lines of code are to test function body.
-    c := 10
-    c := 5
-    c := 42
-    c := 69
-    c := 420
-    c := 69
+  c := 10
+  c := 5
+  c := 42
+  c := 69
+  c := 420
+  c := 69
 }
 
-; This is a function call
-; For now, this errors because we no do function calls :^)
+; This is a function call.
+; For now, this errors because we no do function calls :^(
 foo(20, 34)
 
-; This is the newly conceptualized way to define functions using a lambda-like syntax.
-; Functions can now be assigned to variables, allowing for flexible reuse and inline execution.
-; The structure ensures that argument lists and function bodies remain encapsulated within brackets.
-
-; This approach could support closures, higher-order functions, and potentially currying.
-;[integer (a:integer) { a := 25 a }]
+; TODO: Support this lambda syntax!
+;[integer (a:integer) { a := 25  a }]
 
 ; TODO: Allow function assignment or something
 ;bar : function = [integer (x:integer) { x }]
 
 ; TODO: Shorthand for function assignment
-;baz : [integer (x:integer) { x }]
+;baz : [ integer (x:integer) { x } ]
